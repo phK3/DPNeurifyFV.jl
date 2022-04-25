@@ -1,7 +1,7 @@
 module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters
-import NeuralVerification: Layer, Network, ActivationFunction
+import NeuralVerification: Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id
 const NV = NeuralVerification
 
 # redefinitions of function defined in NeuralVerification.jl
