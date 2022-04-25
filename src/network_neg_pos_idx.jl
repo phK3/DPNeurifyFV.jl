@@ -32,6 +32,34 @@ function NV.compute_output(nnet::NetworkNegPosIdx, input)
 end
 
 
+### Network with layers that store positive and negative weights separately (and not their index)
+
+
+struct LayerNegPos{F<:ActivationFunction, N<:Number}
+    weights::Matrix{N}
+    bias::Vector{N}
+    W_neg::Matrix{N}
+    W_pos::Matrix{N}
+    activation::F
+end
+
+
+LayerNegPos(L::Layer) = LayerNegPos(L.weights, L.bias, min.(L.weights, 0),
+                                    max.(L.weights, 0), L.activation)
+Layer(L::LayerNegPos) = Layer(L.weights, L.bias, L.activation)
+
+NV.n_nodes(L::LayerNegPos) = length(L.bias)
+NV.affine_map(L::LayerNegPos, x) = L.weights*x + L.bias
+
+
+struct NetworkNegPos <: AbstractNetwork
+    layers::Vector{LayerNegPos}
+end
+
+
+NetworkNegPos(net::Network) = NetworkNegPos([LayerNegPos(l) for l in net.layers])
+
+
 function NV.compute_output(nnet::NetworkNegPos, input)
     curr_value = input
     for layer in nnet.layers
