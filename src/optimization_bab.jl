@@ -38,8 +38,9 @@ function print_progress(verbosity::Int, step, lower_bound, best_lower_bound,
         println("Interval: ", [best_lower_bound, value])
         println("max radius: ", max(radius(cell)))
 
-        println("Cell low: ", low(cell))
-        println("Cell high: ", high(cell))
+        # should print the lower and upper bounds of the input hyperrectangle
+        println("Cell low: ", low(domain(cell)))
+        println("Cell high: ", high(domain(cell)))
         println("lower_bound: ", lower_bound)
         println("lower bound threshold: ", lower_bound_threshold)
     elseif verbosity == 2
