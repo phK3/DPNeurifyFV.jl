@@ -8,6 +8,22 @@ function unit_vec(i, n)
 end
 
 
+function Base.split(H::AbstractHyperrectangle, index::Int)
+    lbs, ubs = low(H), high(H)
+    split_val = 0.5 * (lbs[index] + ubs[index])
+
+    high1 = copy(ubs)
+    high1[index] = split_val
+    low2 = copy(lbs)
+    low2[index] = split_val
+
+    domain1 = Hyperrectangle(low=lbs, high=high1)
+    domain2 = Hyperrectangle(low=low2, high=ubs)
+
+    return domain1, domain2
+end
+
+
 ### Related to symbolic intervals with fresh variables ###
 
 """
