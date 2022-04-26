@@ -21,7 +21,8 @@ export
     init_symbolic_interval_fvheur,
     optimize_linear_deep_poly,
     contained_within_polytope_deep_poly,
-    reaches_polytope_deep_poly
+    reaches_polytope_deep_poly,
+    print_network_structure
     
 
 end # module

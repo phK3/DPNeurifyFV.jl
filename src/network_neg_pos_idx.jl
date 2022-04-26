@@ -76,3 +76,11 @@ function NV.interval_map(W⁻::AbstractMatrix{N}, W⁺::AbstractMatrix{N},
 
     return (l_new, u_new)
 end
+
+
+function print_network_structure(nnet)
+    println("input size: ", size(nnet.layers[1].weights, 2))
+    for (i, l) in enumerate(nnet.layers)
+        println(i, ": ", NV.n_nodes(l), " (", l.activation, ")")
+    end
+end
