@@ -165,3 +165,35 @@ function merge_into_network(network::Network, A::Matrix{N}, b::Vector{N}) where 
 
     return Network(layers)
 end
+
+
+### ACAS Xu benchmark
+
+# modified from ZoPE implementation https://github.com/sisl/NeuralPriorityOptimizer.jl (just changed PolytopeComplement to Complement in properties 2-4)
+"""
+    get_acas_sets(property_number)
+
+Get the input and output sets for acas under the standard definition of a problem 
+    as trying to show x in X implies y in Y. This returns the input and output sets X, Y.
+    Taken from https://github.com/NeuralNetworkVerification/Marabou/tree/master/resources/properties
+
+"""
+function get_acas_sets(property_number)
+    if property_number == 1
+        input_set = Hyperrectangle(low=[0.6, -0.5, -0.5, 0.45, -0.5], high=[0.6798577687, 0.5, 0.5, 0.5, -0.45])
+        output_set = HalfSpace([1.0, 0.0, 0.0, 0.0, 0.0], 3.9911256459)
+    elseif property_number == 2
+        input_set = Hyperrectangle(low=[0.6, -0.5, -0.5, 0.45, -0.5], high=[0.6798577687, 0.5, 0.5, 0.5, -0.45])
+        output_set = Complement(HPolytope([-1.0 1.0 0.0 0.0 0.0; -1.0 0.0 1.0 0.0 0.0; -1.0 0.0 0.0 1.0 0.0; -1.0 0.0 0.0 0.0 1.0], [0.0; 0.0; 0.0; 0.0]))
+    elseif property_number == 3
+        input_set = Hyperrectangle(low=[-0.3035311561, -0.0095492966, 0.4933803236, 0.3, 0.3], high=[-0.2985528119, 0.0095492966, 0.5, 0.5, 0.5])
+        output_set = Complement(HPolytope([1.0 -1.0 0.0 0.0 0.0; 1.0 0.0 -1.0 0.0 0.0; 1.0 0.0 0.0 -1.0 0.0; 1.0 0.0 0.0 0.0 -1.0], [0.0; 0.0; 0.0; 0.0]))
+    elseif property_number == 4
+        input_set = Hyperrectangle(low=[-0.3035311561, -0.0095492966, 0.0, 0.3181818182, 0.0833333333], high=[-0.2985528119, 0.0095492966, 0.0, 0.5, 0.1666666667])
+        output_set = Complement(HPolytope([1.0 -1.0 0.0 0.0 0.0; 1.0 0.0 -1.0 0.0 0.0; 1.0 0.0 0.0 -1.0 0.0; 1.0 0.0 0.0 0.0 -1.0], [0.0; 0.0; 0.0; 0.0]))
+    else
+        @assert false "Unsupported property number"
+    end
+
+    return input_set, output_set
+end
