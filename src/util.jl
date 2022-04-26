@@ -1,4 +1,13 @@
 
+### General
+
+function unit_vec(i, n)
+    eᵢ = zeros(n)
+    eᵢ[i] = 1.
+    return eᵢ
+end
+
+
 ### Related to symbolic intervals with fresh variables ###
 
 """
@@ -65,6 +74,21 @@ function is_crossing(lb::Float64, ub::Float64)
     lb < 0 && ub > 0 && return true
     return false
 end
+
+
+function relaxed_relu_gradient_lower(l::Real, u::Real)
+    ((u <= 0) || ((l < 0) && (u <= -l))) && return 0.
+    return 1.
+end
+
+""" Old implementation, ~4x slower
+function relaxed_relu_gradient_lower(l::Real, u::Real)
+    u <= 0 && return 0.
+    l >= 0 && return 1.
+    u <= -l && return 0
+    return 1.
+end
+"""
 
 
 ### Network construction
