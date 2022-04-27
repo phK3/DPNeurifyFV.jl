@@ -52,7 +52,7 @@ end
 """
 overestimate_cell : cell -> (val, cell_out) returns overestimate of value as well as cell propagated through the nn
 """
-function general_priority_optimization(start_cell, overestimate_cell, achievable_value, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)   
+function NPO.general_priority_optimization(start_cell, overestimate_cell, achievable_value, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)   
     # set timer
     t_start = time()
 
@@ -151,7 +151,7 @@ function general_priority_optimization(start_cell, overestimate_cell, achievable
 end
 
 
-function general_priority_optimization(start_cell, relaxed_optimize_cell,
+function NPO.general_priority_optimization(start_cell, relaxed_optimize_cell,
                                        evaluate_objective, params::PriorityOptimizerParameters,
                                        maximize; bound_threshold_realizable=(maximize ? Inf : -Inf),
                                        bound_threshold_approximate=(maximize ? -Inf : Inf),
@@ -341,13 +341,13 @@ function reaches_polytope_deep_poly(network, input_set, polytope, params::Priori
 end
 
 
-function split_largest_interval(s::SymbolicIntervalFVHeur)
+function NPO.split_largest_interval(s::SymbolicIntervalFVHeur)
     largest_dimension = argmax(high(domain(s)) - low(domain(s)))
     return split_symbolic_interval_fv_heur(s, largest_dimension)
 end
 
 
-function split_multiple_times(cell::SymbolicIntervalFVHeur, n; split=split_largest_interval)
+function NPO.split_multiple_times(cell::SymbolicIntervalFVHeur, n; split=split_largest_interval)
     q = Queue{SymbolicIntervalFVHeur}()
     enqueue!(q, cell)
     for i in 1:n

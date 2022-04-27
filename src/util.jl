@@ -24,6 +24,14 @@ function Base.split(H::AbstractHyperrectangle, index::Int)
 end
 
 
+"""
+We say that the domain of a hyperrectangle is just itself.
+
+Debatable, if the hyperrectangle represents some interval that originated from an input hyperrectangle.
+But we just need it for print_progress in our BaB procedure. (but still might be better not to export it)
+"""
+domain(h::AbstractHyperrectangle) = h 
+
 ### Related to symbolic intervals with fresh variables ###
 
 """
