@@ -185,7 +185,7 @@ function get_initial_symbolic_interval(network, input_set, solver::DPNFV)
 end
 
 
-function optimize_linear_deep_poly(network, input_set, coeffs, params; maximize=true, solver=DPNFV(),
+function optimize_linear_deep_poly(network, input_set, coeffs, params::PriorityOptimizerParameters; maximize=true, solver=DPNFV(),
                               split=split_largest_interval, concrete_sample=:Center)
     min_sign_flip = maximize ? 1.0 : -1.0
 
@@ -239,7 +239,7 @@ Used to prove that the NN's output is contained in the polytope.
 If the upper bound on the maximum is < 0 -> contained in polytope.
 If we find a point that violates one constraint of the polytope -> not contained in polytope.
 """
-function contained_within_polytope_deep_poly(network, input_set, polytope, params; solver=DPNeurifyFV(),
+function contained_within_polytope_deep_poly(network, input_set, polytope, params::PriorityOptimizerParameters; solver=DPNeurifyFV(),
                                             split=split_largest_interval, concrete_sample=:Center)
     min_sign_flip = 1.  # we want to maximize violation of polytope to prove containment
     A, b = tosimplehrep(polytope)
@@ -294,7 +294,7 @@ Used to prove that NN's output is disjoint with the polytope.
 If the lower bound on the minimal violation is > 0 -> guaranteed to be outside polytope.
 If we find a point that satisfies all of the polytope's constraints -> intersects with polytope
 """
-function reaches_polytope_deep_poly(network, input_set, polytope, params; solver=DPNeurifyFV(),
+function reaches_polytope_deep_poly(network, input_set, polytope, params::PriorityOptimizerParameters; solver=DPNeurifyFV(),
                                     split=split_largest_interval, concrete_sample=:Center)
     min_sign_flip = -1.  # we want to minimize violation of polytope to prove that we stay outside
     A, b = tosimplehrep(polytope)
