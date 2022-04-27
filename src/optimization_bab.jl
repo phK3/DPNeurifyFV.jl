@@ -275,7 +275,7 @@ function contained_within_polytope_deep_poly(network, input_set, polytope, param
             return x_star, maximum(y_star)
         end
     else
-        throw(ArgumentError("keyword ", concrete_sample, " does not exist!"))
+        throw(ArgumentError("keyword $(concrete_sample) does not exist!"))
     end
 
     # maximize = true,
@@ -330,7 +330,7 @@ function reaches_polytope_deep_poly(network, input_set, polytope, params; solver
             return x_star, maximum(y_star)
         end
     else
-        throw(ArgumentError("keyword ", concrete_sample, " does not exist!"))
+        throw(ArgumentError("keyword $(concrete_sample) does not exist!"))
     end
 
     # maximize = false,
