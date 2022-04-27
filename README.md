@@ -7,7 +7,7 @@ Neural network verification based on input splitting and forward propagation of 
 
 Using the Julia package manager (type `]` in the Julia REPL) type
 - `add https://github.com/phK3/NeuralVerification.jl#BuildingBranch` (adds my fork of `NeuralVerification.jl` to the environment)
-    - at least use my fork, until installation of the original Repo is no longer broken
+    - at least use my fork, until [this issue](https://github.com/sisl/NeuralVerification.jl/issues/201) with the installation of `NeuralVerification.jl` is resolved
 - `add https://github.com/sisl/NeuralPriorityOptimizer.jl` and follow the installation instructions on [their repo](https://github.com/sisl/NeuralPriorityOptimizer.jl) 
 - `add LazySets`
 
