@@ -5,7 +5,8 @@ Neural network verification based on input splitting and forward propagation of 
 
 ## Installation
 
-Using the Julia package manager (type `]` in the Julia REPL) type
+Open the Julia REPL in this directory and type
+- `]` to open the Julia package manager
 - `add https://github.com/sisl/NeuralVerification.jl#0d9be34` (adds `NeuralVerification.jl` to the environment, but pinned to a specific commit)
     - at least use the pinned version, until [this issue](https://github.com/sisl/NeuralVerification.jl/issues/201) with the installation of `NeuralVerification.jl` is resolved
 - `add https://github.com/sisl/NeuralPriorityOptimizer.jl` and follow the installation instructions on [their repo](https://github.com/sisl/NeuralPriorityOptimizer.jl) 
