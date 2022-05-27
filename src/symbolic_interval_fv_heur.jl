@@ -161,3 +161,27 @@ function split_important_interval(s::SymbolicIntervalFVHeur{<:Hyperrectangle})
     most_important_dim = sum(s.importance) == 0. ? argmax(radius) : argmax(s.importance .* radius)
     return split_symbolic_interval_fv_heur(s, most_important_dim)
 end
+
+
+"""
+Splitting based on intermediate importance scores (i.e. coefficients in all crossing ReLUs) with number of fresh variables to
+be introduced following NeuroDiff paper
+"""
+function split_important_interval_neurodiff(s::SymbolicIntervalFVHeur{<:Hyperrectangle})
+    radius = high(domain(s)) - low(domain(s))
+    # if there are no more crossing ReLUs, importance will be zero vector -> if we
+    # multiply it with radius, all inputs are equally important, and argmax always
+    # returns the first index -> infinitely loop splitting
+    most_important_dim = sum(s.importance) == 0. ? argmax(radius) : argmax(s.importance .* radius)
+
+    domain1, domain2 = split(domain(s), most_important_dim)
+
+    num_crossing, crossings = get_num_crossing(s)
+    # don't count last layer as it has Id activation function
+    n_vars = ceil(Integer, sum([ncr/i for (i, ncr) in enumerate(crossings[1:end-1])]))
+
+    s1 = init_symbolic_interval_fvheur(s, domain1; max_vars=n_vars)
+    s2 = init_symbolic_interval_fvheur(s, domain2; max_vars=n_vars)
+
+    return [s1, s2]
+end
