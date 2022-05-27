@@ -138,6 +138,27 @@ function minimizer(s::SymbolicIntervalFVHeur)
     return minimizer(subs_sym_lo, low(domain(s)), high(domain(s)))
 end
 
+
+"""
+Returns number of crossing ReLUs in the network as well as a list
+of crossing ReLUs per layer.
+
+lbs, ubs are lower and upper bounds of the intermediate neurons
+(no input bounds or output bounds)
+"""
+function get_num_crossing(lbs, ubs)
+    n_layers = length(lbs)
+    n_crossings = zeros(Int, n_layers)
+    for (i, (l, u)) in enumerate(zip(lbs, ubs))
+        n_crossings[i] = sum((l .< 0) .& (u .> 0))
+    end
+
+    return sum(n_crossings), n_crossings
+end
+
+get_num_crossing(s::SymbolicIntervalFVHeur) = get_num_crossing(s.lbs, s.ubs)
+
+
 function split_symbolic_interval_fv_heur(s::SymbolicIntervalFVHeur{<:Hyperrectangle}, index::Int)
     domain1, domain2 = split(domain(s), index)
 
