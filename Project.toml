@@ -4,7 +4,9 @@ authors = ["philipp <philipp.kern@kit.edu>"]
 version = "0.1.0"
 
 [deps]
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 LazySets = "b4f0291d-fe17-52bc-9479-3d1a343d9043"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NeuralPriorityOptimizer = "7e1232c4-5598-4acc-a396-12489b5a6036"
 NeuralVerification = "146f25fa-00e7-11e9-3ae5-fdbac6e12fa7"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
