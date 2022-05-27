@@ -306,7 +306,7 @@ function reaches_polytope_deep_poly(network, input_set, polytope, params::Priori
     function approximate_optimize_cell(cell)
         out_cell = forward_network(solver, network, cell)
         violations = out_cell.lbs[end]  # note: lower bounds
-        # after merging, if all constraints are satisifed, we have Ax - b ≤ 0
+
         max_violation = maximum(violations)
         return max_violation, out_cell
     end
@@ -333,9 +333,6 @@ function reaches_polytope_deep_poly(network, input_set, polytope, params::Priori
         throw(ArgumentError("keyword $(concrete_sample) does not exist!"))
     end
 
-    # maximize = false,
-    # bound_threshold_realizable = 0 (-> if we find some concrete input x with NN(x) > 0, then we are not in the polytope)
-    # bound_threshold_approximate = 0 (-> if we can prove that NN(x) < 0 for all x, then we are guaranteed to be in the polytope)
     return general_priority_optimization(initial_sym, approximate_optimize_cell, achievable_value, params, false,
                                              split=split, bound_threshold_realizable=0., bound_threshold_approximate=0.)
 end
