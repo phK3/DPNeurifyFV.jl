@@ -101,3 +101,41 @@ function NPO.general_priority_optimization(start_cell::Hyperrectangle, overestim
     end
     return best_x, best_lower_bound, value, params.max_steps
 end
+
+
+"""
+    general_priority_optimization(start_cell::Hyperrectangle, overestimate_cell, evaluate_objective, params::PriorityOptimizerParameters; maximize=true)
+
+Wrapper to the general priority optimization so we can handle maximization and minimization.
+TODO: is this way of wrapping the functions inefficient?
+
+If maximize is true, then relaxed_optimize_cell must map a cell to an overestimate of the objective value in that cell.
+If maximize is false (so we are minimizing), then relaxed_optimize_cell must map a cell to an underestimate of the objective value in that cell.
+In both cases, evaluate_objective must map from a cell to an achievable objective value within that cell.
+
+If maximize is true, then bound_threshold_realizable corresponds to a lower bound threshold which if we ever get a concrete value above that we return.
+
+If maximize is false, then -bound_threshold_realizable corresponds to a lower bound threshold which if we ever get a concrete value above that we return.
+
+If maximize is true, then bound_threshold_approximate corresponds to an upper bound threshold which if we ever get an upper bound for the maximization problem below
+some amount then we should return
+If maximize is false, then -bound_threshold_approximate corresponds to an upper bound threshold which if we ever get an upper bound for the maximization problem above that
+then we should return. This can be used in a projection problem to stop once we're sure we have a distance > 0. Since in this case we are solving a minimization problem, we will have
+converted it to a maximization problem by multiplying the objective by negative one, so having a threshold on the upper bound in this converted problem
+corresponds to having a threshold on the lower bound of the minimization problem where if we ever get above that we return.
+
+This function returns the best input found, a lower bound on the optimal value, an upper bound on the optimal value, and the number of steps taken.
+"""
+function NPO.general_priority_optimization(start_cell::Hyperrectangle, relaxed_optimize_cell, evaluate_objective, params::PriorityOptimizerParameters, maximize; bound_threshold_realizable=(maximize ? Inf : -Inf), bound_threshold_approximate=(maximize ? -Inf : Inf), split=split_largest_interval)
+    if maximize
+        return general_priority_optimization(start_cell, relaxed_optimize_cell, evaluate_objective, params, bound_threshold_realizable, bound_threshold_approximate, split)
+    else
+        overestimate_cell = cell -> -relaxed_optimize_cell(cell)
+        neg_evaluate_objective = cell -> begin
+            input, result = evaluate_objective(cell)
+            return input, -result
+        end
+        x, lower, upper, steps = general_priority_optimization(start_cell, overestimate_cell, neg_evaluate_objective, params, -bound_threshold_realizable, -bound_threshold_approximate, split)
+        return x, -upper, -lower, steps
+    end
+end
