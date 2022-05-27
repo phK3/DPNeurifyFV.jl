@@ -6,8 +6,8 @@ Neural network verification based on input splitting and forward propagation of 
 ## Installation
 
 Using the Julia package manager (type `]` in the Julia REPL) type
-- `add https://github.com/phK3/NeuralVerification.jl#BuildingBranch` (adds my fork of `NeuralVerification.jl` to the environment)
-    - at least use my fork, until [this issue](https://github.com/sisl/NeuralVerification.jl/issues/201) with the installation of `NeuralVerification.jl` is resolved
+- `add https://github.com/sisl/NeuralVerification.jl#0d9be34` (adds `NeuralVerification.jl` to the environment, but pinned to a specific commit)
+    - at least use the pinned version, until [this issue](https://github.com/sisl/NeuralVerification.jl/issues/201) with the installation of `NeuralVerification.jl` is resolved
 - `add https://github.com/sisl/NeuralPriorityOptimizer.jl` and follow the installation instructions on [their repo](https://github.com/sisl/NeuralPriorityOptimizer.jl) 
 - `add LazySets`
 
@@ -27,3 +27,17 @@ optimize_linear_deep_poly(acas, input_set, [1.,0,0,0,0], params, solver=DPNFV(me
 ```
 
 Further examples can be found in `./example_notebook.ipynb`.
+
+## Reproducing Experiments
+
+To reproduce the experiments in the paper, open the Julia REPL in this directory and type
+- `]` to open the package manager
+- `activate . ` (to activate the DPNeurifyFV environment)
+- press backspace to leave the package manager
+- type `include("experiments/run_experiments.jl")` to start verification of the ACAS Xu benchmark set using DPNeurifyFV
+    - timeouts etc. can be changed in the script
+- type `include("experiments/zope_experiments.jl")` to start verification with ZoPE
+- to reproduce the results for `NNENUM`, 
+    - download `NNENUM` from GitHub: https://github.com/stanleybak/nnenum
+    - use the Python script under `experiments/run_nnenum.py` and place it in `nnenum/examples/acasxu/`
+    - run the script 
