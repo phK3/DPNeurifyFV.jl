@@ -5,11 +5,15 @@ include(string(@__DIR__, "/dpnfv_experiments_basis.jl"))
 # Setup your parameters and then run the tests
 # was commented out before, but printing doesn't work without it
 max_steps = 200000  # hard coded below now to be different for the properties
-timeout = 60.
+# timeout = 60.
+# properties_to_test = 4
+# max_index_1 = 5
+# max_index_2 = 9
+timeout = 5.
 properties_to_test = 4
-max_index_1 = 5
-max_index_2 = 9
-result_dir = string(@__DIR__, "/results/")
+max_index_1 = 2
+max_index_2 = 2
+result_dir = string(@__DIR__, "/")  # just use this directory for now
 
 
 solver = DPNFV(max_vars=20, method=:DeepPolyRelax, get_fresh_var_idxs=DPNeurifyFV.fresh_var_range_non_zero)

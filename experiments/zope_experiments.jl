@@ -134,7 +134,7 @@ end
 ###
 # Setup your parameters and then run the tests
 ###
-filename=string(@__DIR__, "/results/acas_fullrun_onethread_zope.csv")
+filename=string(@__DIR__, "/acas_fullrun_onethread_zope.csv")
 # was commented out before, but printing doesn't work without it
 max_steps = 200000  # hard coded below now to be different for the properties
 timeout = 60.
