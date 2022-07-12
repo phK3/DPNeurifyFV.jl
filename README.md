@@ -16,6 +16,7 @@ Open the Julia REPL in this directory and type
     - type `install Gurobi`
     - (to use all features of `NeuralPriorityOptimizer`, you also need to install Mosek, however, this is not necessary for `DPNeurifyFV` or the experimental evaluation.)
 - `add LazySets`
+- `add https://github.com/phK3/DPNeurifyFV.jl`
 
 ## Examples
 
