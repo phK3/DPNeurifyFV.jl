@@ -116,7 +116,10 @@ returns:
     all_steps - number of steps performed by verifier
     result - (String) SAT, UNSAT or inconclusive
 """
-function verify_vnnlib(solver::DPNFV, network::Network, vnnlib_file, params::PriorityOptimizerParameters; split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true)  
+function verify_vnnlib(solver::DPNFV, network::Network, vnnlib_file, params::PriorityOptimizerParameters; 
+                        split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing)
+    # DPNeurifyFV doesn't use eager 
+
     n_in = size(network.layers[1].weights, 2)
     n_out = NV.n_nodes(network.layers[end])
     
@@ -172,7 +175,10 @@ returns:
     all_steps - number of steps performed by verifier
     result - (String) SAT, UNSAT or inconclusive
 """
-function verify_vnnlib(solver::Ai2z, network::Network, vnnlib_file, params::PriorityOptimizerParameters; eager=false, printing=true)  
+function verify_vnnlib(solver::Ai2z, network::Network, vnnlib_file, params::PriorityOptimizerParameters; eager=false, printing=true, 
+                        split=nothing, concrete_sample=nothing)  
+    # ZoPE doesn't use split and concrete_sample
+
     n_in = size(network.layers[1].weights, 2)
     n_out = NV.n_nodes(network.layers[end])
     
@@ -213,10 +219,33 @@ function verify_vnnlib(solver::Ai2z, network::Network, vnnlib_file, params::Prio
 end
 
 
-function verify_vnnlib(solver, dir, params::PriorityOptimizerParameters; logfile=nothing)
+# max_properties is maximum number of properties we want to verify in this run (useful for debugging and testing)
+"""
+Verifies properties for network in directory with instances.csv file.
+
+params:
+    solver - solver instance to use for verification
+    dir - directory containing instances.csv file with combinations of onnx networks and vnnlib properties to test
+    params - parameters for solver
+
+kwargs:
+    logfile - where to store verification results 
+    max_properties - maximum number of instances to verify (useful for debugging, so we don't have to run all the tasks)
+    split - splitting heuristic for DPNeurifyFV
+    concrete_sample - sampling for concrete solutions for DPNeurifyFV
+    eager - use eager Bounds checking in ZoPE
+
+returns:
+    counterexample - or nothing, if no counterexample could be found
+    all_steps - number of steps performed by verifier
+    result - (String) SAT, UNSAT or inconclusive
+"""
+function verify_vnnlib(solver, dir, params::PriorityOptimizerParameters; logfile=nothing, max_properties=Inf, 
+                        split=split_important_interval, concrete_sample=:BoundsMaximizer, eager=false)
     f = CSV.File(string(dir, "/instances.csv"), header=false)
 
     n = length(f)
+    networks = String[]
     properties = String[]
     results = String[]
     all_steps = zeros(Integer, n)
@@ -235,19 +264,25 @@ function verify_vnnlib(solver, dir, params::PriorityOptimizerParameters; logfile
         end
 
         # TODO: maybe include keyword arguments for ZoPE and DPNeurifyFV?
-        time = @elapsed x_star, steps, result = verify_vnnlib(solver, net, string(dir, "/", propertypath), params)
+        time = @elapsed x_star, steps, result = verify_vnnlib(solver, net, string(dir, "/", propertypath), params, 
+                                                                split=split, concrete_sample=concrete_sample, eager=eager)
 
+        push!(networks, netpath)
         push!(properties, propertypath)
         push!(results, result)
         all_steps[i] = steps
         times[i] = time
+
+        if i >= max_properties
+            break
+        end
     end
 
     if !isnothing(logfile)
         open(logfile, "w") do f
-            println(f, "property,result,time,steps")
-            [println(f, string(property, ", ", result, ", ", time, ", ", steps)) 
-                    for (property, result, time, steps) in zip(properties, results, times, all_steps)]
+            println(f, "network,property,result,time,steps")
+            [println(f, string(network, ", ", property, ", ", result, ", ", time, ", ", steps)) 
+                    for (network, property, result, time, steps) in zip(networks, properties, results, times, all_steps)]
         end
     end
 
