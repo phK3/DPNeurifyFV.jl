@@ -1,6 +1,6 @@
 module DPNeurifyFV
 
-using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer
+using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, OnnxReader, VnnlibParser
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -16,6 +16,7 @@ include("fresh_var_heuristic.jl")
 include("dp_neurify_fv.jl")
 include("optimization_bab.jl")
 include("overwrite_zope.jl")
+include("verify_vnnlib.jl")
 
 export 
     NetworkNegPosIdx,
@@ -24,7 +25,8 @@ export
     optimize_linear_deep_poly,
     contained_within_polytope_deep_poly,
     reaches_polytope_deep_poly,
-    print_network_structure
+    print_network_structure,
+    verify_vnnlib
     #general_priority_optimization
     
 

@@ -175,6 +175,27 @@ function merge_into_network(network::Network, A::Matrix{N}, b::Vector{N}) where 
 end
 
 
+## Read .onnx files 
+
+
+"""
+Reads .onnx network from file.
+Only fully connected ReLU networks are supported!
+"""
+function read_onnx_network(network_file; dtype=Float64)
+    ws, bs = load_network(network_file, dtype=dtype)
+
+    layers = []
+    for (W, b) in zip(ws[1:end-1], bs[1:end-1])
+        push!(layers, Layer(Float64.(W), b, ReLU()))
+    end
+
+    push!(layers, Layer(Float64.(ws[end]), bs[end], Id()))
+
+    return Network(layers)
+end
+
+
 ### ACAS Xu benchmark
 
 # modified from ZoPE implementation https://github.com/sisl/NeuralPriorityOptimizer.jl (just changed PolytopeComplement to Complement in properties 2-4)
