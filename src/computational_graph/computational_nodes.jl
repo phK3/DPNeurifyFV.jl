@@ -1,21 +1,19 @@
 
 
-struct Linear{S,N,M,B} <: Node{S,N} where {M<:AbstractMatrix{N},B<:AbstractVector{N}}
-    # we really need M,B<:Abstract... instead of M::AbstractMatrix{N} since in Julia
-    # Struct{Float64} is no subtype of Struct{Real} for performance reasons
-    parents::AbstractVector{S}
-    children::AbstractVector{S}
-    name::S
+struct Linear <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
     # weights of the layer
-    dense::Dense{typeof(identity),M,B}
+    dense::Dense
     # positive weights
-    dense⁺::Dense{typeof(identity),M,B}
+    dense⁺::Dense
     # negative weights
-    dense⁻::Dense{typeof(identity),M,B}
+    dense⁻::Dense
 end
 
 
-function Linear(parents::Vector{S}, children::Vector{S}, name::S, W::AbstractMatrix{N}, b::AbstractVector{N}; double_precision=false) where {S,N<:Number}
+function Linear(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, W::AbstractMatrix{N}, b::AbstractVector{N}; double_precision=false) where {S,N<:Number}
     n_out, n_in = size(W)
 
     if double_precision
@@ -38,19 +36,19 @@ function Linear(parents::Vector{S}, children::Vector{S}, name::S, W::AbstractMat
     dense⁻.weight .= W
     dense⁻.bias .= zero(b)
 
-    return Linear{S,N,typeof(dense.weight),typeof(dense.bias)}(parents, children, name, dense, dense⁺, dense⁻)
+    return Linear(parents, children, name, dense, dense⁺, dense⁻)
 end
 
 
-function forward_node(L::Linear{S,N}, x) where {S,N}
+function forward_node(L::Linear, x)
     return L.dense(x)
 end
     
 
 
-struct Concat{S,N} <: Node{S,N}
-    parents::AbstractVector{S}
-    children::AbstractVector{S}
-    name::S
+struct Concat <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
     dim::Integer
 end

@@ -7,21 +7,21 @@
     - an identifier (name)
     - the params of the node
 """
-abstract type Node{S, N<:Number} end
+abstract type Node end
 
-struct CompGraph{S,N}
+struct CompGraph
     # names of nodes as keys
-    nodes::Dict{S,<:Node{N}}
-    in_node::Node{N}
-    out_node::Node{N}
+    nodes::Dict
+    in_node::Node
+    out_node::Node
 end
 
 
-function CompGraph(nodes::AbstractVector{<:Node{S,N}}, in_node::Node{S,N}, out_node::Node{S,N}) where {S,N}
+function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node)
     @assert length(in_node.parents) == 0 "Input node should not have parents! Has $(in_node.parents)"
     @assert length(out_node.children) == 0 "Output node should not have children! Has $(out_node.children)"
     
-    node_dict = Dict{S,Node{S,N}}()
+    node_dict = Dict()
     for n in nodes
         if haskey(node_dict, n.name)
             throw(ArgumentError("name $(n.name) duplicate!"))
