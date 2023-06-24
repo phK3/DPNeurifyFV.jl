@@ -19,6 +19,8 @@ include("overwrite_zope.jl")
 include("verify_vnnlib.jl")
 include("computational_graph/computational_graph.jl")
 include("computational_graph/computational_nodes.jl")
+include("computational_graph/symbolic_interval_graph.jl")
+include("computational_graph/dp_neurify_fv_graph.jl")
 
 export 
     NetworkNegPosIdx,

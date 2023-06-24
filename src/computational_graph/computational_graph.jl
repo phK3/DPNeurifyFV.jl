@@ -17,6 +17,14 @@ struct CompGraph
 end
 
 
+"""
+Dummy solver for execution with concrete values.
+
+(since forward_node() requires a solver argument)
+"""
+struct ConcreteExecution <: Solver end
+
+
 function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node)
     @assert length(in_node.parents) == 0 "Input node should not have parents! Has $(in_node.parents)"
     @assert length(out_node.children) == 0 "Output node should not have children! Has $(out_node.children)"
@@ -65,7 +73,7 @@ end
 Propagates values given in the propagation dictionary through the computational graph.
 The dictionary is modified in the process and contains the results of the computation.
 """
-function propagate!(nn::CompGraph, node::Node; prop_dict=nothing)
+function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
     # should we only allow non-empty or non-nothing dicts?
     prop_dict = isnothing(prop_dict) ? Dict() : prop_dict
 
@@ -73,12 +81,12 @@ function propagate!(nn::CompGraph, node::Node; prop_dict=nothing)
     # TODO: make intermediate results available to caller
     for p in get_parents(nn, node)
         if ~haskey(prop_dict, p.name)
-            propagate!(nn, p, prop_dict=prop_dict)
+            propagate!(solver, nn, p, prop_dict=prop_dict)
         end
     end
     
     inputs = collect_inputs(nn, node, prop_dict)
-    ŝ = forward_node(node, inputs...)
+    ŝ = forward_node(solver, node, inputs...)
     
     prop_dict[node.name] = ŝ
 end  
@@ -87,12 +95,22 @@ end
 """
 Propagates an input through a computational graph and returns the result at the single output node.
 """
-function propagate(nn::CompGraph, x)
-    x̂ = forward_node(nn.in_node, x)
+function propagate(solver, nn::CompGraph, x; return_dict=false)
+    x̂ = forward_node(solver, nn.in_node, x)
     prop_dict = Dict(get_name(nn.in_node) => x̂)
     
-    propagate!(nn, nn.out_node, prop_dict=prop_dict)
+    propagate!(solver, nn, nn.out_node, prop_dict=prop_dict)
     
-    y = prop_dict[get_name(nn.out_node)]
-    return y
+    if return_dict
+        return prop_dict
+    else
+        y = prop_dict[get_name(nn.out_node)]
+        return y
+    end
+end
+
+
+function propagate(nn::CompGraph, x)
+    solver = ConcreteExecution()
+    return propagate(solver, nn, x)
 end
