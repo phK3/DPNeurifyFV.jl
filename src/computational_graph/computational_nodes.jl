@@ -124,7 +124,7 @@ struct ConvolutionTranspose <: Node
 end
 
 
-function Convolution(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, 
+function ConvolutionTranspose(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, 
     weight, bias; stride=1, pad=0, dilation=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
@@ -149,7 +149,7 @@ function Convolution(parents::AbstractVector{S}, children::AbstractVector{S}, na
     convt⁻.weight = min.(0, weight)
     convt⁻.bias = zero(convt.bias)
 
-    return Convolution(parents, children, name, conv, conv⁻, conv⁺)
+    return ConvolutionTranspose(parents, children, name, convt, convt⁻, convt⁺)
 end
 
 
@@ -209,6 +209,7 @@ function BatchNormalization(parents, children, name, μ, γ, β, σ²; ϵ=1e-5, 
     batchnorm⁺.γ .= max.(0, γ)
 
     return BatchNormalization(parents, children, name, batchnorm, batchnorm⁺, batchnorm⁻)
+end
 
     
 function forward_node(solver, L::BatchNormalization, x)
@@ -225,7 +226,7 @@ end
 
 
 function Upsampling(parents, children, name; mode=:nearest, scale=nothing, size=nothing)
-    @assert isnothing(scale) || isnothing(size) "Either size or scale needs to be set! (constructor of $name)"
+    @assert ~isnothing(scale) || ~isnothing(size) "Either size or scale needs to be set! (constructor of $name)"
     upsampling = Upsample(mode, scale=scale, size=size)
     return Upsampling(parents, children, name, upsampling)
 end
@@ -367,5 +368,47 @@ end
 
 function forward_node(solver, L::Slice, x)
     return my_slice(x, L.starts, L.stops, L.axes, steps=L.steps)
+end
+
+
+struct SplitNode <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
+    axis::Integer
+    splits
+    num_outputs::Integer
+end
+
+
+function SplitNode(parents, children, name; splits=nothing, num_outputs=nothing, axis=1)
+    @assert ~isnothing(splits) || ~isnothing(num_outputs) "Either splits or num_outputs has to be set (@ node $(name))"
+    if isnothing(num_outputs)
+        num_outputs = length(splits)
+    end
+    # since we don't know the input dimensions, we can't set splits here 
+    return SplitNode(parents, children, name, axis, splits, num_outputs)
+end
+
+
+function forward_node(solver, L::SplitNode, x)
+    if isnothing(L.splits)
+        # -> num_outputs must be set
+        ranges = Iterators.partition(1:size(x, L.axis), ceil(Integer, size(x, L.axis) / L.num_outputs))
+    else
+        # -> splits must be set
+        starts = [0; cumsum(L.splits[1:end-1])]
+        stops  = cumsum(L.splits)
+        ranges = [start+1:stop for (start, stop) in zip(starts, stops)]
+    end
+
+    outputs = []
+    for inds in ranges
+        idxs = [1:size(x,i) for i in 1:ndims(x)]
+        idxs[L.axis] = inds
+        push!(outputs, x[idxs...])
+    end
+
+    return outputs
 end
     
