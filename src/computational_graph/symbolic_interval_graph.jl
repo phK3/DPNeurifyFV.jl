@@ -22,7 +22,38 @@ LazySets.dim(s::SymbolicIntervalGraph) = size(s.Up)[1:end-1]
 # just size of batch-dim, which contains input vars (and also the bias)
 get_n_sym(s::SymbolicIntervalGraph) = size(s.Up)[end] - 1
 get_n_in(s::SymbolicIntervalGraph) = dim(domain(s))
+# FIXME: not working anymore, what if there are lots of fixed input vars?
 get_n_vars(s::SymbolicIntervalGraph) = get_n_sym(s) - get_n_in(s)
+
+
+"""
+Returns the symbolic interval described by the specified indices for the overapproximated values.
+
+Note that indexing over the coefficients of the symbolic interval is not supported!
+"""
+function Base.getindex(s::SymbolicIntervalGraph, inds...)
+    # TODO: what about max_vars (should there be less vars for the split interval?)
+    # and var_ids (should we truncate zero entries?)
+    # only use indices for first dimensions, last dimension is for coefficients
+    Low = s.Low[inds...,:]
+    Up  = s.Up[inds...,:]
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function Base.size(s::SymbolicIntervalGraph)
+    return dim(s)
+end
+
+
+function Base.size(s::SymbolicIntervalGraph, d)
+    return dim(s)[d]
+end
+
+
+function Base.ndims(s::SymbolicIntervalGraph)
+    return length(dim(s))
+end
 
 
 function init_symbolic_interval_graph(net::CompGraph, input_set::AbstractHyperrectangle{N}; max_vars=10) where N<:Number
