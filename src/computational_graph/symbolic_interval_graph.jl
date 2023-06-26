@@ -1,5 +1,6 @@
 
 struct SymbolicIntervalGraph{F<:AbstractPolytope,N<:Number} <: LazySet{N}
+    # TODO: what if input domain is not 1D ?
     Low
     Up
     domain::F
@@ -29,8 +30,9 @@ function init_symbolic_interval_graph(net::CompGraph, input_set::AbstractHyperre
     lbs = low(input_set)
     ubs = high(input_set)
     # only want variable for those inputs, that are not fixed (i.e. ub is strictly larger than lb)
-    Low = [I(n)[:,ubs .> lbs] zeros(N, n)]
-    Up  = [I(n)[:,ubs .> lbs] zeros(N, n)]
+    fixed = (lbs .== ubs)
+    Low = [I(n)[:,.~fixed] lbs .* fixed]
+    Up  = [I(n)[:,.~fixed] ubs .* fixed]
 
     # dict "layername" => [lbs]
     lbs = Dict()
@@ -90,3 +92,46 @@ function substitute_variables(s::SymbolicIntervalGraph)
 
     return subs_lb, subs_ub
 end
+
+
+"""
+Adds a constant to the equations' biases.
+
+Constant offset is stored in the equations batch dimension at the last entry.
+
+!!! inplace method !!!
+"""
+function add_constant!(eqs::AbstractArray, c)
+    nd = ndims(eqs)
+    batch_size = size(eqs, nd)
+    selectdim(eqs, nd, batch_size) .+= c
+end
+
+"""
+Adds a constant to a symbolic interval.
+
+!!! inplace method !!!
+"""
+function add_constant!(s::SymbolicIntervalGraph, c)
+    nd = ndims(s.Low)
+    batch_size = size(s.Low, nd)
+    # constant offset is the last entry in the batch dimension
+    # (batch dimension holds the coeffs for the variables)
+    selectdim(s.Low, nd, batch_size) .+= c
+    selectdim(s.Up,  nd, batch_size) .+= c
+end
+
+function add_constant(s::SymbolicIntervalGraph, c)
+    Low = copy(s.Low)
+    Up  = copy(s.Up)
+
+    nd = ndims(s.Low)
+    batch_size = size(s.Low, nd)
+    # constant offset is the last entry in the batch dimension
+    # (batch dimension holds the coeffs for the variables)
+    selectdim(Low, nd, batch_size) .+= c
+    selectdim(Up,  nd, batch_size) .+= c
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
