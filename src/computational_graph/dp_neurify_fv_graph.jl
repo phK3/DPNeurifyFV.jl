@@ -5,8 +5,66 @@ function forward_node(solver::DPNFV, L::Linear, s::SymbolicIntervalGraph)
     Up  = L.dense⁺(s.Up)  .+ L.dense⁻(s.Low)
     
     # add bias to last entry in batch dimension
-    selectdim(Low, ndims(Low), size(Low, ndims(Low))) .+= L.dense.bias
-    selectdim(Up,  ndims(Up),  size(Up,  ndims(Up)))  .+= L.dense.bias
+    add_constant!(Low, L.dense.bias)
+    add_constant!(Up,  L.dense.bias)
+   
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver::DPNFV, L::Convolution, s::SymbolicIntervalGraph)
+    Low = L.conv⁺(s.Low) .+ L.conv⁻(s.Up)
+    Up  = L.conv⁺(s.Up)  .+ L.conv⁻(s.Low)
+
+    # add bias to last entry in batch dimension
+    add_constant!(Low, L.conv.bias)
+    add_constant!(Up,  L.conv.bias)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver::DPNFV, L::ConvolutionTranspose, s::SymbolicIntervalGraph)
+    Low = L.convt⁺(s.Low) .+ L.convt⁻(s.Up)
+    Up  = L.convt⁺(s.Up)  .+ L.convt⁻(s.Low)
+
+    # add bias to last entry in batch dimension
+    add_constant!(Low, L.convt.bias)
+    add_constant!(Up,  L.convt.bias)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver, L::BatchNormalization, s::SymbolicIntervalGraph)
+    # subtract mean from last entry in batch dimension
+    ŝ = add_constant(s, .- L.batchnorm.μ)
+
+    Low = L.batchnorm⁺(ŝ.Low) .+ L.batchnorm⁻(ŝ.Up)
+    Up  = L.batchnorm⁺(ŝ.Up)  .+ L.batchnorm⁻(ŝ.Low)
+
+    add_constant!(Low, L.batchnorm.β)
+    add_constant!(Up,  L.batchnorm.β)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver::DPNFV, L::Reshape, s::SymbolicIntervalGraph)
+    shape = [L.shape...]
+
+    # if batch-dim already included in L.shape?
+    if length(shape) == ndims(s.Low)
+        # batch-dim included
+        @assert shape[end] == 1 "Reshaping the batch-dimension is not allowed! (at node $(L.name))"
+        shape[end] .= size(s.low, ndims(s.Low))
+    else
+        # batch-dim not included
+        push!(shape, size(s.Low, ndims(s.Low)))
+    end
+
+    Low = reshape(s.Low, shape...)
+    Up  = reshape(s.Up,  shape...)
 
     return init_symbolic_interval_graph(s, Low, Up)
 end
