@@ -88,6 +88,8 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
     inputs = collect_inputs(nn, node, prop_dict)
     ŝ = forward_node(solver, node, inputs...)
     
+    # TODO: what about nodes with multiple outputs like Split?
+    # put "Split_output_0", "Split_output_1" as separate entries into the dict
     prop_dict[node.name] = ŝ
 end  
 
