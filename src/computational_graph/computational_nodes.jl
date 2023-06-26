@@ -277,7 +277,7 @@ end
 function my_gather(x, inds::Vector{<:Integer}; axis=1)
     x = transpose_tensor(x, axis, ndims(x))
     inds = get_positive_index.(inds, size(x, axis))
-    
+
     g = Flux.NNlib.gather(x, inds)
     return transpose_tensor(g, axis, ndims(x))
 end 
@@ -318,6 +318,54 @@ function forward_node(solver, L::Gather, x)
 end
     
 
+struct Slice <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
+    starts::AbstractArray{<:Integer}
+    # writing ends in Julia is annoying!
+    stops::AbstractArray{<:Integer}
+    axes::AbstractArray{<:Integer}
+    steps::AbstractArray{<:Integer}
+end
 
 
+function Slice(parents, children, name, starts, stops, axes; steps=1)
+    @assert all(starts .>= 0) && all(ends .>= 0) "Negative starts or ends are currently not supported! (@ $(Node.name))"
+    return Slice(parents, children, name, starts, stops, axes, steps)
+end
+
+
+"""
+Calculates slice of tensor x along the specified axes.
+
+The result is x̂, s.t. x̂[:,...,axis,...,:] = x[axis][starts[axis]:steps[axis]:ends[axis]]
+
+args:
+    x - the tensor to slice
+    starts - starting indices, s.t. starts[axis] is the starting index for axis
+    stops - end indices of the slice, s.t. stops[axis] is the end index for axis
+    axes - the axes to slice
+    steps - stepsizes, s.t. steps[axis] are the steps for that axis
+"""
+function my_slice(x::AbstractArray, starts, stops, axes; steps=1)
+    starts0 = ones(Integer, ndims(x))
+    stops0  = [size(x)...]
+    steps0  = ones(Integer, ndims(x))
+    
+    starts0[axes] .= starts
+    stops0[axes] .= stops
+    steps0[axes] .= steps
+    
+    starts0 = clamp.(starts0, zero(starts0),  size(x))
+    stops0 = clamp.(stops0, zero(stops0), size(x))
+    
+    inds = [a:b:c for (a,b,c) in zip(starts0, steps0, stops0)]
+    return x[inds...]
+end
+
+
+function forward_node(solver, L::Slice, x)
+    return my_slice(x, L.starts, L.stops, L.axes, steps=L.steps)
+end
     
