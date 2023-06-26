@@ -260,5 +260,64 @@ function forward_node(solver, L::Sub, x₁, x₂)
 end
 
 
+struct Gather <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
+    inds::AbstractArray{<:Integer}
+    axis::Integer
+end
+
+
+function Gather(parents, children, name, inds; axis=1)
+    return Gather(parents, children, name, inds, axis)
+end
+
+
+function my_gather(x, inds::Vector{<:Integer}; axis=1)
+    x = transpose_tensor(x, axis, ndims(x))
+    inds = get_positive_index.(inds, size(x, axis))
+    
+    g = Flux.NNlib.gather(x, inds)
+    return transpose_tensor(g, axis, ndims(x))
+end 
+
+
+"""
+Gathers subtensors specified by lists of indices in inds along the given axis.
+
+args:
+    x - the input tensor
+    inds - List of vectors of indices
+
+kwargs:
+    axis - along which dimension to gather subtensors
+
+returns:
+    a tensor of ndims(x)+1, with the first dimension equal to length(inds)
+"""
+function my_gather(x, inds; axis=1)
+    x = transpose_tensor(x, axis, ndims(x))
+    inds = get_positive_index.(inds, size(x, axis))
+    
+    # inds is a vector of tuples of indices
+    gs = []
+    for idx in inds
+        g = Flux.NNlib.gather(x, idx)
+        # transpose back and add dimension to concatenate results
+        g = transpose_tensor(g, axis, ndims(x))
+        push!(gs, Flux.unsqueeze(g, dims=1))
+    end
+    
+    return cat(gs..., dims=1)
+end
+
+
+function forward_node(solver, L::Gather, x)
+    return my_gather(x, L.inds, axis=L.axis)
+end
+    
+
+
 
     

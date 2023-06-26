@@ -148,3 +148,12 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     return output
 end
 
+
+function forward_node(solver::DPNFV, L::Gather, s::SymbolicIntervalGraph)
+    # TODO: what to do about number of fresh variables?
+    Low = my_gather(s.Low, L.inds, L.axis)
+    Up  = my_gather(s.Up,  L.inds, L.axis)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
