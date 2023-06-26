@@ -12,6 +12,36 @@ function forward_node(solver::DPNFV, L::Linear, s::SymbolicIntervalGraph)
 end
 
 
+function forward_node(solver::DPNFV, L::Add, s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
+    # TODO: check fresh variables
+    Low = s₁.Low .+ s₂.Low
+    Up  = s₁.Up.+ s₂.Up
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver::DPNFV, L::Add, s::SymbolicIntervalGraph, x::AbstractArray)
+    return add_constant(s, x)
+end
+
+
+function forward_node(solver::DPNFV, L::Add, x::AbstractArray, s::SymbolicIntervalGraph)
+    return forward_node(solver, L, s, x)
+end
+
+
+function forward_node(solver::DPNFV, L::Sub, s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
+    Low = s₁.Low .- s₂.Up
+    Up  = s₁.Up  .- s₂.Low
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+function forward_node(solver::DPNFV, L::Sub, s::SymbolicIntervalGraph, x::AbstractArray)
+    return add_constant(s, .-x)
+end
+
+
 function forward_node(solver::DPNFV, L::Convolution, s::SymbolicIntervalGraph)
     Low = L.conv⁺(s.Low) .+ L.conv⁻(s.Up)
     Up  = L.conv⁺(s.Up)  .+ L.conv⁻(s.Low)

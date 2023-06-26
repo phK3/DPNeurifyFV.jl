@@ -236,5 +236,29 @@ function forward_node(solver, L::Upsampling, x)
 end
 
 
+struct Add <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::Add, x₁, x₂)
+    return x₁ .+ x₂
+end
+
+
+struct Sub <: Node
+    parents::AbstractVector
+    children::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::Sub, x₁, x₂)
+    return x₁ .- x₂
+end
+
+
 
     
