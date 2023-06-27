@@ -29,14 +29,17 @@ get_n_vars(s::SymbolicIntervalFVHeur) = get_n_sym(s) - get_n_in(s) # current num
 
 # calculate bounds for a matrix of **equations**, i.e. the lower **or** upper bound of a symbolic interval
 function bounds(eq, input_set::H) where H <: Hyperrectangle
-    W = eq[:, 1:dim(input_set)]
+    fixed = (low(input_set) .== high(input_set))
+    
+    W = eq[:, 1:end-1]
     b = eq[:, end]
 
     W⁺ = max.(W, 0)
     W⁻ = min.(W, 0)
 
-    lb = W⁺ * low(input_set) .+ W⁻ * high(input_set) .+ b
-    ub = W⁺ * high(input_set) .+ W⁻ * low(input_set) .+ b
+    # results for fixed inputs are already included in b
+    lb = W⁺ * low(input_set)[.~fixed] .+ W⁻ * high(input_set)[.~fixed] .+ b
+    ub = W⁺ * high(input_set)[.~fixed] .+ W⁻ * low(input_set)[.~fixed] .+ b
 
     return lb, ub
 end
