@@ -8,6 +8,33 @@ function unit_vec(i, n)
 end
 
 
+"""
+In contrast to Julia, Python allows negative indices.
+
+Converts negative indices to positive indices given the length of the array.
+
+args:
+    idx - indices (maybe containing negative numbers)
+    len - length of array
+"""
+function get_positive_index(idx, len::Integer)
+    return idx < 0 ? idx + len + 1 : idx
+end
+
+
+"""
+Transpose dimensions d₁ and d₂ of tensor x.
+"""
+function transpose_tensor(x::AbstractArray, d₁::Integer, d₂::Integer)
+    ds = collect(1:ndims(x))
+    # transpose d₁ and d₂
+    ds[d₁] = d₂
+    ds[d₂] = d₁
+    
+    return permutedims(x, ds)   
+end
+
+
 function Base.split(H::AbstractHyperrectangle, index::Int)
     lbs, ubs = low(H), high(H)
     split_val = 0.5 * (lbs[index] + ubs[index])
