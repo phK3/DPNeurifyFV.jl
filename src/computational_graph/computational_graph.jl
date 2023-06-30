@@ -44,12 +44,13 @@ end
 
 # define getter functions to ensure that each Node has these features
 # nodes only have list with identifiers
-get_children(n::Node) = n.children
+get_outputs(n::Node) = n.outputs
 get_parents(n::Node) = n.parents
 get_name(n::Node) = n.name
 
 # real Node objects are stored in network dict
-get_children(nn::CompGraph, n::Node) = [nn.nodes[cname] for cname in n.children]
+# doesn't work like this anymore, we now store outputs not children of nodes
+# get_children(nn::CompGraph, n::Node) = [nn.nodes[cname] for cname in n.children]
 get_parents(nn::CompGraph, n::Node) = [nn.nodes[pname] for pname in n.parents]
 
 
@@ -66,6 +67,17 @@ function collect_inputs(nn::CompGraph, node::Node, prop_dict::Dict{K,V}) where {
     end
     
     return inputs
+end
+
+
+function add_outputs!(prop_dict, outputs, out_names::AbstractVector)
+    if length(out_names) == 1
+        prop_dict[out_names[1]] = outputs
+    else
+        for (o, n) in zip(outputs, out_names)
+            prop_dict[n] = o
+        end
+    end
 end
 
 
@@ -90,7 +102,7 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
     
     # TODO: what about nodes with multiple outputs like Split?
     # put "Split_output_0", "Split_output_1" as separate entries into the dict
-    prop_dict[node.name] = ŝ
+    add_outputs!(prop_dict, ŝ, get_outputs(node))
 end  
 
 
@@ -98,8 +110,12 @@ end
 Propagates an input through a computational graph and returns the result at the single output node.
 """
 function propagate(solver, nn::CompGraph, x; return_dict=false)
+    # have to initialize an empty dict, if we initialize it with x̂, then it has exactly that type
+    prop_dict = Dict()
     x̂ = forward_node(solver, nn.in_node, x)
-    prop_dict = Dict(get_name(nn.in_node) => x̂)
+    add_outputs!(prop_dict, x̂, get_outputs(nn.in_node))
+    # prop_dict[get_name(nn.in_node)] = x̂
+    # prop_dict = Dict(get_name(nn.in_node) => x̂)
     
     propagate!(solver, nn, nn.out_node, prop_dict=prop_dict)
     
