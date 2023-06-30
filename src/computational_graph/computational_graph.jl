@@ -14,6 +14,8 @@ struct CompGraph
     nodes::Dict
     in_node::Node
     out_node::Node
+    # dict: output names -> node producing that output
+    out_dict::Dict
 end
 
 
@@ -26,32 +28,53 @@ struct ConcreteExecution <: Solver end
 
 
 function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node)
-    @assert length(in_node.parents) == 0 "Input node should not have parents! Has $(in_node.parents)"
-    @assert length(out_node.children) == 0 "Output node should not have children! Has $(out_node.children)"
+    @assert length(in_node.inputs) == 1 "Input node should not have the iput value as input! Has $(in_node.inputs)"
+    @assert length(out_node.outputs) == 1 "Output node should only have one output value! Has $(out_node.outputs)"
     
     node_dict = Dict()
+    output_dict = Dict()
     for n in nodes
         if haskey(node_dict, n.name)
             throw(ArgumentError("name $(n.name) duplicate!"))
         end
         
         node_dict[n.name] = n
+        
+        for o in n.outputs
+            output_dict[o] = n
+        end
     end
-    
-    return CompGraph(node_dict, in_node, out_node)
+
+    parents_dict = Dict()
+    for n in nodes
+        if n.name == in_node.name
+            # input node has no parent nodes, just the input values
+            continue
+        end
+        # all nodes producing inputs that node n needs are parents of n
+        parents_dict[n.name] = [output_dict[i] for i in n.inputs]
+    end
+        
+    return CompGraph(node_dict, in_node, out_node, output_dict)
 end
 
 
 # define getter functions to ensure that each Node has these features
 # nodes only have list with identifiers
 get_outputs(n::Node) = n.outputs
-get_parents(n::Node) = n.parents
+get_inputs(n::Node) = n.inputs
 get_name(n::Node) = n.name
 
 # real Node objects are stored in network dict
 # doesn't work like this anymore, we now store outputs not children of nodes
 # get_children(nn::CompGraph, n::Node) = [nn.nodes[cname] for cname in n.children]
-get_parents(nn::CompGraph, n::Node) = [nn.nodes[pname] for pname in n.parents]
+# get_parents(nn::CompGraph, n::Node) = nn.parents[n]
+get_parents(nn::CompGraph, n::Node) = [nn.out_dict[i] for i in get_inputs(n)]
+
+"""
+Get node producing output o in network nn.
+"""
+get_producer(nn::CompGraph, o) = nn.out_dict[o]
 
 
 """
@@ -60,13 +83,14 @@ Get inputs to the node in a network from the propagation dictionary.
 We need to know the network, since it connects the names of the nodes with the actual nodes.
 """
 function collect_inputs(nn::CompGraph, node::Node, prop_dict::Dict{K,V}) where {K, V}
-    inputs = V[]
-    for p in get_parents(nn, node)
-        input = prop_dict[p.name]
-        push!(inputs, input)
-    end
-    
-    return inputs
+    #inputs = V[]
+    #for i in get_inputs(node)
+    #    input = prop_dict[i]
+    #    push!(inputs, input)
+    #end
+    #
+    #return inputs
+    return [prop_dict[i] for i in get_inputs(node)]
 end
 
 
@@ -91,11 +115,18 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
 
     # TODO: only store intermediate results as long as they are needed (decrement counter of node's children?)
     # TODO: make intermediate results available to caller
-    for p in get_parents(nn, node)
-        if ~haskey(prop_dict, p.name)
+    for i in get_inputs(node)
+        if ~haskey(prop_dict, i)
+            p = get_producer(nn, i)
             propagate!(solver, nn, p, prop_dict=prop_dict)
         end
     end
+
+    #for p in get_parents(nn, node)
+    #    if ~haskey(prop_dict, p.name)
+    #        propagate!(solver, nn, p, prop_dict=prop_dict)
+    #    end
+    #end
     
     inputs = collect_inputs(nn, node, prop_dict)
     ŝ = forward_node(solver, node, inputs...)
@@ -122,7 +153,8 @@ function propagate(solver, nn::CompGraph, x; return_dict=false)
     if return_dict
         return prop_dict
     else
-        y = prop_dict[get_name(nn.out_node)]
+        # we only support one output!
+        y = prop_dict[get_outputs(nn.out_node)[1]]
         return y
     end
 end
