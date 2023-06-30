@@ -2,7 +2,8 @@
 
 struct Linear <: Node
     parents::AbstractVector
-    children::AbstractVector
+    # vector of identifiers for each output
+    outputs::AbstractVector
     name
     # weights of the layer
     dense::Dense
@@ -13,7 +14,7 @@ struct Linear <: Node
 end
 
 
-function Linear(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, W::AbstractMatrix{N}, b::AbstractVector{N}; double_precision=false) where {S,N<:Number}
+function Linear(parents::AbstractVector{S}, outputs::AbstractVector{S}, name::S, W::AbstractMatrix{N}, b::AbstractVector{N}; double_precision=false) where {S,N<:Number}
     n_out, n_in = size(W)
 
     if double_precision
@@ -35,7 +36,7 @@ function Linear(parents::AbstractVector{S}, children::AbstractVector{S}, name::S
     dense⁻.weight .= min.(0, W)
     dense⁻.bias .= zero(dense.bias)
 
-    return Linear(parents, children, name, dense, dense⁺, dense⁻)
+    return Linear(parents, outputs, name, dense, dense⁺, dense⁻)
 end
 
 
@@ -47,7 +48,7 @@ end
 # Need to write it as Relu as ReLU is in NeuralVerification and relu is in Flux
 struct Relu <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
 end
 
@@ -59,7 +60,7 @@ end
 
 struct Concat <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     dim::Integer
 end
@@ -72,7 +73,7 @@ end
 
 struct Convolution <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     conv::Conv
     conv⁺::Conv
@@ -80,7 +81,7 @@ struct Convolution <: Node
 end
 
 
-function Convolution(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, 
+function Convolution(parents::AbstractVector{S}, outputs::AbstractVector{S}, name::S, 
                     weight, bias; stride=1, pad=0, dilation=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
@@ -105,7 +106,7 @@ function Convolution(parents::AbstractVector{S}, children::AbstractVector{S}, na
     conv⁻.weight = min.(0, weight)
     conv⁻.bias = zero(conv.bias)
 
-    return Convolution(parents, children, name, conv, conv⁺, conv⁻)
+    return Convolution(parents, outputs, name, conv, conv⁺, conv⁻)
 end
 
 
@@ -116,7 +117,7 @@ end
 
 struct ConvolutionTranspose <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     convt::ConvTranspose
     convt⁻::ConvTranspose
@@ -124,7 +125,7 @@ struct ConvolutionTranspose <: Node
 end
 
 
-function ConvolutionTranspose(parents::AbstractVector{S}, children::AbstractVector{S}, name::S, 
+function ConvolutionTranspose(parents::AbstractVector{S}, outputs::AbstractVector{S}, name::S, 
     weight, bias; stride=1, pad=0, dilation=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
@@ -149,7 +150,7 @@ function ConvolutionTranspose(parents::AbstractVector{S}, children::AbstractVect
     convt⁻.weight = min.(0, weight)
     convt⁻.bias = zero(convt.bias)
 
-    return ConvolutionTranspose(parents, children, name, convt, convt⁻, convt⁺)
+    return ConvolutionTranspose(parents, outputs, name, convt, convt⁻, convt⁺)
 end
 
 
@@ -160,7 +161,7 @@ end
 
 struct Reshape <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     shape
 end
@@ -173,7 +174,7 @@ end
 
 struct BatchNormalization <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     batchnorm::BatchNorm
     batchnorm⁺::BatchNorm
@@ -181,7 +182,7 @@ struct BatchNormalization <: Node
 end
 
 
-function BatchNormalization(parents, children, name, μ, γ, β, σ²; ϵ=1e-5, double_precision=false)
+function BatchNormalization(parents, outputs, name, μ, γ, β, σ²; ϵ=1e-5, double_precision=false)
     channels = length(γ)
 
     batchnorm = BatchNorm(channels)
@@ -208,7 +209,7 @@ function BatchNormalization(parents, children, name, μ, γ, β, σ²; ϵ=1e-5, 
     batchnorm⁻.γ .= min.(0, γ)
     batchnorm⁺.γ .= max.(0, γ)
 
-    return BatchNormalization(parents, children, name, batchnorm, batchnorm⁺, batchnorm⁻)
+    return BatchNormalization(parents, outputs, name, batchnorm, batchnorm⁺, batchnorm⁻)
 end
 
     
@@ -219,16 +220,16 @@ end
 
 struct Upsampling <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     upsampling::Upsample
 end
 
 
-function Upsampling(parents, children, name; mode=:nearest, scale=nothing, size=nothing)
+function Upsampling(parents, outputs, name; mode=:nearest, scale=nothing, size=nothing)
     @assert ~isnothing(scale) || ~isnothing(size) "Either size or scale needs to be set! (constructor of $name)"
     upsampling = Upsample(mode, scale=scale, size=size)
-    return Upsampling(parents, children, name, upsampling)
+    return Upsampling(parents, outputs, name, upsampling)
 end
 
 
@@ -239,7 +240,7 @@ end
 
 struct Add <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
 end
 
@@ -251,7 +252,7 @@ end
 
 struct Sub <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
 end
 
@@ -263,15 +264,15 @@ end
 
 struct Gather <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     inds::AbstractArray{<:Integer}
     axis::Integer
 end
 
 
-function Gather(parents, children, name, inds; axis=1)
-    return Gather(parents, children, name, inds, axis)
+function Gather(parents, outputs, name, inds; axis=1)
+    return Gather(parents, outputs, name, inds, axis)
 end
 
 
@@ -321,7 +322,7 @@ end
 
 struct Slice <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     starts::AbstractArray{<:Integer}
     # writing ends in Julia is annoying!
@@ -331,9 +332,9 @@ struct Slice <: Node
 end
 
 
-function Slice(parents, children, name, starts, stops, axes; steps=1)
+function Slice(parents, outputs, name, starts, stops, axes; steps=1)
     @assert all(starts .>= 0) && all(ends .>= 0) "Negative starts or ends are currently not supported! (@ $(Node.name))"
-    return Slice(parents, children, name, starts, stops, axes, steps)
+    return Slice(parents, outputs, name, starts, stops, axes, steps)
 end
 
 
@@ -373,7 +374,7 @@ end
 
 struct SplitNode <: Node
     parents::AbstractVector
-    children::AbstractVector
+    outputs::AbstractVector
     name
     axis::Integer
     splits
@@ -381,13 +382,13 @@ struct SplitNode <: Node
 end
 
 
-function SplitNode(parents, children, name; splits=nothing, num_outputs=nothing, axis=1)
+function SplitNode(parents, outputs, name; splits=nothing, num_outputs=nothing, axis=1)
     @assert ~isnothing(splits) || ~isnothing(num_outputs) "Either splits or num_outputs has to be set (@ node $(name))"
     if isnothing(num_outputs)
         num_outputs = length(splits)
     end
     # since we don't know the input dimensions, we can't set splits here 
-    return SplitNode(parents, children, name, axis, splits, num_outputs)
+    return SplitNode(parents, outputs, name, axis, splits, num_outputs)
 end
 
 
