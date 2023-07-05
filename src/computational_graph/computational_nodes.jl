@@ -82,15 +82,32 @@ struct Convolution <: Node
 end
 
 
+"""
+Creates an instance of a Convolutional node.
+
+args:
+    inputs
+    outputs
+    name
+    weight
+    bias
+
+kwargs:
+    stride - either an Integer or a TUPLE of integers, representing the stride in each dimension
+    pad - either an Integer or a TUPLE of integers, representing the padding in each dimension
+    dilation - eiher an Integer or a TUPLE of integers, representing the dilation in each dimension
+    groups - Integer representing number of groups
+    double_precision - whether to use double precision weights
+"""
 function Convolution(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, 
-                    weight, bias; stride=1, pad=0, dilation=1, double_precision=false) where S
+                    weight, bias; stride=1, pad=0, dilation=1, groups=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
-    in_channels, out_channels = size(weight)[end-2:end]
+    in_channels, out_channels = size(weight)[end-1:end]
 
-    conv = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
-    conv⁺ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
-    conv⁻ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
+    conv = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    conv⁺ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    conv⁻ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
 
     if double_precision
         conv = conv |> f64
@@ -104,8 +121,8 @@ function Convolution(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name
     conv⁺.weight .= max.(0, weight)
     conv⁺.bias .= zero(conv.bias)
 
-    conv⁻.weight = min.(0, weight)
-    conv⁻.bias = zero(conv.bias)
+    conv⁻.weight .= min.(0, weight)
+    conv⁻.bias .= zero(conv.bias)
 
     return Convolution(inputs, outputs, name, conv, conv⁺, conv⁻)
 end
