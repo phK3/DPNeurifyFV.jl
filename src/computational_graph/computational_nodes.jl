@@ -85,6 +85,10 @@ end
 """
 Creates an instance of a Convolutional node.
 
+For Conv((k₁, ..., kₙ), c_in => c_out), we have
+- size(weight) = (k₁, ..., kₙ, c_in, c_out)
+- size(bias) = (c_out,)
+
 args:
     inputs
     outputs
@@ -106,8 +110,8 @@ function Convolution(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name
     in_channels, out_channels = size(weight)[end-1:end]
 
     conv = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
-    conv⁺ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
-    conv⁻ = Conv(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    conv⁺ = Conv(kernel_size, in_channels => out_channels, bias=false, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    conv⁻ = Conv(kernel_size, in_channels => out_channels, bias=false, stride=stride, pad=pad, dilation=dilation, groups=groups)
 
     if double_precision
         conv = conv |> f64
@@ -116,13 +120,13 @@ function Convolution(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name
     end
 
     conv.weight .= weight
-    conv.bias .= bias
+    #conv.bias .= bias
  
     conv⁺.weight .= max.(0, weight)
-    conv⁺.bias .= zero(conv.bias)
+    #conv⁺.bias .= zero(conv.bias)
 
     conv⁻.weight .= min.(0, weight)
-    conv⁻.bias .= zero(conv.bias)
+    #conv⁻.bias .= zero(conv.bias)
 
     return Convolution(inputs, outputs, name, conv, conv⁺, conv⁻)
 end
@@ -143,15 +147,24 @@ struct ConvolutionTranspose <: Node
 end
 
 
+"""
+Create a transposed convolution node.
+
+For ConvTranspose((k₁, ..., kₙ), c_in => c_out), we have
+- size(weight) = (k₁, ..., kₙ, c_out, c_in)
+- size(bias) = (c_out,)
+
+"""
 function ConvolutionTranspose(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, 
-    weight, bias; stride=1, pad=0, dilation=1, double_precision=false) where S
+    weight, bias; stride=1, pad=0, dilation=1, groups=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
-    in_channels, out_channels = size(weight)[end-2:end]
+    # for ConvT order is swapped when compared to Conv
+    out_channels, in_channels = size(weight)[end-1:end]
 
-    convt = ConvTranspose(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
-    convt⁺ = ConvTranspose(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
-    convt⁻ = ConvTranspose(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation)
+    convt = ConvTranspose(kernel_size, in_channels => out_channels, bias=bias, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    convt⁺ = ConvTranspose(kernel_size, in_channels => out_channels, bias=false, stride=stride, pad=pad, dilation=dilation, groups=groups)
+    convt⁻ = ConvTranspose(kernel_size, in_channels => out_channels, bias=false, stride=stride, pad=pad, dilation=dilation, groups=groups)
 
     if double_precision
         convt = convt |> f64
@@ -159,14 +172,15 @@ function ConvolutionTranspose(inputs::AbstractVector{S}, outputs::AbstractVector
         convt⁻ = convt⁻ |> f64
     end
 
+    # if i uncomment the bias lines, convt.bias is all zeros, why is that???
     convt.weight .= weight
-    convt.bias .= bias
+    #convt.bias .= bias
 
     convt⁺.weight .= max.(0, weight)
-    convt⁺.bias .= zero(convt.bias)
+    #convt⁺.bias .= zero(convt.bias)
 
-    convt⁻.weight = min.(0, weight)
-    convt⁻.bias = zero(convt.bias)
+    convt⁻.weight .= min.(0, weight)
+    #convt⁻.bias .= zero(convt.bias)
 
     return ConvolutionTranspose(inputs, outputs, name, convt, convt⁻, convt⁺)
 end
@@ -200,7 +214,7 @@ struct BatchNormalization <: Node
 end
 
 
-function BatchNormalization(inputs, outputs, name, μ, γ, β, σ²; ϵ=1e-5, double_precision=false)
+function BatchNormalization(inputs, outputs, name, μ, γ, β, σ²; λ=identity, ϵ=1e-5, double_precision=false)
     channels = length(γ)
 
     batchnorm = BatchNorm(channels)
@@ -221,8 +235,9 @@ function BatchNormalization(inputs, outputs, name, μ, γ, β, σ²; ϵ=1e-5, do
     end
 
     batchnorm.μ .= μ
+    batchnorm.γ .= γ
     batchnorm.β .= β
-    batchnorm.λ .= λ
+    batchnorm.λ = λ
 
     batchnorm⁻.γ .= min.(0, γ)
     batchnorm⁺.γ .= max.(0, γ)
