@@ -59,8 +59,8 @@ function forward_node(solver::DPNFV, L::Convolution, s::SymbolicIntervalGraph)
     Up  = L.conv⁺(s.Up)  .+ L.conv⁻(s.Low)
 
     # add bias to last entry in batch dimension
-    add_constant!(Low, L.conv.bias)
-    add_constant!(Up,  L.conv.bias)
+    add_constant!(Low, Flux.conv_reshape_bias(L.conv))
+    add_constant!(Up,  Flux.conv_reshape_bias(L.conv))
 
     return init_symbolic_interval_graph(s, Low, Up)
 end
@@ -71,8 +71,8 @@ function forward_node(solver::DPNFV, L::ConvolutionTranspose, s::SymbolicInterva
     Up  = L.convt⁺(s.Up)  .+ L.convt⁻(s.Low)
 
     # add bias to last entry in batch dimension
-    add_constant!(Low, L.convt.bias)
-    add_constant!(Up,  L.convt.bias)
+    add_constant!(Low, Flux.conv_reshape_bias(L.convt))
+    add_constant!(Up,  Flux.conv_reshape_bias(L.convt))
 
     return init_symbolic_interval_graph(s, Low, Up)
 end
@@ -97,7 +97,7 @@ function forward_node(solver, L::BatchNormalization, s::SymbolicIntervalGraph)
 end
 
 
-function forward_node(solver::DPNFV, L::Reshape, s::SymbolicIntervalGraph)
+#= function forward_node(solver::DPNFV, L::Reshape, s::SymbolicIntervalGraph)
     shape = [L.shape...]
 
     # if batch-dim already included in L.shape?
@@ -114,7 +114,7 @@ function forward_node(solver::DPNFV, L::Reshape, s::SymbolicIntervalGraph)
     Up  = reshape(s.Up,  shape...)
 
     return init_symbolic_interval_graph(s, Low, Up)
-end
+end =#
 
 
 function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
