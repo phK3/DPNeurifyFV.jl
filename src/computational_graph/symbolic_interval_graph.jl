@@ -126,6 +126,23 @@ end
 
 
 """
+Calculates concrete lower and upper bounds given a symbolic interval in the 
+shape of the symbolic interval.
+"""
+function bounds(s::SymbolicIntervalGraph)
+    Low = Flux.flatten(s.Low)
+    Up  = Flux.flatten(s.Up)
+    n_neurons = size(Low, 1)
+
+    l_bounds = bounds(Low, domain(s))
+    u_bounds = bounds(Up,  domain(s))
+
+    # take first of [ll, lu] and second of [ul, uu] for outer bounds
+    return reshape(l_bounds[1], size(s)), reshape(u_bounds[2], size(s))
+end
+
+
+"""
 Adds a constant to the equations' biases.
 
 Constant offset is stored in the equations batch dimension at the last entry.
