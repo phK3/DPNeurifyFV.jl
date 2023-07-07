@@ -41,18 +41,71 @@ function Base.getindex(s::SymbolicIntervalGraph, inds...)
 end
 
 
+"""
+Size of a symbolic interval is (d₁,...,dₙ, N), where d₁,...,dₙ are the
+dimensions of the quantity that is enclosed by the symbolic interval and
+N is the number of the coefficients.
+"""
 function Base.size(s::SymbolicIntervalGraph)
-    return dim(s)
+    # return dim(s)
+    return size(s.Up)
 end
 
 
 function Base.size(s::SymbolicIntervalGraph, d)
-    return dim(s)[d]
+    #return dim(s)[d]
+    return size(s.Up, d)
 end
 
 
 function Base.ndims(s::SymbolicIntervalGraph)
-    return length(dim(s))
+    #return length(dim(s))
+    return length(size(s))
+end
+
+
+function Base.reshape(s::SymbolicIntervalGraph, sz; batch_included=true)
+    sz = [sz...]
+    if batch_included    
+        # assume last dim is batch dimension sz = (d₁, ..., dₙ, N)
+        @assert (sz[end] == 1) || (sz[end] == :) || (sz[end] == size(s)[end]) "Reshaping batch dimension is not supported!"
+        # want linear coefficients to be in batch dimension
+        sz[end] = size(s.Low, ndims(s.Low))
+    else
+        # sz is only data shapes sz = (d₁, ..., dₙ)
+        # add batch dimension to shape
+        sz = tuple(push!(sz, size(s.Low, ndims(s.Low))))
+    end
+
+    Low = reshape(s.Low, sz...)
+    Up  = reshape(s.Up, sz...)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+#= function Base.reshape(s::SymbolicIntervalGraph, dims)
+    shape = [dims...]
+
+    # if batch-dim already included in L.shape?
+    if length(shape) == ndims(s.Low)
+        # batch-dim included
+        @assert shape[end] == 1 "Reshaping the batch-dimension is not allowed! (at node $(L.name))"
+        shape[end] = size(s.Low, ndims(s.Low))
+    else
+        # batch-dim not included
+        push!(shape, size(s.Low, ndims(s.Low)))
+    end
+
+    Low = reshape(s.Low, shape...)
+    Up  = reshape(s.Up,  shape...)
+
+    return init_symbolic_interval_graph(s, Low, Up)
+end =#
+
+
+function Base.reshape(s::SymbolicIntervalGraph, dims...)
+    return reshape(s, dims)
 end
 
 
@@ -147,7 +200,7 @@ function bounds(s::SymbolicIntervalGraph)
     u_bounds = bounds(Up,  domain(s))
 
     # take first of [ll, lu] and second of [ul, uu] for outer bounds
-    return reshape(l_bounds[1], size(s)), reshape(u_bounds[2], size(s))
+    return reshape(l_bounds[1], size(s)[1:end-1]), reshape(u_bounds[2], size(s)[1:end-1])
 end
 
 
