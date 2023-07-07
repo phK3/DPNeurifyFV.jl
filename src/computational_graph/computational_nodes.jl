@@ -46,6 +46,29 @@ function forward_node(solver, L::Linear, x)
 end
 
 
+struct AddConst <: Node 
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    c
+end
+
+function forward_node(solver, L::AddConst, x)
+    return x .+ L.c
+end
+
+struct SubConst <: Node 
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    c
+end
+
+function forward_node(solver, L::SubConst, x)
+    return L.c .- x
+end
+
+
 # Need to write it as Relu as ReLU is in NeuralVerification and relu is in Flux
 struct Relu <: Node
     inputs::AbstractVector
@@ -57,6 +80,30 @@ end
 function forward_node(solver, L::Relu, x)
     return relu(x)
 end
+
+
+struct Sigmoid <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::Sigmoid, x)
+    return Flux.σ.(x)
+end 
+
+
+struct Tanh <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::Tanh, x)
+    return tanh.(x)
+end 
     
 
 struct Concat <: Node
@@ -204,6 +251,18 @@ function forward_node(solver, L::Reshape, x)
 end
 
 
+struct Flatten <: Node 
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::Flatten, x)
+    return reshape(x, :, size(x)[end])
+end
+
+
 struct BatchNormalization <: Node
     inputs::AbstractVector
     outputs::AbstractVector
@@ -241,6 +300,11 @@ function BatchNormalization(inputs, outputs, name, μ, γ, β, σ²; λ=identity
 
     batchnorm⁻.γ .= min.(0, γ)
     batchnorm⁺.γ .= max.(0, γ)
+
+    # don't update parameters
+    testmode!(batchnorm)
+    testmode!(batchnorm⁻)
+    testmode!(batchnorm⁺)
 
     return BatchNormalization(inputs, outputs, name, batchnorm, batchnorm⁺, batchnorm⁻)
 end
