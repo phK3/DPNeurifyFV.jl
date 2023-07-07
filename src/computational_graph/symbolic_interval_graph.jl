@@ -83,6 +83,15 @@ end
 
 
 """
+Initialises a symbolic interval to a given shape given Hyperrectangular input set.
+"""
+function init_symbolic_interval_graph(net::CompGraph, input_set::AbstractHyperrectangle{N}, input_shape::Tuple{Vararg{<:Integer}}; max_vars=10) where N <: Number
+    ŝ = init_symbolic_interval_graph(net, input_set, max_vars=max_vars)
+    return reshape(ŝ, input_shape)
+end
+
+
+"""
 Takes an existing SymbolicIntervalGraph and generates a new instance thats different 
 only in its symbolic lower and upper bound.
 
