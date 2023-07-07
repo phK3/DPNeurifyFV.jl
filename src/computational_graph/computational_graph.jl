@@ -16,6 +16,8 @@ struct CompGraph
     out_node::Node
     # dict: output names -> node producing that output
     out_dict::Dict
+    input_shape
+    output_shape
 end
 
 
@@ -27,7 +29,7 @@ Dummy solver for execution with concrete values.
 struct ConcreteExecution <: Solver end
 
 
-function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node)
+function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node, input_shape, output_shape)
     @assert length(in_node.inputs) == 1 "Input node should not have the iput value as input! Has $(in_node.inputs)"
     @assert length(out_node.outputs) == 1 "Output node should only have one output value! Has $(out_node.outputs)"
     
@@ -55,7 +57,7 @@ function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node)
         parents_dict[n.name] = [output_dict[i] for i in n.inputs]
     end
         
-    return CompGraph(node_dict, in_node, out_node, output_dict)
+    return CompGraph(node_dict, in_node, out_node, output_dict, input_shape, output_shape)
 end
 
 
@@ -75,6 +77,9 @@ get_parents(nn::CompGraph, n::Node) = [nn.out_dict[i] for i in get_inputs(n)]
 Get node producing output o in network nn.
 """
 get_producer(nn::CompGraph, o) = nn.out_dict[o]
+
+get_input_shape(nn::CompGraph) = nn.input_shape
+get_output_shape(nn::CompGraph) = nn.output_shape
 
 
 """
@@ -109,7 +114,7 @@ end
 Propagates values given in the propagation dictionary through the computational graph.
 The dictionary is modified in the process and contains the results of the computation.
 """
-function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
+function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing, verbosity=0)
     # should we only allow non-empty or non-nothing dicts?
     prop_dict = isnothing(prop_dict) ? Dict() : prop_dict
 
@@ -118,7 +123,7 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
     for i in get_inputs(node)
         if ~haskey(prop_dict, i)
             p = get_producer(nn, i)
-            propagate!(solver, nn, p, prop_dict=prop_dict)
+            propagate!(solver, nn, p, prop_dict=prop_dict, verbosity=verbosity)
         end
     end
 
@@ -128,6 +133,7 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing)
     #    end
     #end
     
+    verbosity > 0 && println("propagating ", node.name)
     inputs = collect_inputs(nn, node, prop_dict)
     ŝ = forward_node(solver, node, inputs...)
     
@@ -140,7 +146,7 @@ end
 """
 Propagates an input through a computational graph and returns the result at the single output node.
 """
-function propagate(solver, nn::CompGraph, x; return_dict=false)
+function propagate(solver, nn::CompGraph, x; return_dict=false, verbosity=0)
     # have to initialize an empty dict, if we initialize it with x̂, then it has exactly that type
     prop_dict = Dict()
     x̂ = forward_node(solver, nn.in_node, x)
@@ -148,7 +154,7 @@ function propagate(solver, nn::CompGraph, x; return_dict=false)
     # prop_dict[get_name(nn.in_node)] = x̂
     # prop_dict = Dict(get_name(nn.in_node) => x̂)
     
-    propagate!(solver, nn, nn.out_node, prop_dict=prop_dict)
+    propagate!(solver, nn, nn.out_node, prop_dict=prop_dict, verbosity=verbosity)
     
     if return_dict
         return prop_dict
@@ -160,7 +166,7 @@ function propagate(solver, nn::CompGraph, x; return_dict=false)
 end
 
 
-function propagate(nn::CompGraph, x)
+function propagate(nn::CompGraph, x; verbosity=0)
     solver = ConcreteExecution()
-    return propagate(solver, nn, x)
+    return propagate(solver, nn, x, verbosity=verbosity)
 end
