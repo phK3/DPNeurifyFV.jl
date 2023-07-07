@@ -30,6 +30,11 @@ function forward_node(solver::DPNFV, L::Add, x::AbstractArray, s::SymbolicInterv
 end
 
 
+function forward_node(solver::DPNFV, L::AddConst, s::SymbolicIntervalGraph)
+    return add_constant(s, L.c)
+end
+
+
 function forward_node(solver::DPNFV, L::Sub, s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
     Low = s₁.Low .- s₂.Up
     Up  = s₁.Up  .- s₂.Low
@@ -39,6 +44,13 @@ end
 
 function forward_node(solver::DPNFV, L::Sub, s::SymbolicIntervalGraph, x::AbstractArray)
     return add_constant(s, .-x)
+end
+
+
+function forward_node(solver::DPNFV, L::SubConst, s::SymbolicIntervalGraph)
+    # want L.c - s = -s + L.c
+    add_constant(init_symbolic_interval_graph(s, .-s.Low, .-s.Up), L.c)
+    return add_constant(s, L.c)
 end
 
 
@@ -67,14 +79,19 @@ end
 
 
 function forward_node(solver, L::BatchNormalization, s::SymbolicIntervalGraph)
+    N = ndims(s)
+    stats_shape = ntuple(i -> i == N-1 ? size(s, N-1) : 1, N)
+    μ = reshape(L.batchnorm.μ, stats_shape)
+    β = reshape(L.batchnorm.β, stats_shape)
+    
     # subtract mean from last entry in batch dimension
-    ŝ = add_constant(s, .- L.batchnorm.μ)
+    ŝ = add_constant(s, .- μ)
 
     Low = L.batchnorm⁺(ŝ.Low) .+ L.batchnorm⁻(ŝ.Up)
     Up  = L.batchnorm⁺(ŝ.Up)  .+ L.batchnorm⁻(ŝ.Low)
 
-    add_constant!(Low, L.batchnorm.β)
-    add_constant!(Up,  L.batchnorm.β)
+    add_constant!(Low, β)
+    add_constant!(Up,  β)
 
     return init_symbolic_interval_graph(s, Low, Up)
 end
