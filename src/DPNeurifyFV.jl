@@ -1,7 +1,7 @@
 module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
-        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib
+        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -11,7 +11,7 @@ const NPO = NeuralPriorityOptimizer
 const NNL = NNLoader
 
 # redefinitions of function defined in NeuralVerification.jl
-include("overwrite_neural_verification.jl")
+# include("overwrite_neural_verification.jl")
 include("network_neg_pos_idx.jl")
 include("util.jl")
 include("symbolic_interval_fv_heur.jl")
@@ -29,11 +29,14 @@ include("computational_graph/cg_optimization_bab.jl")
 
 # does it get precompiled?
 println("precompiling...")
-params = PriorityOptimizerParameters(max_steps=3, print_frequency=1, stop_frequency=1, verbosity=2)
-solver = DPNFV(method=:DeepPolyRelax)
-onnx_file = string(@__DIR__, "/../networks/precompile_nns/ACASXU_run2a_1_1_batch_2000.onnx")
-vnnlib_file = string(@__DIR__,"/../networks/precompile_nns/prop_1.vnnlib")
-verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true);
+@setup_workload begin
+    params = PriorityOptimizerParameters(max_steps=3, print_frequency=1, stop_frequency=1, verbosity=2)
+    solver = DPNFV(method=:DeepPolyRelax)
+    onnx_file = string(@__DIR__, "/../networks/precompile_nns/ACASXU_run2a_1_1_batch_2000.onnx")
+    vnnlib_file = string(@__DIR__,"/../networks/precompile_nns/prop_1.vnnlib")
+    verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true);
+end
+
 
 export 
     NetworkNegPosIdx,
