@@ -3,8 +3,8 @@ using DPNeurifyFV
 const DP = DPNeurifyFV
 
 
-function verify_an_instance(onnx_file, vnnlib_file)
-    params = DP.PriorityOptimizerParameters(max_steps=10, print_frequency=1, stop_frequency=1, verbosity=2)
+function verify_an_instance(onnx_file, vnnlib_file, timeout)
+    params = DP.PriorityOptimizerParameters(max_steps=10000, print_frequency=100, timeout=timeout, stop_frequency=1, verbosity=2)
     solver = DPNFV(method=:DeepPolyRelax)
 
     x_star, y_star, all_steps, result = DP.verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true)
@@ -20,11 +20,15 @@ end
 
 
 function main(args)
-    result = verify_an_instance(args[1], args[2])
-    open(args[3], "w") do io
-        write(io, result[1])
+    onnx_file = args[1]
+    vnnlib_file = args[2]
+    out_file = args[3]
+    timeout = parse(Int64, args[4])
+    result, x_star, y_star = verify_an_instance(onnx_file, vnnlib_file, timeout)
+    open(out_file, "w") do io
+        write(io, result)
 
-        if result[1] == "sat"
+        if result == "sat"
             for (i, x) in enumerate(vec(x_star))
                 if i == 0
                     write(io, "\n(")
