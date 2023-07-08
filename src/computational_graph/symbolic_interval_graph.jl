@@ -210,8 +210,8 @@ function substitute_variables(s::SymbolicIntervalGraph)
 
     subs_lb, subs_ub = substitute_variables(Low, Up, s.var_los, s.var_his, n_in, n_vars)
 
-    subs_lb = reshape(subs_lb, shape)
-    subs_ub = reshape(subs_ub, shape)
+    subs_lb = reshape(subs_lb, shape[1:end-1]..., :)
+    subs_ub = reshape(subs_ub, shape[1:end-1]..., :)
 
     return subs_lb, subs_ub
 end
@@ -247,9 +247,14 @@ function bounds(s::SymbolicIntervalGraph)
     Low = Flux.flatten(s.Low)
     Up  = Flux.flatten(s.Up)
     n_neurons = size(Low, 1)
+    n_in = get_n_in(s)
+    current_n_vars = get_n_vars(s)
 
-    l_bounds = bounds(Low, domain(s))
-    u_bounds = bounds(Up,  domain(s))
+    subs_LL, subs_UU = substitute_variables(s.Low, s.Up, s.var_los, s.var_his, n_in, current_n_vars)
+
+
+    l_bounds = bounds(subs_LL, domain(s))
+    u_bounds = bounds(subs_UU,  domain(s))
 
     # take first of [ll, lu] and second of [ul, uu] for outer bounds
     return reshape(l_bounds[1], size(s)[1:end-1]), reshape(u_bounds[2], size(s)[1:end-1])

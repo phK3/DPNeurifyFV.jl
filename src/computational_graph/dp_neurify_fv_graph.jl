@@ -117,7 +117,7 @@ end
 end =#
 
 
-function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
+#= function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     # TODO: consider fresh variables, right now only for vanilla symbolic interval
     # TODO: consider stored bounds (and also disabling of storing bounds!)
     Low = Flux.flatten(s.Low)
@@ -156,6 +156,87 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     # get in right shape after flattening
     L = reshape(L̂, size(s.Low))
     U = reshape(Û, size(s.Up))
+
+
+    output = SymbolicIntervalGraph(L, U, domain(s), s.lbs, s.ubs, 
+                                   s.var_los, s.var_his, s.var_ids, 
+                                   s.max_vars, importance)
+
+    return output
+end =#
+
+function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
+    # TODO: consider fresh variables, right now only for vanilla symbolic interval
+    # TODO: consider stored bounds (and also disabling of storing bounds!)
+    Low = Flux.flatten(s.Low)
+    Up  = Flux.flatten(s.Up)
+    n_neurons = size(Low, 1)
+    n_in = get_n_in(s)
+    n_sym = get_n_sym(s)
+    current_n_vars = get_n_vars(s)
+
+    subs_LL, subs_UU = substitute_variables(s.Low, s.Up, s.var_los, s.var_his, n_in, current_n_vars)
+    subs_UL, subs_LU = substitute_variables(s.Up, s.Low, s.var_los, s.var_his, n_in, current_n_vars)
+
+    lbs = fill(-Inf, n_neurons)
+    ubs = fill(Inf, n_neurons)
+    ll = lower_bounds(subs_LL, domain(s), lbs, ubs)
+    lu = upper_bounds(subs_LU, domain(s), lbs, ubs)
+    ul = lower_bounds(subs_UL,  domain(s), lbs, ubs)
+    uu = upper_bounds(subs_UU,  domain(s), lbs, ubs)
+
+    crossing = is_crossing.(ll, uu)
+    layer_importance = sum(abs.(subs_LL[crossing, :]), dims=1) .+ sum(abs.(subs_UU[crossing, :]), dims=1)
+    importance = s.importance .+ layer_importance[1:end-1]  # constant term doesn't need importance
+
+    fv_idxs = solver.get_fresh_var_idxs(s.max_vars, current_n_vars, ll, uu, solver.var_frac)
+    n_vars = length(fv_idxs)
+
+    if solver.method == :OuterBounds
+        λ_l = relaxed_relu_gradient_lower.(ll, uu)
+        λ_u = relaxed_relu_gradient.(ll, uu)
+        β_u = -ll
+    elseif solver.method == :NeurifyRelax
+        λ_l = relaxed_relu_gradient.(ll, lu)
+        λ_u = relaxed_relu_gradient.(ul, uu)
+        β_u = -ul
+    elseif solver.method == :DeepPolyRelax
+        λ_l = relaxed_relu_gradient_lower.(ll, lu)
+        λ_u = relaxed_relu_gradient.(ul, uu)
+        β_u = -ul
+    end
+
+    # relaxation of symbolic bounds
+    L̂ = λ_l .* Low
+    Û = λ_u .* Up
+    Û[:, end] .+= λ_u .* max.(0, β_u)
+
+    # relaxation of substituted bounds
+    subs_LL = λ_l .* subs_LL
+    subs_UU = λ_u .* subs_UU
+    subs_UU[:, end] .+= λ_u .* max.(β_u, 0)
+
+    # introduce new symbolic variables
+    if n_vars > 0
+        L̂ = [L̂[:, 1:n_sym] zeros(n_neurons, n_vars) L̂[:, end]]
+        Û = [Û[:, 1:n_sym] zeros(n_neurons, n_vars) Û[:, end]]
+    end
+
+    for (i, v) in enumerate(fv_idxs)
+        # store symbolic bounds on fresh variables
+        s.var_los[current_n_vars + i, :] .= subs_LL[v, :]
+        s.var_his[current_n_vars + i, :] .= subs_UU[v, :]
+
+        # set corresponding entry to unit vec
+        L̂[v, :] .= unit_vec(n_sym + i, n_sym + 1 + n_vars)
+        Û[v, :] .= unit_vec(n_sym + i, n_sym + 1 + n_vars)
+    end
+
+    # get in right shape after flattening
+    # batch dimension can get larger as there are now more coefficients for the
+    # fresh variables
+    L = reshape(L̂, size(s.Low)[1:end-1]..., :)
+    U = reshape(Û, size(s.Up)[1:end-1]..., :)
 
 
     output = SymbolicIntervalGraph(L, U, domain(s), s.lbs, s.ubs, 

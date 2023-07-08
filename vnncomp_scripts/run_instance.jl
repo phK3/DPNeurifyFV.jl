@@ -4,8 +4,8 @@ const DP = DPNeurifyFV
 
 
 function verify_an_instance(onnx_file, vnnlib_file, timeout)
-    params = DP.PriorityOptimizerParameters(max_steps=10000, print_frequency=100, timeout=timeout, stop_frequency=1, verbosity=2)
-    solver = DPNFV(method=:DeepPolyRelax)
+    params = DP.PriorityOptimizerParameters(max_steps=999999999, print_frequency=100, timeout=timeout, stop_frequency=1, verbosity=2)
+    solver = DPNFV(method=:DeepPolyRelax, max_vars=10)
 
     x_star, y_star, all_steps, result = DP.verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true)
 
