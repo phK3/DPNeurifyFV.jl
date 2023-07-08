@@ -28,6 +28,7 @@ include("computational_graph/onnx_constructors.jl")
 include("computational_graph/cg_optimization_bab.jl")
 
 # does it get precompiled?
+println("precompiling...")
 params = PriorityOptimizerParameters(max_steps=3, print_frequency=1, stop_frequency=1, verbosity=2)
 solver = DPNFV(method=:DeepPolyRelax)
 onnx_file = string(@__DIR__, "/../networks/precompile_nns/ACASXU_run2a_1_1_batch_2000.onnx")
