@@ -1,4 +1,4 @@
-# taken from https://github.com/intelligent-control-lab/NeuralVerification.jl/blob/vnncomp/vnncomp_scripts/run_instance.sh
+# modified from https://github.com/intelligent-control-lab/NeuralVerification.jl/blob/vnncomp/vnncomp_scripts/run_instance.sh
 VERSION_STRING=v1
 
 # check arguments
@@ -21,7 +21,9 @@ script_path=$(dirname "$0")
 #project_path=$(dirname "$script_path")
 project_path=$(dirname $(dirname $(realpath $0)))
 
+julia_path="/opt/julia-1.9.2/bin/julia"
+
 echo $script_path
 echo $project_path
-julia --project="${project_path}" "${script_path}/run_instance.jl" "$ONNX_FILE" "$VNNLIB_FILE" "$RESULTS_FILE"
+$julia_path --sysimage ${project_path}/sys_dpneurifyfv.so --project="${project_path}" "${script_path}/run_instance.jl" "$ONNX_FILE" "$VNNLIB_FILE" "$RESULTS_FILE" "$TIMEOUT"
 exit 0
