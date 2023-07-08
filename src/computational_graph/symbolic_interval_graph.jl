@@ -145,6 +145,36 @@ end
 
 
 """
+Creates a new symbolic interval from an old one with a new input set.
+"""
+function init_symbolic_interval_graph(s::SymbolicIntervalGraph, input_set::AbstractHyperrectangle{N}; max_vars=10) where N <: Number
+    n = dim(input_set)
+    lbs = low(input_set)
+    ubs = high(input_set)
+    # only want variable for those inputs, that are not fixed (i.e. ub is strictly larger than lb)
+    fixed = (lbs .== ubs)
+    Low = [I(n)[:,.~fixed] lbs .* fixed]
+    Up  = [I(n)[:,.~fixed] ubs .* fixed]
+
+    # TODO: is copy enough?
+    # dict "layername" => [lbs]
+    lbs = copy(s.lbs)
+    ubs = copy(s.ubs)
+
+    var_los = zeros(N, max_vars, dim(input_set) + 1)
+    var_his = zeros(N, max_vars, dim(input_set) + 1)
+
+    importance = zeros(N, dim(input_set))
+
+    # maybe use [("layername", position)]
+    var_ids = []
+
+    return SymbolicIntervalGraph(Low, Up, input_set, lbs, ubs, var_los, var_his, 
+                                 var_ids, max_vars, importance) 
+end
+
+
+"""
 Takes an existing SymbolicIntervalGraph and generates a new instance thats different 
 only in its symbolic lower and upper bound.
 
@@ -184,6 +214,28 @@ function substitute_variables(s::SymbolicIntervalGraph)
     subs_ub = reshape(subs_ub, shape)
 
     return subs_lb, subs_ub
+end
+
+
+"""
+Returns point x* in the input domain that maximizes the upper bound of the symbolic interval.
+
+s.t. s.Up[:,1:end-1] * x* + s.Up[:,end] = upper_bounds(s)
+"""
+function maximizer(s::SymbolicIntervalGraph)
+    subs_sym_lo, subs_sym_hi = substitute_variables(s)
+    return maximizer(subs_sym_hi, low(domain(s)), high(domain(s)))
+end
+
+
+"""
+Returns point x* in the input domain that minimizes the lower bound of the symbolic interval.
+
+s.t. s.Low[:,1:end-1] * x* + s.Low[:,end] = lower_bounds(s)
+"""
+function minimizer(s::SymbolicIntervalGraph)
+    subs_sym_lo, subs_sym_hi = substitute_variables(s)
+    return minimizer(subs_sym_lo, low(domain(s)), high(domain(s)))
 end
 
 
@@ -243,5 +295,71 @@ function add_constant(s::SymbolicIntervalGraph, c)
     selectdim(Up,  nd, batch_size) .+= c
 
     return init_symbolic_interval_graph(s, Low, Up)
+end
+
+
+
+"""
+Bisect input interval of dimension i of domain of symbolic interval.
+
+returns:
+    [s₁, s₂] - list of two symbolic intervals with both halves of the domain.
+"""
+function split_symbolic_interval_graph(s::SymbolicIntervalGraph{<:Hyperrectangle}, index::Int)
+    domain1, domain2 = split(domain(s), index)
+
+    current_n_vars = get_n_vars(s)
+    # can't have more vars than parent node?
+    s1 = init_symbolic_interval_graph(s, domain1; max_vars=current_n_vars)
+    s2 = init_symbolic_interval_graph(s, domain2; max_vars=current_n_vars)
+
+    return [s1, s2]
+end
+
+
+"""
+Bisect input interval of dimension with largest radius in domain of symbolic interval.
+"""
+function split_largest_interval(s::SymbolicIntervalGraph)
+    largest_dimension = argmax(high(domain(s)) - low(domain(s)))
+    return split_symbolic_interval_graph(s, largest_dimension)
+end
+
+
+"""
+Splitting based on intermediate importance scores (i.e. coefficients in all crossing ReLUs)
+"""
+function split_important_interval(s::SymbolicIntervalGraph{<:Hyperrectangle})
+    radius = high(domain(s)) - low(domain(s))
+    # if there are no more crossing ReLUs, importance will be zero vector -> if we
+    # multiply it with radius, all inputs are equally important, and argmax always
+    # returns the first index -> infinitely loop splitting
+    most_important_dim = sum(s.importance) == 0. ? argmax(radius) : argmax(s.importance .* radius)
+    return split_symbolic_interval_graph(s, most_important_dim)
+end
+
+
+"""
+Split input domain of symbolic interval n times using a specified split technique.
+
+args:
+    cell - symbolic interval to split
+    n - number of splits
+
+kwargs:
+    split - splitting method (default: split_largest_interval)
+
+returns:
+    queue containing symbolic intervals with split domain
+"""
+function NPO.split_multiple_times(cell::SymbolicIntervalGraph, n; split=split_largest_interval)
+    q = Queue{SymbolicIntervalGraph}()
+    enqueue!(q, cell)
+    for i in 1:n
+        new_cells = split(dequeue!(q))
+        enqueue!(q, new_cells[1])
+        enqueue!(q, new_cells[2])
+    end
+    return q
 end
 
