@@ -1,0 +1,8 @@
+name: DPNeurifyFV
+ami: ami-0d70546e43a941d70
+scripts_dir: vnncomp_scripts
+manual_installation_step: True
+run_installation_script_as_root: True
+run_post_installation_script_as_root: False
+run_toolkit_as_root: False
+description: Dummy description
