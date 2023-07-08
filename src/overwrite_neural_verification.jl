@@ -1,5 +1,6 @@
 
-"""
+# since computational graph stuff just uses Flux layers, we shouldn't need this anymore.
+#= """
 interval_map(W::Matrix, l::AbstractVecOrMat, u::AbstractVecOrMat)
 
 Simple linear mapping on intervals.
@@ -18,4 +19,4 @@ function NV.interval_map(W::AbstractMatrix{N}, l::AbstractVecOrMat, u::AbstractV
     #l_new = max.(W, zero(N)) * l + min.(W, zero(N)) * u
     #u_new = max.(W, zero(N)) * u + min.(W, zero(N)) * l
     return (l_new, u_new)
-end
+end =#
