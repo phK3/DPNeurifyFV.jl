@@ -56,6 +56,7 @@ function reaches_polytope(nn::CompGraph, input_set::AbstractHyperrectangle, poly
                 max_vio_idx = argmax(violations)
                 # TODO: maybe reshape x_star?
                 y_star = propagate(nn_spec, x_star[max_vio_idx, :])
+                x_star = x_star[max_vio_idx, :]
             end
 
             return x_star, maximum(y_star)
@@ -101,6 +102,7 @@ function contained_within_polytope(nn::CompGraph, input_set::AbstractHyperrectan
                 max_vio_idx = argmax(violations)
                 # TODO: do we need to reshape x_star?
                 y_star = propagate(nn_spec, x_star[max_vio_idx, :])
+                x_star = x_star[max_vio_idx, :]
             end
 
             return x_star, maximum(y_star)
@@ -174,7 +176,12 @@ function verify_vnnlib(solver::DPNFV, network::CompGraph, vnnlib_file::String, p
         result == "SAT" && break  # can terminate loop, if one term of the disjunction is true
     end
 
-    y_star = propagate(network, x_star)
+    if isnothing(x_star)
+        # when we can prove property UNSAT in first step, there is no counterexample to try
+        y_star = nothing
+    else
+        y_star = propagate(network, x_star)
+    end
 
     return x_star, y_star, all_steps, result
 end
@@ -190,7 +197,6 @@ end
 # max_properties is maximum number of properties we want to verify in this run (useful for debugging and testing)
 """
 Verifies properties for network in directory with instances.csv file.
-
 params:
     solver - solver instance to use for verification
     dir - directory containing instances.csv file with combinations of onnx networks and vnnlib properties to test
