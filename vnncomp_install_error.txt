@@ -1,0 +1,1855 @@
+SparseArrays/.github/
+julia-1.9.2/share/julia/stdlib/v1.9/SparseArrays/.github/workflows/
+julia-1.9.2/share/julia/stdlib/v1.9/SparseArrays/.github/workflows/ci.yml
+julia-1.9.2/share/julia/stdlib/v1.9/SparseArrays/.github/workflows/backport.yml
+julia-1.9.2/share/julia/stdlib/v1.9/SparseArrays/.codecov.yml
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/StdlibArtifacts.toml
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/src/
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/src/PCRE2_jll.jl
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/Project.toml
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/test/
+julia-1.9.2/share/julia/stdlib/v1.9/PCRE2_jll/test/runtests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/StdlibArtifacts.toml
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/src/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/src/LibGit2_jll.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/Project.toml
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/test/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2_jll/test/runtests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/
+julia-1.9.2/share/julia/stdlib/v1.9/Test/src/
+julia-1.9.2/share/julia/stdlib/v1.9/Test/src/logging.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/src/Test.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/Project.toml
+julia-1.9.2/share/julia/stdlib/v1.9/Test/test/
+julia-1.9.2/share/julia/stdlib/v1.9/Test/test/test_pop_testset_exec.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/test/nothrow_testset.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/test/runtests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/Test/docs/
+julia-1.9.2/share/julia/stdlib/v1.9/Test/docs/src/
+julia-1.9.2/share/julia/stdlib/v1.9/Test/docs/src/index.md
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/gitcredential.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/config.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/utils.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/rebase.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/tag.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/status.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/LibGit2.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/merge.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/index.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/commit.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/error.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/reference.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/repository.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/diff.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/blame.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/types.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/oid.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/consts.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/strarray.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/blob.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/callbacks.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/tree.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/remote.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/walker.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/src/signature.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/Project.toml
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/libgit2-helpers.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/testgroups
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/bad_ca_roots.pem
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/online-tests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/valid-passphrase.pub
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/invalid.pub
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/valid-passphrase
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/invalid
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/valid.pub
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/keys/valid
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/libgit2.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/known_hosts
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/bad_ca_roots.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/online.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/libgit2-tests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/test/runtests.jl
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/docs/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/docs/src/
+julia-1.9.2/share/julia/stdlib/v1.9/LibGit2/docs/src/index.md
+julia-1.9.2/share/julia/test/
+julia-1.9.2/share/julia/test/depot/
+julia-1.9.2/share/julia/test/depot/packages/
+julia-1.9.2/share/julia/test/depot/packages/Baz/
+julia-1.9.2/share/julia/test/depot/packages/Baz/81oLe/
+julia-1.9.2/share/julia/test/depot/packages/Baz/81oLe/src/
+julia-1.9.2/share/julia/test/depot/packages/Baz/81oLe/src/Baz.jl
+julia-1.9.2/share/julia/test/depot/packages/Foo/
+julia-1.9.2/share/julia/test/depot/packages/Foo/I05Qq/
+julia-1.9.2/share/julia/test/depot/packages/Foo/I05Qq/src/
+julia-1.9.2/share/julia/test/depot/packages/Foo/I05Qq/src/Foo.jl
+julia-1.9.2/share/julia/test/vecelement.jl
+julia-1.9.2/share/julia/test/specificity.jl
+julia-1.9.2/share/julia/test/env.jl
+julia-1.9.2/share/julia/test/loading.jl
+julia-1.9.2/share/julia/test/manifest/
+julia-1.9.2/share/julia/test/manifest/v1.0/
+julia-1.9.2/share/julia/test/manifest/v1.0/Manifest.toml
+julia-1.9.2/share/julia/test/manifest/v2.0/
+julia-1.9.2/share/julia/test/manifest/v2.0/Manifest.toml
+julia-1.9.2/share/julia/test/sysinfo.jl
+julia-1.9.2/share/julia/test/version.jl
+julia-1.9.2/share/julia/test/meta.jl
+julia-1.9.2/share/julia/test/ranges.jl
+julia-1.9.2/share/julia/test/subtype.jl
+julia-1.9.2/share/julia/test/opaque_closure.jl
+julia-1.9.2/share/julia/test/reinterpretarray.jl
+julia-1.9.2/share/julia/test/osutils.jl
+julia-1.9.2/share/julia/test/deprecation_exec.jl
+julia-1.9.2/share/julia/test/triplequote.jl
+julia-1.9.2/share/julia/test/clangsa/
+julia-1.9.2/share/julia/test/clangsa/ImplicitAtomicsTest.c
+julia-1.9.2/share/julia/test/clangsa/.gitignore
+julia-1.9.2/share/julia/test/clangsa/GCPushPop.cpp
+julia-1.9.2/share/julia/test/clangsa/MissingRoots.c
+julia-1.9.2/share/julia/test/clangsa/lit.cfg.py
+julia-1.9.2/share/julia/test/clangsa/Makefile
+julia-1.9.2/share/julia/test/misc.jl
+julia-1.9.2/share/julia/test/ccall.jl
+julia-1.9.2/share/julia/test/.gitignore
+julia-1.9.2/share/julia/test/stack_overflow.jl
+julia-1.9.2/share/julia/test/backtrace.jl
+julia-1.9.2/share/julia/test/profile_spawnmany_exec.jl
+julia-1.9.2/share/julia/test/smallarrayshrink.jl
+julia-1.9.2/share/julia/test/project/
+julia-1.9.2/share/julia/test/project/Extensions/
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithDeps/
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithDeps/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithDeps/Manifest.toml
+julia-1.9.2/share/julia/test/project/Extensions/SomePackage/
+julia-1.9.2/share/julia/test/project/Extensions/SomePackage/src/
+julia-1.9.2/share/julia/test/project/Extensions/SomePackage/src/SomePackage.jl
+julia-1.9.2/share/julia/test/project/Extensions/SomePackage/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensionsv2/
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensionsv2/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensionsv2/Manifest.toml
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/src/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/src/HasExtensions.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/ext/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/ext/Extension2.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions_v2.jl/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensions/
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensions/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/EnvWithHasExtensions/Manifest.toml
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/src/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/src/HasExtensions.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/ext/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/ext/Extension.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/ext/ExtensionFolder/
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/ext/ExtensionFolder/ExtensionFolder.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/HasExtensions.jl/Manifest.toml
+julia-1.9.2/share/julia/test/project/Extensions/HasDepWithExtensions.jl/
+julia-1.9.2/share/julia/test/project/Extensions/HasDepWithExtensions.jl/src/
+julia-1.9.2/share/julia/test/project/Extensions/HasDepWithExtensions.jl/src/HasDepWithExtensions.jl
+julia-1.9.2/share/julia/test/project/Extensions/HasDepWithExtensions.jl/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/HasDepWithExtensions.jl/Manifest.toml
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep2/
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep2/src/
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep2/src/ExtDep2.jl
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep2/Project.toml
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep.jl/
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep.jl/src/
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep.jl/src/ExtDep.jl
+julia-1.9.2/share/julia/test/project/Extensions/ExtDep.jl/Project.toml
+julia-1.9.2/share/julia/test/project/Project.toml
+julia-1.9.2/share/julia/test/project/Manifest.toml
+julia-1.9.2/share/julia/test/project/deps/
+julia-1.9.2/share/julia/test/project/deps/Qux.jl
+julia-1.9.2/share/julia/test/project/deps/Bar/
+julia-1.9.2/share/julia/test/project/deps/Bar/src/
+julia-1.9.2/share/julia/test/project/deps/Bar/src/Bar.jl
+julia-1.9.2/share/julia/test/project/deps/Foo1/
+julia-1.9.2/share/julia/test/project/deps/Foo1/src/
+julia-1.9.2/share/julia/test/project/deps/Foo1/src/Foo.jl
+julia-1.9.2/share/julia/test/project/deps/Foo1/src/SubFoo1.jl
+julia-1.9.2/share/julia/test/project/deps/Foo1/src/subdir/
+julia-1.9.2/share/julia/test/project/deps/Foo1/src/subdir/SubFoo2.jl
+julia-1.9.2/share/julia/test/project/deps/Foo1/Project.toml
+julia-1.9.2/share/julia/test/project/deps/Foo2.jl/
+julia-1.9.2/share/julia/test/project/deps/Foo2.jl/src/
+julia-1.9.2/share/julia/test/project/deps/Foo2.jl/src/Foo.jl
+julia-1.9.2/share/julia/test/threads_exec.jl
+julia-1.9.2/share/julia/test/iobuffer.jl
+julia-1.9.2/share/julia/test/strings/
+julia-1.9.2/share/julia/test/strings/search.jl
+julia-1.9.2/share/julia/test/strings/util.jl
+julia-1.9.2/share/julia/test/strings/types.jl
+julia-1.9.2/share/julia/test/strings/io.jl
+julia-1.9.2/share/julia/test/strings/basic.jl
+julia-1.9.2/share/julia/test/reduce.jl
+julia-1.9.2/share/julia/test/gcext/
+julia-1.9.2/share/julia/test/gcext/.gitignore
+julia-1.9.2/share/julia/test/gcext/gcext.c
+julia-1.9.2/share/julia/test/gcext/ForeignObjSerialization/
+julia-1.9.2/share/julia/test/gcext/ForeignObjSerialization/src/
+julia-1.9.2/share/julia/test/gcext/ForeignObjSerialization/src/ForeignObjSerialization.jl
+julia-1.9.2/share/julia/test/gcext/ForeignObjSerialization/Project.toml
+julia-1.9.2/share/julia/test/gcext/ForeignObjSerialization/Manifest.toml
+julia-1.9.2/share/julia/test/gcext/gcext-test.jl
+julia-1.9.2/share/julia/test/gcext/Foreign/
+julia-1.9.2/share/julia/test/gcext/Foreign/src/
+julia-1.9.2/share/julia/test/gcext/Foreign/src/Foreign.jl
+julia-1.9.2/share/julia/test/gcext/Foreign/Project.toml
+julia-1.9.2/share/julia/test/gcext/Foreign/Manifest.toml
+julia-1.9.2/share/julia/test/gcext/Foreign/deps/
+julia-1.9.2/share/julia/test/gcext/Foreign/deps/foreignlib.c
+julia-1.9.2/share/julia/test/gcext/Makefile
+julia-1.9.2/share/julia/test/gcext/DependsOnForeign/
+julia-1.9.2/share/julia/test/gcext/DependsOnForeign/src/
+julia-1.9.2/share/julia/test/gcext/DependsOnForeign/src/DependsOnForeign.jl
+julia-1.9.2/share/julia/test/gcext/DependsOnForeign/Project.toml
+julia-1.9.2/share/julia/test/gcext/DependsOnForeign/Manifest.toml
+julia-1.9.2/share/julia/test/gcext/LocalTest.jl
+julia-1.9.2/share/julia/test/hashing.jl
+julia-1.9.2/share/julia/test/sorting.jl
+julia-1.9.2/share/julia/test/missing.jl
+julia-1.9.2/share/julia/test/interpreter.jl
+julia-1.9.2/share/julia/test/filesystem.jl
+julia-1.9.2/share/julia/test/functional.jl
+julia-1.9.2/share/julia/test/complex.jl
+julia-1.9.2/share/julia/test/bitset.jl
+julia-1.9.2/share/julia/test/docs.jl
+julia-1.9.2/share/julia/test/download_exec.jl
+julia-1.9.2/share/julia/test/ryu.jl
+julia-1.9.2/share/julia/test/sets.jl
+julia-1.9.2/share/julia/test/reducedim.jl
+julia-1.9.2/share/julia/test/math.jl
+julia-1.9.2/share/julia/test/mpfr.jl
+julia-1.9.2/share/julia/test/ordering.jl
+julia-1.9.2/share/julia/test/spawn.jl
+julia-1.9.2/share/julia/test/syntax.jl
+julia-1.9.2/share/julia/test/keywordargs.jl
+julia-1.9.2/share/julia/test/offsetarray.jl
+julia-1.9.2/share/julia/test/reflection.jl
+julia-1.9.2/share/julia/test/corelogging.jl
+julia-1.9.2/share/julia/test/asyncmap.jl
+julia-1.9.2/share/julia/test/dict.jl
+julia-1.9.2/share/julia/test/operators.jl
+julia-1.9.2/share/julia/test/namedtuple.jl
+julia-1.9.2/share/julia/test/choosetests.jl
+julia-1.9.2/share/julia/test/read.jl
+julia-1.9.2/share/julia/test/threadpool_latency.jl
+julia-1.9.2/share/julia/test/ambiguous.jl
+julia-1.9.2/share/julia/test/channels.jl
+julia-1.9.2/share/julia/test/exceptions.jl
+julia-1.9.2/share/julia/test/enums.jl
+julia-1.9.2/share/julia/test/threads.jl
+julia-1.9.2/share/julia/test/error.jl
+julia-1.9.2/share/julia/test/precompile.jl
+julia-1.9.2/share/julia/test/generic_map_tests.jl
+julia-1.9.2/share/julia/test/iostream.jl
+julia-1.9.2/share/julia/test/download.jl
+julia-1.9.2/share/julia/test/int.jl
+julia-1.9.2/share/julia/test/boundscheck_exec.jl
+julia-1.9.2/share/julia/test/goto.jl
+julia-1.9.2/share/julia/test/threadpool_use.jl
+julia-1.9.2/share/julia/test/boundscheck.jl
+julia-1.9.2/share/julia/test/stress.jl
+julia-1.9.2/share/julia/test/intrinsics.jl
+julia-1.9.2/share/julia/test/stress_fd_exec.jl
+julia-1.9.2/share/julia/test/mod2pi.jl
+julia-1.9.2/share/julia/test/worlds.jl
+julia-1.9.2/share/julia/test/arrayops.jl
+julia-1.9.2/share/julia/test/gmp.jl
+julia-1.9.2/share/julia/test/llvmcall2.jl
+julia-1.9.2/share/julia/test/unicode/
+julia-1.9.2/share/julia/test/unicode/utf8.jl
+julia-1.9.2/share/julia/test/subarray.jl
+julia-1.9.2/share/julia/test/broadcast.jl
+julia-1.9.2/share/julia/test/fastmath.jl
+julia-1.9.2/share/julia/test/rational.jl
+julia-1.9.2/share/julia/test/core.jl
+julia-1.9.2/share/julia/test/floatapprox.jl
+julia-1.9.2/share/julia/test/compiler/
+julia-1.9.2/share/julia/test/compiler/AbstractInterpreter.jl
+julia-1.9.2/share/julia/test/compiler/ssair.jl
+julia-1.9.2/share/julia/test/compiler/validation.jl
+julia-1.9.2/share/julia/test/compiler/datastructures.jl
+julia-1.9.2/share/julia/test/compiler/irutils.jl
+julia-1.9.2/share/julia/test/compiler/codegen.jl
+julia-1.9.2/share/julia/test/compiler/inline.jl
+julia-1.9.2/share/julia/test/compiler/EscapeAnalysis/
+julia-1.9.2/share/julia/test/compiler/EscapeAnalysis/EAUtils.jl
+julia-1.9.2/share/julia/test/compiler/EscapeAnalysis/local.jl
+julia-1.9.2/share/julia/test/compiler/EscapeAnalysis/interprocedural.jl
+julia-1.9.2/share/julia/test/compiler/EscapeAnalysis/setup.jl
+julia-1.9.2/share/julia/test/compiler/inference.jl
+julia-1.9.2/share/julia/test/compiler/effects.jl
+julia-1.9.2/share/julia/test/compiler/irpasses.jl
+julia-1.9.2/share/julia/test/compiler/interpreter_exec.jl
+julia-1.9.2/share/julia/test/compiler/contextual.jl
+julia-1.9.2/share/julia/test/client.jl
+julia-1.9.2/share/julia/test/regex.jl
+julia-1.9.2/share/julia/test/netload/
+julia-1.9.2/share/julia/test/netload/memtest.jl
+julia-1.9.2/share/julia/test/tuple.jl
+julia-1.9.2/share/julia/test/TestPkg/
+julia-1.9.2/share/julia/test/TestPkg/src/
+julia-1.9.2/share/julia/test/TestPkg/src/TestPkg.jl
+julia-1.9.2/share/julia/test/TestPkg/Project.toml
+julia-1.9.2/share/julia/test/TestPkg/Manifest.toml
+julia-1.9.2/share/julia/test/intfuncs.jl
+julia-1.9.2/share/julia/test/file.jl
+julia-1.9.2/share/julia/test/binaryplatforms.jl
+julia-1.9.2/share/julia/test/simdloop.jl
+julia-1.9.2/share/julia/test/atexit.jl
+julia-1.9.2/share/julia/test/parse.jl
+julia-1.9.2/share/julia/test/test_sourcepath.jl
+julia-1.9.2/share/julia/test/floatfuncs.jl
+julia-1.9.2/share/julia/test/testdefs.jl
+julia-1.9.2/share/julia/test/rounding.jl
+julia-1.9.2/share/julia/test/char.jl
+julia-1.9.2/share/julia/test/cmdlineargs.jl
+julia-1.9.2/share/julia/test/numbers.jl
+julia-1.9.2/share/julia/test/some.jl
+julia-1.9.2/share/julia/test/copy.jl
+julia-1.9.2/share/julia/test/errorshow.jl
+julia-1.9.2/share/julia/test/secretbuffer.jl
+julia-1.9.2/share/julia/test/iterators.jl
+julia-1.9.2/share/julia/test/float16.jl
+julia-1.9.2/share/julia/test/runtests.jl
+julia-1.9.2/share/julia/test/checked.jl
+julia-1.9.2/share/julia/test/embedding/
+julia-1.9.2/share/julia/test/embedding/embedding.c
+julia-1.9.2/share/julia/test/embedding/.gitignore
+julia-1.9.2/share/julia/test/embedding/LocalModule.jl
+julia-1.9.2/share/julia/test/embedding/include_and_eval.jl
+julia-1.9.2/share/julia/test/embedding/embedding-test.jl
+julia-1.9.2/share/julia/test/embedding/Makefile
+julia-1.9.2/share/julia/test/staged.jl
+julia-1.9.2/share/julia/test/llvmpasses/
+julia-1.9.2/share/julia/test/llvmpasses/late-lower-gc-addrspaces.ll
+julia-1.9.2/share/julia/test/llvmpasses/final-lower-gc-addrspaces.ll
+julia-1.9.2/share/julia/test/llvmpasses/.gitignore
+julia-1.9.2/share/julia/test/llvmpasses/pipeline-o0.jl
+julia-1.9.2/share/julia/test/llvmpasses/alloc-opt-pipeline.jl
+julia-1.9.2/share/julia/test/llvmpasses/late-lower-gc.ll
+julia-1.9.2/share/julia/test/llvmpasses/float16.ll
+julia-1.9.2/share/julia/test/llvmpasses/propagate-addrspace-non-zero.ll
+julia-1.9.2/share/julia/test/llvmpasses/alloc-opt-unsized.ll
+julia-1.9.2/share/julia/test/llvmpasses/safepoint_stress.jl
+julia-1.9.2/share/julia/test/llvmpasses/loopinfo.jl
+julia-1.9.2/share/julia/test/llvmpasses/returnstwicegc.ll
+julia-1.9.2/share/julia/test/llvmpasses/lit.cfg.py
+julia-1.9.2/share/julia/test/llvmpasses/lower-handlers.ll
+julia-1.9.2/share/julia/test/llvmpasses/gcroots.ll
+julia-1.9.2/share/julia/test/llvmpasses/lower-handlers-addrspaces.ll
+julia-1.9.2/share/julia/test/llvmpasses/pipeline-o2-allocs.jl
+julia-1.9.2/share/julia/test/llvmpasses/alloc-opt-gcframe-addrspaces.jl
+julia-1.9.2/share/julia/test/llvmpasses/fastmath.jl
+julia-1.9.2/share/julia/test/llvmpasses/propagate-addrspace.ll
+julia-1.9.2/share/julia/test/llvmpasses/muladd.ll
+julia-1.9.2/share/julia/test/llvmpasses/alloc-opt-pass.jl
+julia-1.9.2/share/julia/test/llvmpasses/noinline.jl
+julia-1.9.2/share/julia/test/llvmpasses/refinements.ll
+julia-1.9.2/share/julia/test/llvmpasses/Makefile
+julia-1.9.2/share/julia/test/llvmpasses/fmf.jl
+julia-1.9.2/share/julia/test/llvmpasses/simdloop.ll
+julia-1.9.2/share/julia/test/llvmpasses/julia-licm.ll
+julia-1.9.2/share/julia/test/llvmpasses/remove-addrspaces.ll
+julia-1.9.2/share/julia/test/llvmpasses/aliasscopes.jl
+julia-1.9.2/share/julia/test/llvmpasses/final-lower-gc.ll
+julia-1.9.2/share/julia/test/llvmpasses/cpu-features.ll
+julia-1.9.2/share/julia/test/llvmpasses/pipeline-o2.jl
+julia-1.9.2/share/julia/test/llvmpasses/llvmcall.jl
+julia-1.9.2/share/julia/test/llvmpasses/alloc-opt-gcframe.jl
+julia-1.9.2/share/julia/test/cartesian.jl
+julia-1.9.2/share/julia/test/print_process_affinity.jl
+julia-1.9.2/share/julia/test/testhelpers/
+julia-1.9.2/share/julia/test/testhelpers/Furlongs.jl
+julia-1.9.2/share/julia/test/testhelpers/coverage_file.info.bad2
+julia-1.9.2/share/julia/test/testhelpers/coverage_file.jl
+julia-1.9.2/share/julia/test/testhelpers/include_error.jl
+julia-1.9.2/share/julia/test/testhelpers/FakePTYs.jl
+julia-1.9.2/share/julia/test/testhelpers/withlocales.jl
+julia-1.9.2/share/julia/test/testhelpers/allocation_file.jl
+julia-1.9.2/share/julia/test/testhelpers/SizedArrays.jl
+julia-1.9.2/share/julia/test/testhelpers/coverage_file.info.bad
+julia-1.9.2/share/julia/test/testhelpers/InfiniteArrays.jl
+julia-1.9.2/share/julia/test/testhelpers/ImmutableArrays.jl
+julia-1.9.2/share/julia/test/testhelpers/Quaternions.jl
+julia-1.9.2/share/julia/test/testhelpers/coverage_file.info
+julia-1.9.2/share/julia/test/testhelpers/llvmpasses.jl
+julia-1.9.2/share/julia/test/testhelpers/MacroCalls.jl
+julia-1.9.2/share/julia/test/testhelpers/PhysQuantities.jl
+julia-1.9.2/share/julia/test/testhelpers/arrayindexingtypes.jl
+julia-1.9.2/share/julia/test/testhelpers/OffsetArrays.jl
+julia-1.9.2/share/julia/test/stacktraces.jl
+julia-1.9.2/share/julia/test/testenv.jl
+julia-1.9.2/share/julia/test/abstractarray.jl
+julia-1.9.2/share/julia/test/euler.jl
+julia-1.9.2/share/julia/test/path.jl
+julia-1.9.2/share/julia/test/llvmcall.jl
+julia-1.9.2/share/julia/test/bitarray.jl
+julia-1.9.2/share/julia/test/atomics.jl
+julia-1.9.2/share/julia/test/combinatorics.jl
+julia-1.9.2/share/julia/test/show.jl
+julia-1.9.2/share/julia/test/test_exec.jl
+julia-1.9.2/share/julia/base/
+julia-1.9.2/share/julia/base/env.jl
+julia-1.9.2/share/julia/base/loading.jl
+julia-1.9.2/share/julia/base/Enums.jl
+julia-1.9.2/share/julia/base/sysinfo.jl
+julia-1.9.2/share/julia/base/version.jl
+julia-1.9.2/share/julia/base/meta.jl
+julia-1.9.2/share/julia/base/uuid.jl
+julia-1.9.2/share/julia/base/permuteddimsarray.jl
+julia-1.9.2/share/julia/base/uv_constants.jl
+julia-1.9.2/share/julia/base/timing.jl
+julia-1.9.2/share/julia/base/opaque_closure.jl
+julia-1.9.2/share/julia/base/iddict.jl
+julia-1.9.2/share/julia/base/reinterpretarray.jl
+julia-1.9.2/share/julia/base/views.jl
+julia-1.9.2/share/julia/base/sysimg.jl
+julia-1.9.2/share/julia/base/osutils.jl
+julia-1.9.2/share/julia/base/stat.jl
+julia-1.9.2/share/julia/base/float.jl
+julia-1.9.2/share/julia/base/.gitignore
+julia-1.9.2/share/julia/base/Base.jl
+julia-1.9.2/share/julia/base/threadcall.jl
+julia-1.9.2/share/julia/base/indices.jl
+julia-1.9.2/share/julia/base/errno_h.jl
+julia-1.9.2/share/julia/base/iobuffer.jl
+julia-1.9.2/share/julia/base/strings/
+julia-1.9.2/share/julia/base/strings/unicode.jl
+julia-1.9.2/share/julia/base/strings/substring.jl
+julia-1.9.2/share/julia/base/strings/strings.jl
+julia-1.9.2/share/julia/base/strings/search.jl
+julia-1.9.2/share/julia/base/strings/lazy.jl
+julia-1.9.2/share/julia/base/strings/string.jl
+julia-1.9.2/share/julia/base/strings/util.jl
+julia-1.9.2/share/julia/base/strings/io.jl
+julia-1.9.2/share/julia/base/strings/basic.jl
+julia-1.9.2/share/julia/base/reduce.jl
+julia-1.9.2/share/julia/base/boot.jl
+julia-1.9.2/share/julia/base/div.jl
+julia-1.9.2/share/julia/base/ntuple.jl
+julia-1.9.2/share/julia/base/hashing.jl
+julia-1.9.2/share/julia/base/missing.jl
+julia-1.9.2/share/julia/base/gcutils.jl
+julia-1.9.2/share/julia/base/filesystem.jl
+julia-1.9.2/share/julia/base/threads_overloads.jl
+julia-1.9.2/share/julia/base/pointer.jl
+julia-1.9.2/share/julia/base/file_constants.jl
+julia-1.9.2/share/julia/base/sort.jl
+julia-1.9.2/share/julia/base/arrayshow.jl
+julia-1.9.2/share/julia/base/cmd.jl
+julia-1.9.2/share/julia/base/complex.jl
+julia-1.9.2/share/julia/base/bitset.jl
+julia-1.9.2/share/julia/base/twiceprecision.jl
+julia-1.9.2/share/julia/base/features_h.jl
+julia-1.9.2/share/julia/base/task.jl
+julia-1.9.2/share/julia/base/reducedim.jl
+julia-1.9.2/share/julia/base/math.jl
+julia-1.9.2/share/julia/base/mpfr.jl
+julia-1.9.2/share/julia/base/generator.jl
+julia-1.9.2/share/julia/base/ordering.jl
+julia-1.9.2/share/julia/base/reflection.jl
+julia-1.9.2/share/julia/base/cpuid.jl
+julia-1.9.2/share/julia/base/shell.jl
+julia-1.9.2/share/julia/base/asyncmap.jl
+julia-1.9.2/share/julia/base/dict.jl
+julia-1.9.2/share/julia/base/operators.jl
+julia-1.9.2/share/julia/base/namedtuple.jl
+julia-1.9.2/share/julia/base/threadingconstructs.jl
+julia-1.9.2/share/julia/base/slicearray.jl
+julia-1.9.2/share/julia/base/abstractset.jl
+julia-1.9.2/share/julia/base/abstractarraymath.jl
+julia-1.9.2/share/julia/base/c.jl
+julia-1.9.2/share/julia/base/pair.jl
+julia-1.9.2/share/julia/base/channels.jl
+julia-1.9.2/share/julia/base/libdl.jl
+julia-1.9.2/share/julia/base/partr.jl
+julia-1.9.2/share/julia/base/condition.jl
+julia-1.9.2/share/julia/base/weakkeydict.jl
+julia-1.9.2/share/julia/base/threads.jl
+julia-1.9.2/share/julia/base/error.jl
+julia-1.9.2/share/julia/base/refvalue.jl
+julia-1.9.2/share/julia/base/asyncevent.jl
+julia-1.9.2/share/julia/base/deprecated.jl
+julia-1.9.2/share/julia/base/iostream.jl
+julia-1.9.2/share/julia/base/logging.jl
+julia-1.9.2/share/julia/base/deepcopy.jl
+julia-1.9.2/share/julia/base/range.jl
+julia-1.9.2/share/julia/base/baseext.jl
+julia-1.9.2/share/julia/base/initdefs.jl
+julia-1.9.2/share/julia/base/download.jl
+julia-1.9.2/share/julia/base/int.jl
+julia-1.9.2/share/julia/base/bool.jl
+julia-1.9.2/share/julia/base/arraymath.jl
+julia-1.9.2/share/julia/base/methodshow.jl
+julia-1.9.2/share/julia/base/libuv.jl
+julia-1.9.2/share/julia/base/multinverses.jl
+julia-1.9.2/share/julia/base/gmp.jl
+julia-1.9.2/share/julia/base/ctypes.jl
+julia-1.9.2/share/julia/base/subarray.jl
+julia-1.9.2/share/julia/base/ryu/
+julia-1.9.2/share/julia/base/ryu/utils.jl
+julia-1.9.2/share/julia/base/ryu/exp.jl
+julia-1.9.2/share/julia/base/ryu/fixed.jl
+julia-1.9.2/share/julia/base/ryu/LICENSE.md
+julia-1.9.2/share/julia/base/ryu/Ryu.jl
+julia-1.9.2/share/julia/base/ryu/shortest.jl
+julia-1.9.2/share/julia/base/broadcast.jl
+julia-1.9.2/share/julia/base/summarysize.jl
+julia-1.9.2/share/julia/base/fastmath.jl
+julia-1.9.2/share/julia/base/rational.jl
+julia-1.9.2/share/julia/base/promotion.jl
+julia-1.9.2/share/julia/base/pkgid.jl
+julia-1.9.2/share/julia/base/reshapedarray.jl
+julia-1.9.2/share/julia/base/abstractdict.jl
+julia-1.9.2/share/julia/base/process.jl
+julia-1.9.2/share/julia/base/compiler/
+julia-1.9.2/share/julia/base/compiler/typeinfer.jl
+julia-1.9.2/share/julia/base/compiler/bootstrap.jl
+julia-1.9.2/share/julia/base/compiler/typelattice.jl
+julia-1.9.2/share/julia/base/compiler/stmtinfo.jl
+julia-1.9.2/share/julia/base/compiler/sort.jl
+julia-1.9.2/share/julia/base/compiler/validation.jl
+julia-1.9.2/share/julia/base/compiler/inferencestate.jl
+julia-1.9.2/share/julia/base/compiler/utilities.jl
+julia-1.9.2/share/julia/base/compiler/ssair/
+julia-1.9.2/share/julia/base/compiler/ssair/basicblock.jl
+julia-1.9.2/share/julia/base/compiler/ssair/irinterp.jl
+julia-1.9.2/share/julia/base/compiler/ssair/legacy.jl
+julia-1.9.2/share/julia/base/compiler/ssair/passes.jl
+julia-1.9.2/share/julia/base/compiler/ssair/ir.jl
+julia-1.9.2/share/julia/base/compiler/ssair/inlining.jl
+julia-1.9.2/share/julia/base/compiler/ssair/driver.jl
+julia-1.9.2/share/julia/base/compiler/ssair/EscapeAnalysis/
+julia-1.9.2/share/julia/base/compiler/ssair/EscapeAnalysis/EscapeAnalysis.jl
+julia-1.9.2/share/julia/base/compiler/ssair/EscapeAnalysis/disjoint_set.jl
+julia-1.9.2/share/julia/base/compiler/ssair/EscapeAnalysis/interprocedural.jl
+julia-1.9.2/share/julia/base/compiler/ssair/verify.jl
+julia-1.9.2/share/julia/base/compiler/ssair/domtree.jl
+julia-1.9.2/share/julia/base/compiler/ssair/heap.jl
+julia-1.9.2/share/julia/base/compiler/ssair/slot2ssa.jl
+julia-1.9.2/share/julia/base/compiler/ssair/show.jl
+julia-1.9.2/share/julia/base/compiler/tfuncs.jl
+julia-1.9.2/share/julia/base/compiler/cicache.jl
+julia-1.9.2/share/julia/base/compiler/abstractlattice.jl
+julia-1.9.2/share/julia/base/compiler/typeutils.jl
+julia-1.9.2/share/julia/base/compiler/inferenceresult.jl
+julia-1.9.2/share/julia/base/compiler/parsing.jl
+julia-1.9.2/share/julia/base/compiler/types.jl
+julia-1.9.2/share/julia/base/compiler/typelimits.jl
+julia-1.9.2/share/julia/base/compiler/abstractinterpretation.jl
+julia-1.9.2/share/julia/base/compiler/optimize.jl
+julia-1.9.2/share/julia/base/compiler/effects.jl
+julia-1.9.2/share/julia/base/compiler/compiler.jl
+julia-1.9.2/share/julia/base/compiler/methodtable.jl
+julia-1.9.2/share/julia/base/client.jl
+julia-1.9.2/share/julia/base/regex.jl
+julia-1.9.2/share/julia/base/pcre_h.jl
+julia-1.9.2/share/julia/base/options.jl
+julia-1.9.2/share/julia/base/version_git.jl
+julia-1.9.2/share/julia/base/multimedia.jl
+julia-1.9.2/share/julia/base/ttyhascolor.jl
+julia-1.9.2/share/julia/base/tuple.jl
+julia-1.9.2/share/julia/base/intfuncs.jl
+julia-1.9.2/share/julia/base/file.jl
+julia-1.9.2/share/julia/base/util.jl
+julia-1.9.2/share/julia/base/binaryplatforms.jl
+julia-1.9.2/share/julia/base/simdloop.jl
+julia-1.9.2/share/julia/base/stream.jl
+julia-1.9.2/share/julia/base/pcre.jl
+julia-1.9.2/share/julia/base/array.jl
+julia-1.9.2/share/julia/base/toml_parser.jl
+julia-1.9.2/share/julia/base/parse.jl
+julia-1.9.2/share/julia/base/mathconstants.jl
+julia-1.9.2/share/julia/base/floatfuncs.jl
+julia-1.9.2/share/julia/base/essentials.jl
+julia-1.9.2/share/julia/base/set.jl
+julia-1.9.2/share/julia/base/rounding.jl
+julia-1.9.2/share/julia/base/char.jl
+julia-1.9.2/share/julia/base/refpointer.jl
+julia-1.9.2/share/julia/base/Makefile
+julia-1.9.2/share/julia/base/some.jl
+julia-1.9.2/share/julia/base/errorshow.jl
+julia-1.9.2/share/julia/base/secretbuffer.jl
+julia-1.9.2/share/julia/base/iterators.jl
+julia-1.9.2/share/julia/base/linked_list.jl
+julia-1.9.2/share/julia/base/number.jl
+julia-1.9.2/share/julia/base/expr.jl
+julia-1.9.2/share/julia/base/lock.jl
+julia-1.9.2/share/julia/base/docs/
+julia-1.9.2/share/julia/base/docs/utils.jl
+julia-1.9.2/share/julia/base/docs/Docs.jl
+julia-1.9.2/share/julia/base/docs/core.jl
+julia-1.9.2/share/julia/base/docs/basedocs.jl
+julia-1.9.2/share/julia/base/docs/bindings.jl
+julia-1.9.2/share/julia/base/idset.jl
+julia-1.9.2/share/julia/base/multidimensional.jl
+julia-1.9.2/share/julia/base/checked.jl
+julia-1.9.2/share/julia/base/exports.jl
+julia-1.9.2/share/julia/base/linking.jl
+julia-1.9.2/share/julia/base/cartesian.jl
+julia-1.9.2/share/julia/base/traits.jl
+julia-1.9.2/share/julia/base/coreio.jl
+julia-1.9.2/share/julia/base/stacktraces.jl
+julia-1.9.2/share/julia/base/build_h.jl
+julia-1.9.2/share/julia/base/irrationals.jl
+julia-1.9.2/share/julia/base/abstractarray.jl
+julia-1.9.2/share/julia/base/accumulate.jl
+julia-1.9.2/share/julia/base/libc.jl
+julia-1.9.2/share/julia/base/special/
+julia-1.9.2/share/julia/base/special/log.jl
+julia-1.9.2/share/julia/base/special/exp.jl
+julia-1.9.2/share/julia/base/special/rem_pio2.jl
+julia-1.9.2/share/julia/base/special/hyperbolic.jl
+julia-1.9.2/share/julia/base/special/cbrt.jl
+julia-1.9.2/share/julia/base/special/trig.jl
+julia-1.9.2/share/julia/base/path.jl
+julia-1.9.2/share/julia/base/io.jl
+julia-1.9.2/share/julia/base/experimental.jl
+julia-1.9.2/share/julia/base/locks-mt.jl
+julia-1.9.2/share/julia/base/bitarray.jl
+julia-1.9.2/share/julia/base/atomics.jl
+julia-1.9.2/share/julia/base/combinatorics.jl
+julia-1.9.2/share/julia/base/show.jl
+julia-1.9.2/libexec/
+julia-1.9.2/libexec/julia/
+julia-1.9.2/libexec/julia/dsymutil
+julia-1.9.2/libexec/julia/7z
+julia-1.9.2/libexec/julia/lld
+julia-1.9.2/include/
+julia-1.9.2/include/julia/
+julia-1.9.2/include/julia/utf8.h
+julia-1.9.2/include/julia/htable.h
+julia-1.9.2/include/julia/strtod.h
+julia-1.9.2/include/julia/rle.h
+julia-1.9.2/include/julia/libsupport.h
+julia-1.9.2/include/julia/julia_gcext.h
+julia-1.9.2/include/julia/hashing.h
+julia-1.9.2/include/julia/utils.h
+julia-1.9.2/include/julia/arraylist.h
+julia-1.9.2/include/julia/bitvector.h
+julia-1.9.2/include/julia/julia_version.h
+julia-1.9.2/include/julia/MurmurHash3.h
+julia-1.9.2/include/julia/julia.h
+julia-1.9.2/include/julia/timefuncs.h
+julia-1.9.2/include/julia/ptrhash.h
+julia-1.9.2/include/julia/END.h
+julia-1.9.2/include/julia/uv/
+julia-1.9.2/include/julia/uv/linux.h
+julia-1.9.2/include/julia/uv/unix.h
+julia-1.9.2/include/julia/uv/errno.h
+julia-1.9.2/include/julia/uv/version.h
+julia-1.9.2/include/julia/uv/threadpool.h
+julia-1.9.2/include/julia/julia_threads.h
+julia-1.9.2/include/julia/julia_fasttls.h
+julia-1.9.2/include/julia/uv.h
+julia-1.9.2/include/julia/jloptions.h
+julia-1.9.2/include/julia/ENTRY.i387.h
+julia-1.9.2/include/julia/tzfile.h
+julia-1.9.2/include/julia/dtypes.h
+julia-1.9.2/include/julia/dirpath.h
+julia-1.9.2/include/julia/julia_locks.h
+julia-1.9.2/include/julia/analyzer_annotations.h
+julia-1.9.2/include/julia/julia_atomics.h
+julia-1.9.2/include/julia/platform.h
+julia-1.9.2/include/julia/ios.h
+julia-1.9.2/include/julia/julia_assert.h
+julia-1.9.2/include/julia/ENTRY.amd64.h
+julia-1.9.2/bin/
+julia-1.9.2/bin/julia
+julia-1.9.2/etc/
+julia-1.9.2/etc/julia/
+julia-1.9.2/etc/julia/startup.jl
+julia-1.9.2/LICENSE.md
++ sudo cp -r julia-1.9.2 /opt/
++ sudo apt-get install build-essential -y
+Reading package lists...
+Building dependency tree...
+Reading state information...
+build-essential is already the newest version (12.9ubuntu3).
+build-essential set to manually installed.
+0 upgraded, 0 newly installed, 0 to remove and 186 not upgraded.
++ sudo apt-get install git -y
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Suggested packages:
+  git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui gitk gitweb
+  git-cvs git-mediawiki git-svn
+The following packages will be upgraded:
+  git
+1 upgraded, 0 newly installed, 0 to remove and 185 not upgraded.
+Need to get 3166 kB of archives.
+After this operation, 127 kB of additional disk space will be used.
+Get:1 http://us-west-2.ec2.archive.ubuntu.com/ubuntu jammy-updates/main amd64 git amd64 1:2.34.1-1ubuntu1.9 [3166 kB]
+Fetched 3166 kB in 0s (17.6 MB/s)
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 70544 files and directories currently installed.)
+
+Preparing to unpack .../git_1%3a2.34.1-1ubuntu1.9_amd64.deb ...
+
+Unpacking git (1:2.34.1-1ubuntu1.9) over (1:2.34.1-1ubuntu1.2) ...
+
+Setting up git (1:2.34.1-1ubuntu1.9) ...
+
+
+Running kernel seems to be up-to-date.
+
+Services to be restarted:
+ systemctl restart acpid.service
+ systemctl restart chrony.service
+ systemctl restart cron.service
+ systemctl restart irqbalance.service
+ systemctl restart multipathd.service
+ systemctl restart packagekit.service
+ systemctl restart polkit.service
+ systemctl restart rsyslog.service
+ systemctl restart serial-getty@ttyS0.service
+ systemctl restart snapd.service
+ systemctl restart ssh.service
+ systemctl restart systemd-journald.service
+ systemctl restart systemd-networkd.service
+ systemctl restart systemd-resolved.service
+ systemctl restart systemd-udevd.service
+ systemctl restart udisks2.service
+
+Service restarts being deferred:
+ systemctl restart ModemManager.service
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart networkd-dispatcher.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+ systemctl restart user@1000.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
++ sudo apt-get install python3 -y
+Reading package lists...
+Building dependency tree...
+Reading state information...
+python3 is already the newest version (3.10.6-1~22.04).
+0 upgraded, 0 newly installed, 0 to remove and 185 not upgraded.
++ sudo apt-get install python3-pip -y
+Reading package lists...
+Building dependency tree...
+Reading state information...
+python3-pip is already the newest version (22.0.2+dfsg-1ubuntu0.3).
+0 upgraded, 0 newly installed, 0 to remove and 185 not upgraded.
++ sudo apt-get install psmisc
+Reading package lists...
+Building dependency tree...
+Reading state information...
+psmisc is already the newest version (23.4-2build3).
+psmisc set to manually installed.
+0 upgraded, 0 newly installed, 0 to remove and 185 not upgraded.
++ source /root/.bashrc
+++ '[' -z '' ']'
+++ return
++ script_name=install_tool.sh
+++ dirname install_tool.sh
++ script_path=.
+++++ realpath install_tool.sh
++++ dirname /home/ubuntu/toolkit/vnncomp_scripts/install_tool.sh
+++ dirname /home/ubuntu/toolkit/vnncomp_scripts
++ project_path=/home/ubuntu/toolkit
++ julia_path=/opt/julia-1.9.2/bin/julia
++ cd /home/ubuntu/toolkit
++ echo '
+using Pkg
+Pkg.activate(".")
+Pkg.add("PyCall")
+ENV["PYTHON"] = ""
+Pkg.add("Conda")
+using Conda
+Conda.pip_interop(true)
+Conda.pip("install", "git+https://github.com/dlshriver/vnnlib.git@main")
+Conda.add("numpy")
+Conda.add("onnx")
+Pkg.build("PyCall")
+'
++ /opt/julia-1.9.2/bin/julia
+  Activating project at `/home/ubuntu/toolkit`
+  Installing known registries into `~/.julia`
+    Updating registry at `~/.julia/registries/General.toml`
+   Resolving package versions...
+ERROR: expected package `PyVnnlib [12ce610b]` to exist at path `/root/.julia/packages/PyVnnlib/H93AM`
+Stacktrace:
+  [1] pkgerror(msg::String)
+    @ Pkg.Types /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Types.jl:69
+  [2] collect_fixed!(env::Pkg.Types.EnvCache, pkgs::Vector{Pkg.Types.PackageSpec}, names::Dict{Base.UUID, String})
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:313
+  [3] resolve_versions!(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, julia_version::VersionNumber, installed_only::Bool)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:378
+  [4] targeted_resolve(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, preserve::Pkg.Types.PreserveLevel, julia_version::VersionNumber)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1357
+  [5] tiered_resolve(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, julia_version::VersionNumber, try_all_installed::Bool)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1329
+  [6] _resolve(io::Base.PipeEndpoint, env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, preserve::Pkg.Types.PreserveLevel, julia_version::VersionNumber)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1367
+  [7] add(ctx::Pkg.Types.Context, pkgs::Vector{Pkg.Types.PackageSpec}, new_git::Set{Base.UUID}; preserve::Pkg.Types.PreserveLevel, platform::Base.BinaryPlatforms.Platform)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1384
+  [8] add
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1373 [inlined]
+  [9] add(ctx::Pkg.Types.Context, pkgs::Vector{Pkg.Types.PackageSpec}; preserve::Pkg.Types.PreserveLevel, platform::Base.BinaryPlatforms.Platform, kwargs::Base.Pairs{Symbol, Base.PipeEndpoint, Tuple{Symbol}, NamedTuple{(:io,), Tuple{Base.PipeEndpoint}}})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:275
+ [10] add(pkgs::Vector{Pkg.Types.PackageSpec}; io::Base.PipeEndpoint, kwargs::Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:156
+ [11] add(pkgs::Vector{Pkg.Types.PackageSpec})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:145
+ [12] #add#25
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:144 [inlined]
+ [13] add
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:144 [inlined]
+ [14] #add#24
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:143 [inlined]
+ [15] add(pkg::String)
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:143
+ [16] top-level scope
+    @ none:1
+""
+   Resolving package versions...
+ERROR: expected package `PyVnnlib [12ce610b]` to exist at path `/root/.julia/packages/PyVnnlib/H93AM`
+Stacktrace:
+  [1] pkgerror(msg::String)
+    @ Pkg.Types /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Types.jl:69
+  [2] collect_fixed!(env::Pkg.Types.EnvCache, pkgs::Vector{Pkg.Types.PackageSpec}, names::Dict{Base.UUID, String})
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:313
+  [3] resolve_versions!(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, julia_version::VersionNumber, installed_only::Bool)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:378
+  [4] targeted_resolve(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, preserve::Pkg.Types.PreserveLevel, julia_version::VersionNumber)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1357
+  [5] tiered_resolve(env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, julia_version::VersionNumber, try_all_installed::Bool)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1329
+  [6] _resolve(io::Base.PipeEndpoint, env::Pkg.Types.EnvCache, registries::Vector{Pkg.Registry.RegistryInstance}, pkgs::Vector{Pkg.Types.PackageSpec}, preserve::Pkg.Types.PreserveLevel, julia_version::VersionNumber)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1367
+  [7] add(ctx::Pkg.Types.Context, pkgs::Vector{Pkg.Types.PackageSpec}, new_git::Set{Base.UUID}; preserve::Pkg.Types.PreserveLevel, platform::Base.BinaryPlatforms.Platform)
+    @ Pkg.Operations /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1384
+  [8] add
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Operations.jl:1373 [inlined]
+  [9] add(ctx::Pkg.Types.Context, pkgs::Vector{Pkg.Types.PackageSpec}; preserve::Pkg.Types.PreserveLevel, platform::Base.BinaryPlatforms.Platform, kwargs::Base.Pairs{Symbol, Base.PipeEndpoint, Tuple{Symbol}, NamedTuple{(:io,), Tuple{Base.PipeEndpoint}}})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:275
+ [10] add(pkgs::Vector{Pkg.Types.PackageSpec}; io::Base.PipeEndpoint, kwargs::Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:156
+ [11] add(pkgs::Vector{Pkg.Types.PackageSpec})
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:145
+ [12] #add#25
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:144 [inlined]
+ [13] add
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:144 [inlined]
+ [14] #add#24
+    @ /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:143 [inlined]
+ [15] add(pkg::String)
+    @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:143
+ [16] top-level scope
+    @ none:1
+ERROR: ArgumentError: Package Conda [8f4d0f93-b110-5947-807f-2305c1781a2d] is required but does not seem to be installed:
+ - Run `Pkg.instantiate()` to install all recorded dependencies.
+
+Stacktrace:
+ [1] _require(pkg::Base.PkgId, env::String)
+   @ Base ./loading.jl:1774
+ [2] _require_prelocked(uuidkey::Base.PkgId, env::String)
+   @ Base ./loading.jl:1660
+ [3] macro expansion
+   @ ./loading.jl:1648 [inlined]
+ [4] macro expansion
+   @ ./lock.jl:267 [inlined]
+ [5] require(into::Module, mod::Symbol)
+   @ Base ./loading.jl:1611
+ERROR: UndefVarError: `Conda` not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
+ERROR: UndefVarError: `Conda` not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
+ERROR: UndefVarError: `Conda` not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
+ERROR: UndefVarError: `Conda` not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
+     Cloning git-repo `https://github.com/phK3/PyVnnlib.jl`
+     Cloning git-repo `https://github.com/sisl/NeuralPriorityOptimizer.jl`
+     Cloning git-repo `https://github.com/sisl/NeuralVerification.jl`
+     Cloning git-repo `https://github.com/phK3/VNNLib.jl`
+     Cloning git-repo `https://github.com/phK3/OnnxReader.jl`
+     Cloning git-repo `https://github.com/phK3/VnnlibParser.jl`
+   Installed Calculus  v0.5.1
+   Installed OffsetArrays  v1.12.10
+   Installed ContextVariablesX  v0.1.3
+   Installed CDDLib  v0.7.0
+   Installed SCS  v0.7.1
+   Installed ShowCases  v0.1.0
+   Installed Preferences  v1.4.0
+   Installed MutableArithmetics  v0.2.22
+   Installed RelocatableFolders  v1.0.0
+   Installed TimerOutputs  v0.5.23
+   Installed NNlibCUDA  v0.2.7
+   Installed cuDNN  v1.1.0
+   Installed LabelledArrays  v1.14.0
+   Installed InlineStrings  v1.4.0
+   Installed SetRounding  v0.2.1
+   Installed Bijections  v0.1.4
+   Installed StaticArrays  v1.6.0
+   Installed EarCut_jll  v2.2.4+0
+   Installed EnumX  v1.0.4
+   Installed InitialValues  v0.3.1
+   Installed Optimisers  v0.2.18
+   Installed NNlib  v0.8.21
+   Installed CEnum  v0.4.2
+   Installed ProtoBuf  v1.0.11
+   Installed BFloat16s  v0.4.2
+   Installed DelimitedFiles  v1.9.1
+   Installed GPUArrays  v8.8.1
+   Installed RecursiveArrayTools  v2.38.5
+   Installed AMD  v0.4.0
+   Installed FileIO  v1.16.1
+   Installed CUDA_Runtime_jll  v0.6.0+0
+   Installed HTTP  v0.9.17
+   Installed FastRounding  v0.3.1
+   Installed RandomNumbers  v1.5.3
+   Installed ZygoteRules  v0.2.3
+   Installed PrettyPrint  v0.2.0
+   Installed CodeTracking  v1.3.1
+   Installed MLUtils  v0.4.3
+   Installed Convex  v0.14.18
+   Installed Missings  v1.1.0
+   Installed RoundingEmulator  v0.2.1
+   Installed IrrationalConstants  v0.2.2
+   Installed JLD2  v0.4.31
+   Installed RealDot  v0.1.0
+   Installed LLVM  v6.1.0
+   Installed MathOptInterface  v0.9.22
+   Installed IRTools  v0.4.10
+   Installed Functors  v0.4.4
+   Installed GLPK_jll  v4.64.0+0
+   Installed JSON  v0.21.4
+   Installed FLoopsBase  v0.1.1
+   Installed WinReg  v0.3.1
+   Installed CUDA_Driver_jll  v0.5.0+1
+   Installed MultivariatePolynomials  v0.3.18
+   Installed Bzip2_jll  v1.0.8+0
+   Installed Revise  v3.5.3
+   Installed CodecBzip2  v0.7.2
+   Installed SentinelArrays  v1.4.0
+   Installed BenchmarkTools  v1.3.2
+   Installed ProgressLogging  v0.1.4
+   Installed LoweredCodeUtils  v2.3.0
+   Installed IfElse  v0.1.1
+   Installed MicrosoftMPI_jll  v10.1.3+4
+   Installed SCS_GPU_jll  v2.1.4+0
+   Installed SpecialFunctions  v2.3.0
+   Installed NaNMath  v0.3.7
+   Installed StaticArraysCore  v1.4.0
+   Installed CUDA_Runtime_Discovery  v0.2.2
+   Installed DefineSingletons  v0.1.2
+   Installed OneHotArrays  v0.2.4
+   Installed JuMP  v0.21.5
+   Installed MicroCollections  v0.1.4
+   Installed PackageCompiler  v2.1.7
+   Installed NameResolution  v0.1.5
+   Installed WorkerUtilities  v1.6.1
+   Installed UnsafeAtomicsLLVM  v0.1.3
+   Installed Random123  v1.6.1
+   Installed TranscodingStreams  v0.9.13
+   Installed MPIPreferences  v0.1.8
+   Installed WeakRefStrings  v1.4.2
+   Installed MbedTLS  v1.1.7
+   Installed Zygote  v0.6.62
+   Installed BinaryProvider  v0.5.10
+   Installed Ratios  v0.4.5
+   Installed MathProgBase  v0.7.8
+   Installed Colors  v0.12.10
+   Installed DataStructures  v0.18.14
+   Installed CommonSubexpressions  v0.3.0
+   Installed BufferedStreams  v1.2.0
+   Installed ChainRules  v1.52.0
+   Installed StatsAPI  v1.6.0
+   Installed BangBang  v0.3.39
+   Installed Compat  v4.7.0
+   Installed PicoSAT  v0.4.0
+   Installed MLStyle  v0.4.17
+   Installed HDF5_jll  v1.14.0+0
+   Installed CodecZlib  v0.7.1
+   Installed ExprTools  v0.1.9
+   Installed ONNXRunTime  v0.3.1
+   Installed MosekTools  v0.9.4
+   Installed DynamicPolynomials  v0.3.21
+   Installed MPICH_jll  v4.1.2+0
+   Installed Scratch  v1.2.0
+   Installed FLoops  v0.2.1
+   Installed ColorTypes  v0.11.4
+   Installed StatsBase  v0.34.0
+   Installed Mosek  v1.2.3
+   Installed DiffRules  v1.15.1
+   Installed ArgCheck  v2.3.0
+   Installed Conda  v1.9.0
+   Installed TableTraits  v1.0.1
+   Installed DiffResults  v1.1.0
+   Installed Parsers  v2.7.1
+   Installed JSONSchema  v0.3.4
+   Installed PyCall  v1.96.1
+   Installed Setfield  v1.1.1
+   Installed JuliaInterpreter  v0.9.23
+   Installed LazySets  v2.8.0
+   Installed Flux  v0.13.17
+   Installed GLPKMathProgInterface  v0.5.0
+   Installed Extents  v0.1.1
+   Installed OpenMPI_jll  v4.1.5+0
+   Installed Tokenize  v0.5.25
+   Installed JLLWrappers  v1.4.1
+   Installed DataValueInterfaces  v1.0.0
+   Installed ConstructionBase  v1.5.2
+   Installed CSV  v0.10.11
+   Installed PooledArrays  v1.4.2
+   Installed LLVMExtra_jll  v0.0.23+0
+   Installed AbstractFFTs  v1.4.0
+   Installed AbstractTrees  v0.3.4
+   Installed ChainRulesCore  v1.16.0
+   Installed HDF5  v0.16.15
+   Installed OrderedCollections  v1.6.0
+   Installed Reexport  v1.2.2
+   Installed Combinatorics  v1.0.2
+   Installed ArrayInterface  v7.4.11
+   Installed LogExpFunctions  v0.3.24
+   Installed KernelAbstractions  v0.9.6
+   Installed PreallocationTools  v0.4.12
+   Installed IntervalArithmetic  v0.20.9
+   Installed OpenSpecFun_jll  v0.5.5+0
+   Installed CompositionsBase  v0.1.2
+   Installed UnPack  v1.0.2
+   Installed UnsafeAtomics  v0.2.1
+   Installed MacroTools  v0.5.10
+   Installed JuliaVariables  v0.2.4
+   Installed SimpleTraits  v0.9.4
+   Installed Interpolations  v0.14.7
+   Installed Atomix  v0.1.0
+   Installed GPUArraysCore  v0.1.5
+   Installed DocStringExtensions  v0.9.3
+   Installed libaec_jll  v1.0.6+1
+   Installed Adapt  v3.6.2
+   Installed PicoSAT_jll  v965.0.0+0
+   Installed Transducers  v0.4.77
+   Installed GLPK  v0.13.0
+   Installed Gurobi  v0.9.14
+   Installed OpenSSL_jll  v3.0.9+0
+   Installed GeometryBasics  v0.4.7
+   Installed IterTools  v1.8.0
+   Installed DataAPI  v1.15.0
+   Installed LLVMOpenMP_jll  v15.0.4+0
+   Installed FixedPointNumbers  v0.8.4
+   Installed Tables  v1.10.1
+   Installed Baselet  v0.1.1
+   Installed IteratorInterfaceExtensions  v1.0.0
+   Installed cddlib_jll  v0.94.10+1
+   Installed GPUCompiler  v0.21.3
+   Installed IniFile  v0.5.1
+   Installed PrecompileTools  v1.1.2
+   Installed RecipesBase  v1.3.4
+   Installed URIs  v1.4.2
+   Installed VersionParsing  v1.3.0
+   Installed Unityper  v0.1.2
+   Installed ErrorfreeArithmetic  v0.5.2
+   Installed SymbolicIndexingInterface  v0.2.2
+   Installed StructArrays  v0.6.15
+   Installed LDLFactorizations  v0.8.2
+   Installed SymbolicUtils  v1.0.5
+   Installed FillArrays  v1.3.0
+   Installed FilePathsBase  v0.9.20
+   Installed ForwardDiff  v0.10.35
+   Installed Polyhedra  v0.6.17
+   Installed AxisAlgorithms  v1.0.1
+   Installed SplittablesBase  v0.1.15
+   Installed Requires  v1.3.0
+   Installed GeoInterface  v1.3.1
+   Installed MPItrampoline_jll  v5.3.1+0
+   Installed SCS_jll  v2.1.2+1
+   Installed ReachabilityBase  v0.1.7
+   Installed Parameters  v0.12.3
+   Installed CRlibm_jll  v1.0.1+0
+   Installed CUDNN_jll  v8.9.2+0
+   Installed CRlibm  v1.0.1
+   Installed SortingAlgorithms  v1.1.1
+   Installed GenericLinearAlgebra  v0.2.7
+   Installed WoodburyMatrices  v0.5.5
+   Installed CUDA  v4.4.0
+ Downloading artifact: CUDA_Driver
+    Building Conda  `~/.julia/scratchspaces/44cfe95a-1eb2-52ea-b672-e2afdf69b78f/915ebe6f0e7302693bdd8eac985797dba1d25662/build.log`
+    Building PyCall  `~/.julia/scratchspaces/44cfe95a-1eb2-52ea-b672-e2afdf69b78f/43d304ac6f0354755f1d60730ece8c499980f7ba/build.log`
+Precompiling project...
+[32m   [39m[90mAMD[39m
+[32m   [39m[90mCombinatorics[39m
+[32m   [39m[90mCalculus[39m
+[32m   [39m[90mAbstractFFTs[39m
+[32m   [39m[90mExprTools[39m
+[32m   [39m[90mSentinelArrays[39m
+[32m   [39m[90mErrorfreeArithmetic[39m
+[32m   [39m[90mIteratorInterfaceExtensions[39m
+[32m   [39m[90mWorkerUtilities[39m
+[32m   [39m[90mStatsAPI[39m
+[32m   [39m[90mVersionParsing[39m
+[32m   [39m[90mGenericLinearAlgebra[39m
+[32m   [39m[90mUnsafeAtomics[39m
+[32m   [39m[90mCEnum[39m
+[32m   [39m[90mInitialValues[39m
+[32m   [39m[90mUnPack[39m
+[32m   [39m[90mBufferedStreams[39m
+[32m   [39m[90mPrettyPrint[39m
+[32m   [39m[90mArgCheck[39m
+[32m   [39m[90mWoodburyMatrices[39m
+[32m   [39m[90mShowCases[39m
+[32m   [39m[90mCompilerSupportLibraries_jll[39m
+[32m   [39m[90mIterTools[39m
+[32m   [39m[90mWinReg[39m
+[32m   [39m[90mPreferences[39m
+[32m   [39m[90mCompat[39m
+[32m   [39m[90mOrderedCollections[39m
+[32m   [39m[90mMacroTools[39m
+[32m   [39m[90mRequires[39m
+[32m   [39m[90mDataValueInterfaces[39m
+[32m   [39m[90mMutableArithmetics[39m
+[32m   [39m[90mEnumX[39m
+[32m   [39m[90mRealDot[39m
+[32m   [39m[90mReexport[39m
+[32m   [39m[90mDocStringExtensions[39m
+[32m   [39m[90mIniFile[39m
+[32m   [39m[90mAbstractTrees[39m
+[32m   [39m[90mURIs[39m
+[32m   [39m[90mIrrationalConstants[39m
+[32m   [39m[90mRoundingEmulator[39m
+[32m   [39m[90mBFloat16s[39m
+[32m   [39m[90mCompositionsBase[39m
+[32m   [39m[90mExtents[39m
+[32m   [39m[90mTranscodingStreams[39m
+[32m   [39m[90mDefineSingletons[39m
+[32m   [39m[90mCUDA_Runtime_Discovery[39m
+[32m   [39m[90mTokenize[39m
+[32m   [39m[90mNaNMath[39m
+[32m   [39m[90mMathProgBase[39m
+[32m   [39mDelimitedFiles
+[32m   [39m[90mSetRounding[39m
+[32m   [39m[90mIfElse[39m
+[32m   [39m[90mConstructionBase[39m
+[32m   [39m[90mDataAPI[39m
+[32m   [39mVnnlibParser
+[32m   [39m[90mProgressLogging[39m
+[32m   [39m[90mScratch[39m
+[32m   [39m[90mFunctors[39m
+[32m   [39m[90mCodeTracking[39m
+[32m   [39m[90mStaticArraysCore[39m
+[32m   [39m[90mBijections[39m
+[32m   [39m[90mBaselet[39m
+[32m   [39m[90mBinaryProvider[39m
+[32m   [39m[90mFillArrays[39m
+[32m   [39m[90mFixedPointNumbers[39m
+[32m   [39m[90mMbedTLS[39m
+[32m   [39m[90mLDLFactorizations[39m
+[32m   [39m[90mGLPK_jll[39m
+[32m   [39m[90mFastRounding[39m
+[32m   [39m[90mTableTraits[39m
+[32m   [39m[90mAtomix[39m
+[32m   [39m[90mNameResolution[39m
+[32m   [39m[90mAxisAlgorithms[39m
+[32m   [39m[90mTimerOutputs[39m
+[32m   [39m[90mJLLWrappers[39m
+[91m   [39mMosek
+[32m   [39m[90mMPIPreferences[39m
+[32m   [39mPrecompileTools
+[32m   [39m[90mCompat  CompatLinearAlgebraExt[39m
+[32m   [39m[90mFilePathsBase[39m
+[32m   [39m[90mChainRulesCore[39m
+[32m   [39mParameters
+[32m   [39m[90mCommonSubexpressions[39m
+[32m   [39m[90mSimpleTraits[39m
+[32m   [39m[90mIRTools[39m
+[32m   [39m[90mRandomNumbers[39m
+[32m   [39m[90mRatios[39m
+[32m   [39m[90mAdapt[39m
+[32m   [39m[90mReachabilityBase[39m
+[32m   [39m[90mSymbolicIndexingInterface[39m
+[32m   [39m[90mLogExpFunctions[39m
+[32m   [39m[90mGeoInterface[39m
+[32m   [39m[90mCodecZlib[39m
+[32m   [39m[90mFileIO[39m
+[32m   [39m[90mUnityper[39m
+[32m   [39m[90mPooledArrays[39m
+[32m   [39m[90mMissings[39m
+[32m   [39m[90mRelocatableFolders[39m
+[32m   [39m[90mMLStyle[39m
+[32m   [39m[90mDiffResults[39m
+[32m   [39m[90mProtoBuf[39m
+[32m   [39m[90mStaticArrays[39m
+[32m   [39m[90mColorTypes[39m
+[32m   [39m[90mTables[39m
+[32m   [39m[90mOpenSSL_jll[39m
+[32m   [39m[90mCUDA_Driver_jll[39m
+[32m   [39m[90mHTTP[39m
+[32m   [39m[90mBzip2_jll[39m
+[32m   [39m[90mLLVMOpenMP_jll[39m
+[32m   [39m[90mSCS_GPU_jll[39m
+[32m   [39m[90mlibaec_jll[39m
+[32m   [39m[90mcddlib_jll[39m
+[32m   [39m[90mPicoSAT_jll[39m
+[32m   [39m[90mEarCut_jll[39m
+[32m   [39m[90mSCS_jll[39m
+[32m   [39m[90mCRlibm_jll[39m
+[32m   [39m[90mLLVMExtra_jll[39m
+[32m   [39m[90mMicrosoftMPI_jll[39m
+[32m   [39m[90mJuliaInterpreter[39m
+[32m   [39m[90mOpenSpecFun_jll[39m
+[32m   [39m[90mMPItrampoline_jll[39m
+[32m   [39m[90mOpenMPI_jll[39m
+[32m   [39m[90mMPICH_jll[39m
+[32m   [39m[90mContextVariablesX[39m
+[32m   [39m[90mRecipesBase[39m
+[32m   [39m[90mZygoteRules[39m
+[32m   [39mDataStructures
+[32m   [39m[90mOptimisers[39m
+[32m   [39m[90mAbstractFFTs  AbstractFFTsChainRulesCoreExt[39m
+[32m   [39m[90mRatios  RatiosFixedPointNumbersExt[39m
+[32m   [39m[90mRandom123[39m
+[32m   [39m[90mLogExpFunctions  LogExpFunctionsChainRulesCoreExt[39m
+[32m   [39mPackageCompiler
+[32m   [39m[90mJuliaVariables[39m
+[32m   [39m[90mStaticArrays  StaticArraysStatisticsExt[39m
+[32m   [39m[90mConstructionBase  ConstructionBaseStaticArraysExt[39m
+[32m   [39m[90mAdapt  AdaptStaticArraysExt[39m
+[32m   [39m[90mColors[39m
+[32m   [39m[90mCUDA_Runtime_jll[39m
+[32m   [39m[90mCodecBzip2[39m
+[32m   [39m[90mPicoSAT[39m
+[32m   [39m[90mCRlibm[39m
+[32m   [39m[90mLLVM[39m
+[32m   [39m[90mParsers[39m
+[32m   [39m[90mHDF5_jll[39m
+[32m   [39m[90mJLD2[39m
+[32m   [39m[90mFLoopsBase[39m
+[32m   [39mONNXRunTime
+[32m   [39m[90mMultivariatePolynomials[39m
+[32m   [39m[90mSortingAlgorithms[39m
+[32m   [39m[90mSetfield[39m
+[32m   [39m[90mOffsetArrays[39m
+[32m   [39m[90mLoweredCodeUtils[39m
+[32m   [39m[90mSpecialFunctions[39m
+[32m   [39m[90mGPUArraysCore[39m
+[32m   [39m[90mCUDNN_jll[39m
+[32m   [39m[90mArrayInterface[39m
+[32m   [39m[90mUnsafeAtomicsLLVM[39m
+[32m   [39m[90mInlineStrings[39m
+[32m   [39m[90mIntervalArithmetic[39m
+[32m   [39m[90mJSON[39m
+[91m   [39m[90mHDF5[39m
+[32m   [39m[90mDynamicPolynomials[39m
+[32m   [39m[90mSplittablesBase[39m
+[32m   [39m[90mStatsBase[39m
+[32m   [39m[90mBangBang[39m
+[32m   [39m[90mInterpolations[39m
+[32m   [39m[90mSpecialFunctions  SpecialFunctionsChainRulesCoreExt[39m
+[32m   [39m[90mDiffRules[39m
+[32m   [39m[90mStructArrays[39m
+[32m   [39m[90mGPUArrays[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceGPUArraysCoreExt[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceStaticArraysCoreExt[39m
+[32m   [39m[90mKernelAbstractions[39m
+[32m   [39m[90mWeakRefStrings[39m
+[32m   [39m[90mJSONSchema[39m
+[32m   [39mConda
+[32m   [39mRevise
+[32m   [39m[90mBangBang  BangBangStaticArraysExt[39m
+[32m   [39m[90mBenchmarkTools[39m
+[32m   [39m[90mBangBang  BangBangChainRulesCoreExt[39m
+[32m   [39m[90mForwardDiff[39m
+[32m   [39m[90mChainRules[39m
+[32m   [39m[90mBangBang  BangBangStructArraysExt[39m
+[32m   [39m[90mNNlib[39m
+[32m   [39m[90mGeometryBasics[39m
+[32m   [39m[90mGPUCompiler[39m
+[32m   [39m[90mPyCall[39m
+[32m   [39m[90mForwardDiff  ForwardDiffStaticArraysExt[39m
+[32m   [39m[90mMicroCollections[39m
+[32m   [39m[90mOneHotArrays[39m
+[32m   [39mCSV
+[32m   [39mOnnxReader
+[32m   [39mPyVnnlib
+[32m   [39m[90mPreallocationTools[39m
+[32m   [39m[90mZygote[39m
+[32m   [39m[90mTransducers[39m
+[32m   [39m[90mZygote  ZygoteColorsExt[39m
+[32m   [39m[90mFLoops[39m
+[32m   [39m[90mMLUtils[39m
+[32m   [39m[90mCUDA[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceCUDAExt[39m
+[32m   [39m[90mRecursiveArrayTools[39m
+[32m   [39m[90mRecursiveArrayTools  RecursiveArrayToolsZygoteExt[39m
+[32m   [39m[90mcuDNN[39m
+[32m   [39m[90mLabelledArrays[39m
+[32m   [39m[90mNNlibCUDA[39m
+[32m   [39mFlux
+[32m   [39m[90mSymbolicUtils[39m
+[32m   [39m[90mMathOptInterface[39m
+[91m   [39m[90mGurobi[39m
+[32m   [39mVNNLib
+[32m   [39m[90mGLPK[39m
+[91m   [39m[90mMosekTools[39m
+[32m   [39m[90mSCS[39m
+[32m   [39m[90mJuMP[39m
+[32m   [39m[90mGLPKMathProgInterface[39m
+[32m   [39m[90mConvex[39m
+[32m   [39m[90mPolyhedra[39m
+[32m   [39mLazySets
+[32m   [39m[90mCDDLib[39m
+[32m   [39mNeuralVerification
+[91m   [39mNeuralPriorityOptimizer
+[91m   [39mDPNeurifyFV
+  218 dependencies successfully precompiled in 491 seconds. 8 already precompiled.
+  [91m6[39m dependencies errored. To see a full report either run `import Pkg; Pkg.precompile()` or load the packages
+  [33m4[39m dependencies had warnings during precompilation:[33m
+ [39mDynamicPolynomials [7c1d4256-1411-5781-91ec-d7bc3513ac07][33m
+  [39mWARNING: method definition for multiplyexistingvar at /root/.julia/packages/DynamicPolynomials/TP85p/src/mult.jl:1 declares type variable C but does not use it.[33m
+  [39mWARNING: method definition for multiplyexistingvar at /root/.julia/packages/DynamicPolynomials/TP85p/src/mult.jl:6 declares type variable C but does not use it.[33m
+  [39m[33m
+ [39mMathOptInterface [b8f27783-ece8-5eb3-8dc8-9495eed66fee][33m
+  [39mWARNING: method definition for promote_operation at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/mutable_arithmetics.jl:74 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for promote_operation at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/mutable_arithmetics.jl:81 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for #normalize_and_add_constraint#124 at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/constraints.jl:13 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for get at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/struct_of_constraints.jl:83 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for set at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:415 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for modify at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:462 declares type variable F but does not use it.[33m
+  [39mWARNING: method definition for check_type_and_multiple_names at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:516 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for check_type_and_multiple_names at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:527 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for get at /root/.julia/packages/MathOptInterface/YDdD3/src/Bridges/Constraint/indicator_sos.jl:186 declares type variable CI but does not use it.[33m
+  [39m[33m
+ [39mLDLFactorizations [40e66cde-538c-5869-a4ad-c39174c6795b][33m
+  [39mWARNING: method definition for ldiv! at /root/.julia/packages/LDLFactorizations/I4E5y/src/LDLFactorizations.jl:814 declares type variable Tp but does not use it.[33m
+  [39mWARNING: method definition for ldiv! at /root/.julia/packages/LDLFactorizations/I4E5y/src/LDLFactorizations.jl:814 declares type variable Tn but does not use it.[33m
+  [39m[33m
+ [39mMutableArithmetics [d8a4904e-b15c-11e9-3269-09a3773c0cb0][33m
+  [39mWARNING: method definition for mutable_operate_to_fallback at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/interface.jl:502 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for mutable_operate_fallback at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/interface.jl:505 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for #int_test#8 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #scalar_test#13 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #quadratic_test#14 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #array_test#34 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #sparse_test#36 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39m
++ echo '
+using Pkg
+Pkg.instantiate()
+'
++ /opt/julia-1.9.2/bin/julia
+  No Changes to `~/.julia/environments/v1.9/Project.toml`
+  No Changes to `~/.julia/environments/v1.9/Manifest.toml`
++ echo creating sysimage, can take some time
+creating sysimage, can take some time
++ echo '
+using Pkg
+Pkg.activate(".")
+include("vnncomp_scripts/create_sysimage.jl")
+'
++ /opt/julia-1.9.2/bin/julia
+  Activating project at `/home/ubuntu/toolkit`
+Precompiling project...
+[32m   [39m[90mAMD[39m
+[32m   [39m[90mCombinatorics[39m
+[32m   [39m[90mCalculus[39m
+[32m   [39m[90mSentinelArrays[39m
+[32m   [39m[90mAbstractFFTs[39m
+[32m   [39m[90mSuiteSparse[39m
+[32m   [39m[90mErrorfreeArithmetic[39m
+[32m   [39m[90mIteratorInterfaceExtensions[39m
+[32m   [39m[90mExprTools[39m
+[32m   [39m[90mWorkerUtilities[39m
+[32m   [39m[90mStatsAPI[39m
+[32m   [39m[90mVersionParsing[39m
+[32m   [39m[90mUnsafeAtomics[39m
+[32m   [39m[90mGenericLinearAlgebra[39m
+[32m   [39m[90mInitialValues[39m
+[32m   [39m[90mCEnum[39m
+[32m   [39m[90mUnPack[39m
+[32m   [39m[90mOpenLibm_jll[39m
+[32m   [39m[90mBufferedStreams[39m
+[32m   [39m[90mStatistics[39m
+[32m   [39m[90mPrettyPrint[39m
+[32m   [39m[90mArgCheck[39m
+[32m   [39m[90mWoodburyMatrices[39m
+[32m   [39m[90mShowCases[39m
+[32m   [39m[90mCompilerSupportLibraries_jll[39m
+[32m   [39m[90mSuiteSparse_jll[39m
+[32m   [39m[90mIterTools[39m
+[32m   [39m[90mWinReg[39m
+[32m   [39m[90mCompat[39m
+[32m   [39m[90mMutableArithmetics[39m
+[32m   [39m[90mRequires[39m
+[32m   [39m[90mOrderedCollections[39m
+[32m   [39m[90mMacroTools[39m
+[32m   [39m[90mDataValueInterfaces[39m
+[32m   [39m[90mEnumX[39m
+[32m   [39m[90mRealDot[39m
+[32m   [39m[90mReexport[39m
+[32m   [39m[90mMbedTLS_jll[39m
+[32m   [39m[90mZlib_jll[39m
+[32m   [39m[90mMPIPreferences[39m
+[32m   [39m[90mDocStringExtensions[39m
+[32m   [39m[90mIniFile[39m
+[32m   [39m[90mAbstractTrees[39m
+[32m   [39m[90mIrrationalConstants[39m
+[32m   [39m[90mURIs[39m
+[32m   [39m[90mTokenize[39m
+[32m   [39m[90mBFloat16s[39m
+[32m   [39m[90mRoundingEmulator[39m
+[32m   [39m[90mGMP_jll[39m
+[32m   [39m[90mCompositionsBase[39m
+[32m   [39m[90mExtents[39m
+[32m   [39m[90mDefineSingletons[39m
+[32m   [39m[90mTranscodingStreams[39m
+[32m   [39m[90mCUDA_Runtime_Discovery[39m
+[32m   [39m[90mNaNMath[39m
+[32m   [39m[90mMathProgBase[39m
+[32m   [39mDelimitedFiles
+[32m   [39m[90mSetRounding[39m
+[32m   [39m[90mIfElse[39m
+[32m   [39m[90mConstructionBase[39m
+[32m   [39m[90mDataAPI[39m
+[32m   [39mPrecompileTools
+[32m   [39m[90mProgressLogging[39m
+[32m   [39mVnnlibParser
+[32m   [39m[90mScratch[39m
+[32m   [39m[90mFunctors[39m
+[32m   [39m[90mCodeTracking[39m
+[32m   [39m[90mStaticArraysCore[39m
+[32m   [39m[90mBijections[39m
+[32m   [39m[90mBinaryProvider[39m
+[32m   [39m[90mOpenSSL_jll[39m
+[32m   [39m[90mBaselet[39m
+[32m   [39m[90mLLVMOpenMP_jll[39m
+[32m   [39m[90mBzip2_jll[39m
+[32m   [39m[90mSCS_GPU_jll[39m
+[32m   [39m[90mlibaec_jll[39m
+[32m   [39m[90mPicoSAT_jll[39m
+[32m   [39m[90mEarCut_jll[39m
+[32m   [39m[90mSCS_jll[39m
+[32m   [39m[90mCRlibm_jll[39m
+[32m   [39m[90mLLVMExtra_jll[39m
+[32m   [39m[90mMicrosoftMPI_jll[39m
+[32m   [39m[90mCUDNN_jll[39m
+[32m   [39m[90mLDLFactorizations[39m
+[32m   [39m[90mFastRounding[39m
+[32m   [39m[90mTableTraits[39m
+[32m   [39m[90mAtomix[39m
+[32m   [39m[90mTimerOutputs[39m
+[32m   [39m[90mFillArrays[39m
+[32m   [39m[90mMLStyle[39m
+[32m   [39m[90mNameResolution[39m
+[32m   [39m[90mFixedPointNumbers[39m
+[32m   [39m[90mAxisAlgorithms[39m
+[32m   [39m[90mOpenSpecFun_jll[39m
+[32m   [39m[90mCompat  CompatLinearAlgebraExt[39m
+[91m   [39mMosek
+[32m   [39m[90mFilePathsBase[39m
+[32m   [39m[90mChainRulesCore[39m
+[32m   [39m[90mRandomNumbers[39m
+[32m   [39m[90mAdapt[39m
+[32m   [39m[90mRatios[39m
+[32m   [39mParameters
+[32m   [39m[90mReachabilityBase[39m
+[32m   [39m[90mCommonSubexpressions[39m
+[32m   [39m[90mFileIO[39m
+[32m   [39m[90mSimpleTraits[39m
+[32m   [39m[90mLibSSH2_jll[39m
+[32m   [39m[90mMbedTLS[39m
+[32m   [39m[90mIRTools[39m
+[32m   [39m[90mMPItrampoline_jll[39m
+[32m   [39m[90mOpenMPI_jll[39m
+[32m   [39m[90mMPICH_jll[39m
+[32m   [39m[90mSymbolicIndexingInterface[39m
+[32m   [39m[90mLogExpFunctions[39m
+[32m   [39m[90mGLPK_jll[39m
+[32m   [39m[90mcddlib_jll[39m
+[32m   [39m[90mCodecZlib[39m
+[32m   [39m[90mGeoInterface[39m
+[32m   [39m[90mUnityper[39m
+[32m   [39m[90mPooledArrays[39m
+[32m   [39m[90mMissings[39m
+[32m   [39m[90mRecipesBase[39m
+[32m   [39m[90mRelocatableFolders[39m
+[32m   [39m[90mProtoBuf[39m
+[32m   [39m[90mDiffResults[39m
+[32m   [39m[90mJuliaInterpreter[39m
+[32m   [39m[90mStaticArrays[39m
+[32m   [39m[90mCodecBzip2[39m
+[32m   [39m[90mPicoSAT[39m
+[32m   [39m[90mCRlibm[39m
+[32m   [39m[90mTables[39m
+[32m   [39m[90mParsers[39m
+[32m   [39m[90mLLVM[39m
+[32m   [39m[90mContextVariablesX[39m
+[32m   [39m[90mColorTypes[39m
+[32m   [39m[90mJuliaVariables[39m
+[32m   [39m[90mAbstractFFTs  AbstractFFTsChainRulesCoreExt[39m
+[32m   [39m[90mZygoteRules[39m
+[32m   [39mDataStructures
+[32m   [39m[90mRatios  RatiosFixedPointNumbersExt[39m
+[32m   [39m[90mOptimisers[39m
+[32m   [39m[90mRandom123[39m
+[32m   [39m[90mHDF5_jll[39m
+[32m   [39m[90mLogExpFunctions  LogExpFunctionsChainRulesCoreExt[39m
+[32m   [39m[90mHTTP[39m
+[32m   [39mPackageCompiler
+[32m   [39m[90mStaticArrays  StaticArraysStatisticsExt[39m
+[32m   [39m[90mConstructionBase  ConstructionBaseStaticArraysExt[39m
+[32m   [39m[90mAdapt  AdaptStaticArraysExt[39m
+[32m   [39m[90mLoweredCodeUtils[39m
+[32m   [39m[90mInlineStrings[39m
+[32m   [39m[90mIntervalArithmetic[39m
+[32m   [39m[90mJSON[39m
+[32m   [39m[90mUnsafeAtomicsLLVM[39m
+[32m   [39m[90mFLoopsBase[39m
+[32m   [39m[90mJLD2[39m
+[32m   [39mONNXRunTime
+[32m   [39m[90mColors[39m
+[32m   [39m[90mGPUCompiler[39m
+[32m   [39m[90mMultivariatePolynomials[39m
+[32m   [39m[90mSortingAlgorithms[39m
+[32m   [39m[90mSetfield[39m
+[91m   [39m[90mHDF5[39m
+[32m   [39m[90mGPUArraysCore[39m
+[32m   [39m[90mOffsetArrays[39m
+[32m   [39m[90mArrayInterface[39m
+[32m   [39m[90mSpecialFunctions[39m
+[32m   [39m[90mWeakRefStrings[39m
+[32m   [39m[90mJSONSchema[39m
+[32m   [39mConda
+[32m   [39m[90mBenchmarkTools[39m
+[32m   [39m[90mDynamicPolynomials[39m
+[32m   [39mRevise
+[32m   [39m[90mKernelAbstractions[39m
+[32m   [39m[90mSplittablesBase[39m
+[32m   [39m[90mBangBang[39m
+[32m   [39m[90mStatsBase[39m
+[32m   [39m[90mStructArrays[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceGPUArraysCoreExt[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceStaticArraysCoreExt[39m
+[32m   [39m[90mGPUArrays[39m
+[32m   [39m[90mDiffRules[39m
+[32m   [39m[90mSpecialFunctions  SpecialFunctionsChainRulesCoreExt[39m
+[32m   [39m[90mInterpolations[39m
+[32m   [39m[90mPyCall[39m
+[32m   [39mCSV
+[32m   [39m[90mBangBang  BangBangStaticArraysExt[39m
+[32m   [39m[90mBangBang  BangBangChainRulesCoreExt[39m
+[32m   [39m[90mNNlib[39m
+[32m   [39m[90mChainRules[39m
+[32m   [39m[90mBangBang  BangBangStructArraysExt[39m
+[32m   [39m[90mGeometryBasics[39m
+[32m   [39m[90mForwardDiff[39m
+[32m   [39mOnnxReader
+[32m   [39mPyVnnlib
+[32m   [39m[90mOneHotArrays[39m
+[32m   [39m[90mMicroCollections[39m
+[32m   [39m[90mForwardDiff  ForwardDiffStaticArraysExt[39m
+[32m   [39m[90mTransducers[39m
+[32m   [39m[90mPreallocationTools[39m
+[32m   [39m[90mMathOptInterface[39m
+[32m   [39m[90mCUDA[39m
+[32m   [39m[90mFLoops[39m
+[91m   [39m[90mGurobi[39m
+[32m   [39m[90mSCS[39m
+[91m   [39m[90mMosekTools[39m
+[32m   [39m[90mZygote[39m
+[32m   [39m[90mGLPK[39m
+[32m   [39m[90mJuMP[39m
+[32m   [39m[90mConvex[39m
+[32m   [39m[90mcuDNN[39m
+[32m   [39m[90mZygote  ZygoteColorsExt[39m
+[32m   [39m[90mArrayInterface  ArrayInterfaceCUDAExt[39m
+[32m   [39m[90mGLPKMathProgInterface[39m
+[32m   [39m[90mMLUtils[39m
+[32m   [39m[90mNNlibCUDA[39m
+[32m   [39m[90mPolyhedra[39m
+[32m   [39m[90mRecursiveArrayTools[39m
+[32m   [39m[90mCDDLib[39m
+[32m   [39mLazySets
+[32m   [39mFlux
+[32m   [39m[90mRecursiveArrayTools  RecursiveArrayToolsZygoteExt[39m
+[32m   [39m[90mLabelledArrays[39m
+[32m   [39mNeuralVerification
+[32m   [39m[90mSymbolicUtils[39m
+[91m   [39mNeuralPriorityOptimizer
+[32m   [39mVNNLib
+[91m   [39mDPNeurifyFV
+  222 dependencies successfully precompiled in 307 seconds. 4 already precompiled.
+  [33m4[39m dependencies had warnings during precompilation:[33m
+ [39mDynamicPolynomials [7c1d4256-1411-5781-91ec-d7bc3513ac07][33m
+  [39mWARNING: method definition for multiplyexistingvar at /root/.julia/packages/DynamicPolynomials/TP85p/src/mult.jl:1 declares type variable C but does not use it.[33m
+  [39mWARNING: method definition for multiplyexistingvar at /root/.julia/packages/DynamicPolynomials/TP85p/src/mult.jl:6 declares type variable C but does not use it.[33m
+  [39m[33m
+ [39mMathOptInterface [b8f27783-ece8-5eb3-8dc8-9495eed66fee][33m
+  [39mWARNING: method definition for promote_operation at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/mutable_arithmetics.jl:74 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for promote_operation at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/mutable_arithmetics.jl:81 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for #normalize_and_add_constraint#124 at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/constraints.jl:13 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for get at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/struct_of_constraints.jl:83 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for set at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:415 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for modify at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:462 declares type variable F but does not use it.[33m
+  [39mWARNING: method definition for check_type_and_multiple_names at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:516 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for check_type_and_multiple_names at /root/.julia/packages/MathOptInterface/YDdD3/src/Utilities/universalfallback.jl:527 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for get at /root/.julia/packages/MathOptInterface/YDdD3/src/Bridges/Constraint/indicator_sos.jl:186 declares type variable CI but does not use it.[33m
+  [39m[33m
+ [39mLDLFactorizations [40e66cde-538c-5869-a4ad-c39174c6795b][33m
+  [39mWARNING: method definition for ldiv! at /root/.julia/packages/LDLFactorizations/I4E5y/src/LDLFactorizations.jl:814 declares type variable Tp but does not use it.[33m
+  [39mWARNING: method definition for ldiv! at /root/.julia/packages/LDLFactorizations/I4E5y/src/LDLFactorizations.jl:814 declares type variable Tn but does not use it.[33m
+  [39m[33m
+ [39mMutableArithmetics [d8a4904e-b15c-11e9-3269-09a3773c0cb0][33m
+  [39mWARNING: method definition for mutable_operate_to_fallback at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/interface.jl:502 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for mutable_operate_fallback at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/interface.jl:505 declares type variable N but does not use it.[33m
+  [39mWARNING: method definition for #int_test#8 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #scalar_test#13 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #quadratic_test#14 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #array_test#34 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39mWARNING: method definition for #sparse_test#36 at /root/.julia/packages/MutableArithmetics/0Y9ZS/src/Test/config.jl:9 declares type variable T but does not use it.[33m
+  [39m
+
+ERROR: The following 3 direct dependencies failed to precompile:
+
+Mosek [6405355b-0ac2-5fba-af84-adbd65488c0e]
+
+Failed to precompile Mosek [6405355b-0ac2-5fba-af84-adbd65488c0e] to "/root/.julia/compiled/v1.9/Mosek/jl_XvZ6eH".
+ERROR: LoadError: Mosek not properly installed. Please run Pkg.build("Mosek")
+Stacktrace:
+ [1] error(s::String)
+   @ Base ./error.jl:35
+ [2] top-level scope
+   @ ~/.julia/packages/Mosek/3NJdY/src/Mosek.jl:10
+ [3] include
+   @ ./Base.jl:457 [inlined]
+ [4] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::Nothing)
+   @ Base ./loading.jl:2049
+ [5] top-level scope
+   @ stdin:3
+in expression starting at /root/.julia/packages/Mosek/3NJdY/src/Mosek.jl:2
+in expression starting at stdin:3
+
+DPNeurifyFV [f89bd1d0-2145-4f19-8566-64208dd4e436]
+
+Failed to precompile DPNeurifyFV [f89bd1d0-2145-4f19-8566-64208dd4e436] to "/root/.julia/compiled/v1.9/DPNeurifyFV/jl_M3iIU2".
+ Error: HDF5 is not properly installed. Please run Pkg.build("HDF5") 
+   and restart Julia. = "and restart Julia."
+ @ HDF5.API ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:10
+ERROR: LoadError: UndefVarError: `libhdf5` not defined
+Stacktrace:
+  [1] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/api/types.jl:246
+  [2] include(mod::Module, _path::String)
+    @ Base ./Base.jl:457
+  [3] include(x::String)
+    @ HDF5.API ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:1
+  [4] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:17
+  [5] include(mod::Module, _path::String)
+    @ Base ./Base.jl:457
+  [6] include(x::String)
+    @ HDF5 ~/.julia/packages/HDF5/aiZLs/src/HDF5.jl:1
+  [7] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/HDF5.jl:67
+  [8] include
+    @ ./Base.jl:457 [inlined]
+  [9] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::String)
+    @ Base ./loading.jl:2049
+ [10] top-level scope
+    @ stdin:3
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/api/types.jl:246
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/api/api.jl:1
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/HDF5.jl:1
+in expression starting at stdin:3
+ERROR: LoadError: Failed to precompile HDF5 [f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f] to "/root/.julia/compiled/v1.9/HDF5/jl_jepRFL".
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:2300
+  [3] compilecache
+    @ ./loading.jl:2167 [inlined]
+  [4] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:1805
+  [5] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1660
+  [6] macro expansion
+    @ ./loading.jl:1648 [inlined]
+  [7] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [8] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [9] include
+    @ ./Base.jl:457 [inlined]
+ [10] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::String)
+    @ Base ./loading.jl:2049
+ [11] top-level scope
+    @ stdin:3
+in expression starting at /root/.julia/packages/NeuralPriorityOptimizer/kjhiM/src/NeuralPriorityOptimizer.jl:1
+in expression starting at stdin:3
+ERROR: LoadError: Failed to precompile NeuralPriorityOptimizer [7e1232c4-5598-4acc-a396-12489b5a6036] to "/root/.julia/compiled/v1.9/NeuralPriorityOptimizer/jl_OE35Yp".
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:2300
+  [3] compilecache
+    @ ./loading.jl:2167 [inlined]
+  [4] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:1805
+  [5] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1660
+  [6] macro expansion
+    @ ./loading.jl:1648 [inlined]
+  [7] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [8] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [9] include
+    @ ./Base.jl:457 [inlined]
+ [10] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::Nothing)
+    @ Base ./loading.jl:2049
+ [11] top-level scope
+    @ stdin:3
+in expression starting at /home/ubuntu/toolkit/src/DPNeurifyFV.jl:1
+in expression starting at stdin:3
+
+
+NeuralPriorityOptimizer [7e1232c4-5598-4acc-a396-12489b5a6036]
+
+Failed to precompile NeuralPriorityOptimizer [7e1232c4-5598-4acc-a396-12489b5a6036] to "/root/.julia/compiled/v1.9/NeuralPriorityOptimizer/jl_vs7u3X".
+ Error: HDF5 is not properly installed. Please run Pkg.build("HDF5") 
+   and restart Julia. = "and restart Julia."
+ @ HDF5.API ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:10
+ERROR: LoadError: UndefVarError: `libhdf5` not defined
+Stacktrace:
+  [1] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/api/types.jl:246
+  [2] include(mod::Module, _path::String)
+    @ Base ./Base.jl:457
+  [3] include(x::String)
+    @ HDF5.API ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:1
+  [4] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/api/api.jl:17
+  [5] include(mod::Module, _path::String)
+    @ Base ./Base.jl:457
+  [6] include(x::String)
+    @ HDF5 ~/.julia/packages/HDF5/aiZLs/src/HDF5.jl:1
+  [7] top-level scope
+    @ ~/.julia/packages/HDF5/aiZLs/src/HDF5.jl:67
+  [8] include
+    @ ./Base.jl:457 [inlined]
+  [9] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::String)
+    @ Base ./loading.jl:2049
+ [10] top-level scope
+    @ stdin:3
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/api/types.jl:246
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/api/api.jl:1
+in expression starting at /root/.julia/packages/HDF5/aiZLs/src/HDF5.jl:1
+in expression starting at stdin:3
+ERROR: LoadError: Failed to precompile HDF5 [f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f] to "/root/.julia/compiled/v1.9/HDF5/jl_aFL0dv".
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:2300
+  [3] compilecache
+    @ ./loading.jl:2167 [inlined]
+  [4] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:1805
+  [5] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1660
+  [6] macro expansion
+    @ ./loading.jl:1648 [inlined]
+  [7] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [8] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [9] include
+    @ ./Base.jl:457 [inlined]
+ [10] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::Nothing)
+    @ Base ./loading.jl:2049
+ [11] top-level scope
+    @ stdin:3
+in expression starting at /root/.julia/packages/NeuralPriorityOptimizer/kjhiM/src/NeuralPriorityOptimizer.jl:1
+in expression starting at stdin:3
+
+Stacktrace:
+ [1] pkgerror(msg::String)
+   @ Pkg.Types /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/Types.jl:69
+ [2] precompile(ctx::Pkg.Types.Context, pkgs::Vector{Pkg.Types.PackageSpec}; internal_call::Bool, strict::Bool, warn_loaded::Bool, already_instantiated::Bool, timing::Bool, kwargs::Base.Pairs{Symbol, Base.PipeEndpoint, Tuple{Symbol}, NamedTuple{(:io,), Tuple{Base.PipeEndpoint}}})
+   @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:1581
+ [3] precompile(pkgs::Vector{Pkg.Types.PackageSpec}; io::Base.PipeEndpoint, kwargs::Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+   @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:156
+ [4] precompile(pkgs::Vector{Pkg.Types.PackageSpec})
+   @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:145
+ [5] precompile(; name::Nothing, uuid::Nothing, version::Nothing, url::Nothing, rev::Nothing, path::Nothing, mode::Pkg.Types.PackageMode, subdir::Nothing, kwargs::Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+   @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:171
+ [6] precompile()
+   @ Pkg.API /opt/julia-1.9.2/share/julia/stdlib/v1.9/Pkg/src/API.jl:162
+ [7] top-level scope
+   @ none:1
+ERROR: LoadError: failed process: Process(setenv(`/opt/julia-1.9.2/bin/julia --color=auto --startup-file=no --pkgimages=no --sysimage=/opt/julia-1.9.2/lib/julia/sys.so -e 'using Pkg; Pkg.precompile()'`,["LANG=C.UTF-8", "SHELLOPTS=braceexpand:hashall:interactive-comments:xtrace", "SUDO_USER=ubuntu", "PWD=/home/ubuntu/toolkit", "LOGNAME=root", "SHLVL=0", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin", "OLDPWD=/home/ubuntu/toolkit/vnncomp_scripts", "SUDO_UID=1000", "SUDO_GID=1000", "JULIA_LOAD_PATH=/home/ubuntu/toolkit:@stdlib", "SHELL=/bin/bash", "SUDO_COMMAND=/usr/bin/env SHELLOPTS=xtrace /bin/bash install_tool.sh v1", "_=/opt/julia-1.9.2/bin/julia", "OPENBLAS_DEFAULT_NUM_THREADS=1", "USER=root", "HOME=/root", "TERM=screen", "OPENBLAS_MAIN_FREE=1", "MAIL=/var/mail/root"]), ProcessExited(1)) [1]
+
+Stacktrace:
+ [1] pipeline_error
+   @ ./process.jl:565 [inlined]
+ [2] run(::Cmd; wait::Bool)
+   @ Base ./process.jl:480
+ [3] run
+   @ ./process.jl:477 [inlined]
+ [4] ensurecompiled(project::String, packages::Vector{String}, sysimage::String)
+   @ PackageCompiler ~/.julia/packages/PackageCompiler/b2smD/src/PackageCompiler.jl:271
+ [5] create_sysimage(packages::Vector{String}; sysimage_path::String, project::String, precompile_execution_file::String, precompile_statements_file::Vector{String}, incremental::Bool, filter_stdlibs::Bool, cpu_target::String, script::Nothing, sysimage_build_args::Cmd, include_transitive_dependencies::Bool, base_sysimage::Nothing, julia_init_c_file::Nothing, version::Nothing, soname::Nothing, compat_level::String, extra_precompiles::String)
+   @ PackageCompiler ~/.julia/packages/PackageCompiler/b2smD/src/PackageCompiler.jl:541
+ [6] top-level scope
+   @ /home/ubuntu/toolkit/vnncomp_scripts/create_sysimage.jl:3
+in expression starting at /home/ubuntu/toolkit/vnncomp_scripts/create_sysimage.jl:3
++ script_name=install_tool.sh
+++ dirname install_tool.sh
++ script_path=.
++ chmod +x './*.sh'
+chmod: cannot access './*.sh': No such file or directory
++ curl --retry 100 --retry-connrefused https://vnncomp.christopher-brix.de/update/999/failure
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0 
