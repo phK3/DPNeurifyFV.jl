@@ -48,3 +48,19 @@ To reproduce the experiments in the paper, open the Julia REPL in this directory
     - download `NNENUM` from GitHub: https://github.com/stanleybak/nnenum
     - use the Python script under `experiments/run_nnenum.py` and place it in `nnenum/examples/acasxu/`
     - run the script 
+
+
+## Creating Sysimage
+
+In order to avoid long loading times for the package, we can generate a precompiled sysimage of `DPNeurifyFV` by executing 
+```julia
+using Pkg
+Pkg.activate(".")
+include("vnncomp_scripts/create_sysimage.jl")
+```
+The sysimage will be created as `./sys_dpneurifyfv.so` (in the root directory of `DPNeurifyFV`).
+The compilation can take long itself (it took ~10mins on my laptop), but subsequent calls are fast, when the sysimage is used:
+```
+julia --sysimage ./sys_dpneurifyfv.so 
+```
+starts a Julia session with the sysimage loaded.
