@@ -22,9 +22,24 @@ LazySets.dim(s::SymbolicIntervalGraph) = size(s.Up)[1:end-1]
 # just size of batch-dim, which contains input vars (and also the bias)
 get_n_sym(s::SymbolicIntervalGraph) = size(s.Up)[end] - 1
 get_n_in(s::SymbolicIntervalGraph) = dim(domain(s))
-# FIXME: not working anymore, what if there are lots of fixed input vars?
-get_n_vars(s::SymbolicIntervalGraph) = get_n_sym(s) - get_n_in(s)
 
+"""
+Get the number of unfixed inputs in the domain of a symbolic interval.
+"""
+function get_n_unfixed(s::SymbolicIntervalGraph)
+    input_set = domain(s)
+    unfixed_mask = (low(input_set) .< high(input_set))
+    return sum(unfixed_mask)
+end
+
+"""
+Get the number of introduced fresh variables in a symbolic interval.
+"""
+function get_n_vars(s::SymbolicIntervalGraph)
+    # there is one symbolic variable for each unfixed input and possibly
+    # symbolic variables for fresh variables
+    return get_n_sym(s) - get_n_unfixed(s)   
+end
 
 """
 Returns the symbolic interval described by the specified indices for the overapproximated values.
@@ -122,8 +137,9 @@ function init_symbolic_interval_graph(net::CompGraph, input_set::AbstractHyperre
     lbs = Dict()
     ubs = Dict()
 
-    var_los = zeros(N, max_vars, dim(input_set) + 1)
-    var_his = zeros(N, max_vars, dim(input_set) + 1)
+    n_unfixed = sum(.~fixed)
+    var_los = zeros(N, max_vars, n_unfixed + 1)
+    var_his = zeros(N, max_vars, n_unfixed + 1)
 
     importance = zeros(N, dim(input_set))
 
@@ -161,8 +177,9 @@ function init_symbolic_interval_graph(s::SymbolicIntervalGraph, input_set::Abstr
     lbs = copy(s.lbs)
     ubs = copy(s.ubs)
 
-    var_los = zeros(N, max_vars, dim(input_set) + 1)
-    var_his = zeros(N, max_vars, dim(input_set) + 1)
+    n_unfixed = sum(.~fixed)
+    var_los = zeros(N, max_vars, n_unfixed + 1)
+    var_his = zeros(N, max_vars, n_unfixed + 1)
 
     importance = zeros(N, dim(input_set))
 
@@ -202,13 +219,14 @@ returns:
 """
 function substitute_variables(s::SymbolicIntervalGraph)
     n_in = get_n_in(s)
+    n_unfixed = get_n_unfixed(s)
     n_vars = get_n_vars(s)
 
     shape = size(s.Low)
     Low = reshape(s.Low, (prod(shape[1:end-1]), shape[end]))
     Up  = reshape(s.Up, (prod(shape[1:end-1]), shape[end]))
 
-    subs_lb, subs_ub = substitute_variables(Low, Up, s.var_los, s.var_his, n_in, n_vars)
+    subs_lb, subs_ub = substitute_variables(Low, Up, s.var_los, s.var_his, n_unfixed, n_vars)
 
     subs_lb = reshape(subs_lb, shape[1:end-1]..., :)
     subs_ub = reshape(subs_ub, shape[1:end-1]..., :)
@@ -221,10 +239,27 @@ end
 Returns point x* in the input domain that maximizes the upper bound of the symbolic interval.
 
 s.t. s.Up[:,1:end-1] * x* + s.Up[:,end] = upper_bounds(s)
+!!! the equation only holds if all input variables are unfixed !!!
+otherwise fixed dimensions need to be removed from x* 
 """
 function maximizer(s::SymbolicIntervalGraph)
     subs_sym_lo, subs_sym_hi = substitute_variables(s)
-    return maximizer(subs_sym_hi, low(domain(s)), high(domain(s)))
+
+    lbs = low(domain(s))
+    ubs = high(domain(s))
+    unfixed_mask = (lbs .< ubs)
+
+    x̂_star = maximizer(subs_sym_lo, lbs[unfixed_mask], ubs[unfixed_mask])
+    # at fixed indices, lb == ub, so it doesn't matter
+    x_star = lbs
+    if ndims(x̂_star) > 1
+        x_star = repeat(lbs', size(x̂_star, 1), 1)
+        x_star[:, unfixed_mask] .= x̂_star
+    else
+        x_star[unfixed_mask] .= x̂_star
+    end
+    
+    return x_star
 end
 
 
@@ -232,10 +267,28 @@ end
 Returns point x* in the input domain that minimizes the lower bound of the symbolic interval.
 
 s.t. s.Low[:,1:end-1] * x* + s.Low[:,end] = lower_bounds(s)
+!!! the equation only holds if all input variables are unfixed !!!
+otherwise fixed dimensions need to be removed from x* 
+
+For multiple dimensions, x*[i,:] is the minimizer of the i-th dimension
 """
 function minimizer(s::SymbolicIntervalGraph)
     subs_sym_lo, subs_sym_hi = substitute_variables(s)
-    return minimizer(subs_sym_lo, low(domain(s)), high(domain(s)))
+
+    lbs = low(domain(s))
+    ubs = high(domain(s))
+    unfixed_mask = (lbs .< ubs)
+
+    x̂_star = minimizer(subs_sym_lo, lbs[unfixed_mask], ubs[unfixed_mask])
+    # at fixed indices, lb == ub, so it doesn't matter
+    x_star = lbs
+    if ndims(x̂_star) > 1
+        x_star = repeat(lbs', size(x̂_star, 1), 1)
+        x_star[:, unfixed_mask] .= x̂_star
+    else
+        x_star[unfixed_mask] .= x̂_star
+    end
+    return x_star
 end
 
 
@@ -248,9 +301,11 @@ function bounds(s::SymbolicIntervalGraph)
     Up  = Flux.flatten(s.Up)
     n_neurons = size(Low, 1)
     n_in = get_n_in(s)
+    n_unfixed = get_n_unfixed(s)
     current_n_vars = get_n_vars(s)
 
-    subs_LL, subs_UU = substitute_variables(s.Low, s.Up, s.var_los, s.var_his, n_in, current_n_vars)
+    # need n_unfixed instead of n_in, because only unfixed inputs are modeled as variables
+    subs_LL, subs_UU = substitute_variables(Low, Up, s.var_los, s.var_his, n_unfixed, current_n_vars)
 
 
     l_bounds = bounds(subs_LL, domain(s))

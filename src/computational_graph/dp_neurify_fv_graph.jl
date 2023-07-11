@@ -172,11 +172,13 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     Up  = Flux.flatten(s.Up)
     n_neurons = size(Low, 1)
     n_in = get_n_in(s)
+    n_unfixed = get_n_unfixed(s)
     n_sym = get_n_sym(s)
     current_n_vars = get_n_vars(s)
 
-    subs_LL, subs_UU = substitute_variables(s.Low, s.Up, s.var_los, s.var_his, n_in, current_n_vars)
-    subs_UL, subs_LU = substitute_variables(s.Up, s.Low, s.var_los, s.var_his, n_in, current_n_vars)
+    # need n_unfixed instead of n_in here, because we only model the unfixed inputs with an variable
+    subs_LL, subs_UU = substitute_variables(Low, Up, s.var_los, s.var_his, n_unfixed, current_n_vars)
+    subs_UL, subs_LU = substitute_variables(Up, Low, s.var_los, s.var_his, n_unfixed, current_n_vars)
 
     lbs = fill(-Inf, n_neurons)
     ubs = fill(Inf, n_neurons)
@@ -187,7 +189,13 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
 
     crossing = is_crossing.(ll, uu)
     layer_importance = sum(abs.(subs_LL[crossing, :]), dims=1) .+ sum(abs.(subs_UU[crossing, :]), dims=1)
-    importance = s.importance .+ layer_importance[1:end-1]  # constant term doesn't need importance
+    
+    importance = zero(s.importance)
+    unfixed_mask = (low(domain(s)) .< high(domain(s)))
+    importance[unfixed_mask] .= s.importance[unfixed_mask] .+ layer_importance[1:end-1]
+    
+    # this only works, if all inputs are unfixed!!!
+    # importance = s.importance .+ layer_importance[1:end-1]  # constant term doesn't need importance
 
     fv_idxs = solver.get_fresh_var_idxs(s.max_vars, current_n_vars, ll, uu, solver.var_frac)
     n_vars = length(fv_idxs)
