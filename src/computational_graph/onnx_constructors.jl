@@ -90,7 +90,7 @@ end
 
 # TODO: is Type{NNL.DynamicInput} what we really want here?
 function NNL.construct_layer_matmul(::Type{CGType}, name, inputs, outputs, x::Type{NNL.DynamicInput}, weight)
-    println("parsing Matmul with input :-) (Is order correct?)")
+    println("parsing Matmul with input :-)")
     # TODO: do we have to transpose matrix if it is x * W instead of W*x?
     #println("node $name with params $weight and x is $x")
     return Linear(inputs, outputs, name, weight, zero(weight[:,1]))
@@ -215,7 +215,7 @@ function NNL.construct_network(::Type{CGType}, inputs, outputs, nodes, input_sha
     @assert length(inputs) == 1 "currently only a unique input node is supported"
     @assert length(outputs) == 1 "currently only a unique output node is supported"
 
-    println(nodes)
+    # println(nodes)
 
     input_node = nothing
     output_node = nothing
