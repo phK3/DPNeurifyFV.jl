@@ -27,6 +27,14 @@ include("computational_graph/dp_neurify_fv_graph.jl")
 include("computational_graph/onnx_constructors.jl")
 include("computational_graph/cg_optimization_bab.jl")
 
+
+include("computational_graph/lstm/LSTMRelaxation.jl")
+
+using .LSTMRelaxation
+
+include("computational_graph/lstm/split_zono.jl")
+include("computational_graph/lstm/lstm_solver.jl")
+
 # does it get precompiled?
 println("precompiling...")
 @setup_workload begin

@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "836335ba8084ab30880a6666b0e48d2c877fe700"
+project_hash = "613aa0314341e31f0ffbeea10ece8b34b73bc349"
 
 [[deps.AMD]]
 deps = ["Libdl", "LinearAlgebra", "SparseArrays", "Test"]
@@ -1033,6 +1033,11 @@ deps = ["GenericLinearAlgebra", "GeometryBasics", "JuMP", "LinearAlgebra", "Muta
 git-tree-sha1 = "ac8957775d8b45038b2a788ada92f94b5ae052f8"
 uuid = "67491407-f73d-577b-9b50-8179a7c68029"
 version = "0.6.17"
+
+[[deps.PolynomialRoots]]
+git-tree-sha1 = "5f807b5345093487f733e520a1b7395ee9324825"
+uuid = "3a141323-8675-5d76-9d11-e1df1406c778"
+version = "1.0.0"
 
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
