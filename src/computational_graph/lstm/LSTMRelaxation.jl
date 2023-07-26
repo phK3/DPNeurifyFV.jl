@@ -77,7 +77,7 @@ function get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
         γ = a / tanh(y)
         # solve s(1-s) = γ ⇔ -γ + s - s² = 0
         ss = roots([-γ, 1, -1])
-        s = Float64.(ss)  # can have up to 2 solutions
+        s = Float64.(filter(x -> imag(x) == 0, ss))  # can have up to 2 solutions
         # TODO: also handle for other solution
         for ŝ in s
             # ŝ is valid sigmoid value
@@ -93,7 +93,7 @@ function get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
 
     # max in interior
     ss = roots([-a^2, -b, 1+2*b, -b-2, 1])
-    s = Float64.(ss)
+    s = Float64.(filter(x -> imag(x) == 0, ss))
     t = a ./ (s .* (1 .- s))
     for (ŝ, t̂) in zip(s, t)
         if ŝ >= 0 && ŝ <= 1 && abs(t̂) <= 1
@@ -165,7 +165,8 @@ function get_critical_points_σ_y(lx, ux, ly, uy, a, b, c)
         γ = a / y
         # solve s(1-s) = γ ⇔ -γ + s - s² = 0
         ss = roots([-γ, 1, -1])
-        s = Float64.(ss)  # can have up to 2 solutions
+        # can have up to 2 solutions, only want real solutions
+        s = Float64.(filter(x -> imag(x) == 0, ss))
         # TODO: also handle for other solution
         for ŝ in s
             # ŝ is valid sigmoid value
