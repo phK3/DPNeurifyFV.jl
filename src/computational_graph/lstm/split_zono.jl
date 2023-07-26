@@ -11,38 +11,70 @@ We also store for each generator (each column of the generator matrix) at which 
 """
 struct SplitZonotope{N} <: AbstractZonotope{N}
     z::Zonotope{N}
-    # mapping layer_name -> (neuron_idx, split_value)
-    splits
+    # mapping layer_name -> [(neuron_idx, lb, ub)]
+    # for each split neuron in a layer, we store its lower bound and upper bound (that were set by the split)
+    splits::Dict{String, <:AbstractVector{<:Tuple{<:Integer, <:Real, <:Real}}}
     # mapping column idx in zonotope -> (layer_name, neuron_idx)
-    generator_map
+    generator_map::Vector{<:Tuple{String, <:Integer}}
+    # constraints added to LP solver later on (for now just in form Ax ≤ b)
+    split_A::AbstractMatrix{N}
+    split_b::AbstractVector{N}
+    shape
 end
 
 
-function SplitZonotope(input_set::AbstractHyperrectangle{N}) where N <: Number
+function SplitZonotope(input_set::AbstractHyperrectangle{N}, shape) where N <: Number
     z = convert(Zonotope, input_set)
-    splits = Dict()
+    # z = zono2float32(z)
+    splits = Dict{String, Vector{Tuple{Int64, Float64, Float64}}}()
     generator_map = [("input", i) for (i, _) in enumerate(generators(input_set))]
-    return SplitZonotope(z, splits, generator_map)
+    split_A = Array{N}(undef, 0, 0)
+    split_b = Array{N}(undef, 0)
+    return SplitZonotope(z, splits, generator_map, split_A, split_b, shape)
+end  
+
+
+function SplitZonotope(input_set::AbstractHyperrectangle{N}) where N <: Number
+    shape = size(low(input_set))
+    return SplitZonotope(input_set, shape)
+end
+
+
+function SplitZonotope(ẑ::Zonotope{N}, sz::SplitZonotope{N}) where N <: Number
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, sz.split_A, sz.split_b, sz.shape)
+end
+
+
+function SplitZonotope(ẑ::Zonotope{N}, sz::SplitZonotope{N}, shape) where N <: Number
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, sz.split_A, sz.split_b, shape)
 end
 
 
 LazySets.ngens(sz::SplitZonotope) = ngens(sz.z)
 
 
+"""
+Returns a SplitZonotope representing the 0ⁿ vector with a zero generator matrix
+with the same number of generators as the input SplitZonotope.
+"""
 function Base.zero(sz::SplitZonotope{N}) where N <: Number
     z = sz.z
     c = z.center
-    n = length(c)
+    m, n = size(z.generators)
     # need to reshape, so G is a matrix
-    ẑ = Zonotope(zero(c), reshape(zero(c), n, 1))
-    return SplitZonotope(ẑ, sz.splits, sz.generator_map)
+    ẑ = Zonotope(zero(c), zeros(m, n))
+
+    # no split constraints in zero
+    split_A = Array{N}(undef, 0, 0)
+    split_b = Array{N}(undef, 0)
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, split_A, split_b, sz.shape)
 end
 
 
 function Base.getindex(sz::SplitZonotope{N}, inds::AbstractArray{<:Integer}) where N <: Number
     z = sz.z
     ẑ = Zonotope(z.center[inds], z.generators[inds, :])
-    return SplitZonotope(ẑ, sz.splits, sz.generator_map)
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, sz.split_A, sz.split_b)
 end
 
 
@@ -55,7 +87,8 @@ encloses x[:,1].
 """
 function get_tensor_idx(sz::SplitZonotope{N}, dims, inds...) where N <: Number
     # need to have list comprehension construct as : is allowed in indexing
-    free_dims = length(dims) - length([e for e in inds if typeof(e) <: Integer])
+    #free_dims = length(dims) - length([e for e in inds if typeof(e) <: Integer])
+    free_dims = length(dims) - length([e for e in inds if e != :])
     # should we also support scalar output (i.e. 0 free dims)?
     @assert free_dims == 1 "Can only generate zonotope for vector ouput, but got $free_dims free dimensions!"
     
@@ -67,10 +100,12 @@ function get_tensor_idx(sz::SplitZonotope{N}, dims, inds...) where N <: Number
     n_gens = size(G, 2)
     ĉ = reshape(c, dims...)
     Ĝ = reshape(G, dims..., n_gens)
+
+    shape = size(ĉ[inds...])
     
     # Ĝ[inds..., :] since we want all generators
     ẑ = Zonotope(ĉ[inds...], Ĝ[inds..., :])
-    return SplitZonotope(ẑ, sz.splits, sz.generator_map)
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, sz.split_A, sz.split_b, shape)
 end
 
 
@@ -111,11 +146,50 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
     distinct₂ = setdiff(1:ngens(sz₂), common_gens₂)
     generator_map = [sz₁.generator_map[common_gens₁]; sz₁.generator_map[distinct₁]; sz₂.generator_map[distinct₂]]
 
-    return SplitZonotope(z, merge(sz₁.splits, sz₂.splits), generator_map)
+    if size(sz₁.split_A, 1) == 0
+        # there are no split constraints in sz₁
+        split_A = sz₂.split_A
+        split_b = sz₂.split_b
+    elseif size(sz₂.split_A, 1) == 0
+        # there are no split constraints in sz₂
+        split_A = sz₁.split_A
+        split_b = sz₁.split_b
+    else
+        split_A = [sz₁.split_A[:, common_gens₁] sz₁.split_A[:, distinct₁] zeros(size(sz₁.split_A, 1), length(distinct₂));
+                sz₂.split_A[:, common_gens₂] zeros(size(sz₂.split_A, 1), length(distinct₂)) sz₂.split_A[:, distinct₁]]
+        split_b = [sz₁.split_b; sz₂.split_b]
+    end
+
+    return SplitZonotope(z, merge(sz₁.splits, sz₂.splits), generator_map, split_A, split_b, sz₁.shape)
+end
+
+
+"""
+Returns constraints Â x ≤ b̂ when adding constraint A x ≤ b to already existing constraints in the SplitZonotope
+"""
+function get_constraints_matrix(sz::SplitZonotope, A::AbstractMatrix, b::AbstractVector)
+    m, n = size(sz.split_A)
+    m̂, n̂ = size(A)
+    if n < n̂
+        # old constraints don't have all generators
+        Â = [sz.split_A zeros(m, n̂ - n);
+             A]
+    elseif n > n̂
+        # new constraints don't have all generators
+        # TODO: when could this happen?
+        Â = [sz.split_A;
+             sz.A zeros(m̂, n - n̂)]
+    else
+        Â = [sz.split_A; A]
+    end
+
+    b̂ = [sz.split_b; b]
+
+    return Â, b̂   
 end
 
 
 function hadamard_prod(a::AbstractVector{N}, sz::SplitZonotope{N}) where N <: Number
     ẑ = Zonotope(a .* sz.z.center, a .* sz.z.generators)
-    return SplitZonotope(ẑ, sz.splits, sz.generator_map)
+    return SplitZonotope(ẑ, sz.splits, sz.generator_map, sz.split_A, sz.split_b, sz.shape)
 end
