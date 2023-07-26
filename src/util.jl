@@ -9,6 +9,32 @@ end
 
 
 """
+Convert scalars to vectors and leave vectors as they are.
+"""
+_vec(x) = [x]
+_vec(x::AbstractArray) = x
+
+
+
+"""
+Given array of tuples a, returns tuple of arrays.
+
+example:
+    [(1, 2), (3, 4), (5, 6)] --> ([1, 3, 5], [2, 4, 6])
+
+taken from https://stackoverflow.com/a/53645744
+"""
+unzip(a) = map(x -> getfield.(a, x), fieldnames(eltype(a)))
+
+
+function zono2float32(z::Zonotope)
+    c = Float32.(z.center)
+    G = Float32.(z.generators)
+    return Zonotope(c, G)
+end
+
+
+"""
 In contrast to Julia, Python allows negative indices.
 
 Converts negative indices to positive indices given the length of the array.
