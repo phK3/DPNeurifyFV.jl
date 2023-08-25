@@ -177,6 +177,35 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
 end
 
 
+"""
+Expand generators, s.t. sz₁ and sz₂ have the same set of generators.
+
+returns:
+    ŝz₁ - SplitZonotope representing the same set as sz₁, but with 
+            added empty generators for distinct generators of sz₂
+    ŝz₂ - SplitZonotope representing the same set as sz₂, but with 
+            added empty generators for distinct generators of sz₁
+"""
+function expand_generators(sz₁::SplitZonotope, sz₂::SplitZonotope)
+    common_gens₁ = filter(!isnothing, indexin(sz₂.generator_map, sz₁.generator_map))
+    common_gens₂ = filter(!isnothing, indexin(sz₁.generator_map, sz₂.generator_map))
+    distinct₁ = setdiff(1:ngens(sz₁), common_gens₁)
+    distinct₂ = setdiff(1:ngens(sz₂), common_gens₂)
+    generator_map = [sz₁.generator_map[common_gens₁]; sz₁.generator_map[distinct₁]; sz₂.generator_map[distinct₂]]
+
+    m₁ = size(sz₁.z.center, 1)
+    m₂ = size(sz₂.z.center, 1)
+    z₁ = Zonotope(sz₁.z.center, [sz₁.z.generators[:, common_gens₁] sz₁.z.generators[:, distinct₁] zeros(m₁, length(distinct₂))])
+    z₂ = Zonotope(sz₂.z.center, [sz₂.z.generators[:, common_gens₂] zeros(m₂, length(distinct₁)) sz₂.z.generators[:, distinct₂]])
+
+    ŝz₁ = SplitZonotope(z₁, sz₁.splits, sz₁.bounds, generator_map, sz₁.split_A, sz₁.split_b, sz₁.shape)
+    ŝz₂ = SplitZonotope(z₂, sz₂.splits, sz₂.bounds, copy(generator_map), sz₂.split_A, sz₂.split_b, sz₂.shape)
+
+    return ŝz₁, ŝz₂
+end
+
+
+
 function hadamard_prod(a::AbstractVector{N}, sz::SplitZonotope{N}) where N <: Number
     ẑ = Zonotope(a .* sz.z.center, a .* sz.z.generators)
     return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape)
