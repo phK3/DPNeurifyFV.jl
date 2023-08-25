@@ -509,4 +509,34 @@ function forward_node(solver, L::SplitNode, x)
 
     return outputs
 end
+
+
+# TODO: Maybe better to use Flux here?
+struct LSTMCell <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name::String
+    linear_ih::Linear
+    linear_hh::Linear
+    state0::AbstractArray
+end
+
+struct LSTMLayer <: Node
+    cell::LSTMCell
+end
+
+
+function LSTMCell(inputs, outputs, name, Wih, Whh, b; state0=nothing)
+    hs4, n_in = size(Wih)
+    hidden_size = floor(Integer, hs4 / 4)
+
+    linear_ih = Linear([], [], name * "_linear_ih", Wih, b)
+    linear_hh = Linear([], [], name * "_linear_hh", Whh, zeros(hs4))
+
+    if isnothing(state0)
+        state0 = zeros(n_in)
+    end
+
+    return LSTMCell(inputs, outputs, name, linear_ih, linear_hh, state0)
+end
     
