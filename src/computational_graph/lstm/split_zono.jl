@@ -266,7 +266,8 @@ function get_bounds!(sz::SplitZonotope, layer_name::String)
         u = min.(u, û)
     end
 
-    sz.bounds[layer_name] = (l, u)
+    # copy s.t. modifying the returned l, u doesn't modify the stored bounds
+    sz.bounds[layer_name] = (copy(l), copy(u))
     return l, u        
 end
 
@@ -290,7 +291,7 @@ function get_bounds!(sx::SplitZonotope, sy::SplitZonotope, layer_name::String)
     end
 
     # TODO: is it the same object/reference as sy.bounds? (we want it to be that way)
-    sx.bounds[layer_name] = (lx, ux, ly, uy)
+    sx.bounds[layer_name] = (copy(lx), copy(ux), copy(ly), copy(uy))
     return lx, ux, ly, uy        
 end
 
