@@ -38,6 +38,7 @@ function SplitZonotope(input_set::AbstractHyperrectangle{N}, shape) where N <: N
     # bounds = Dict{String, Vector{Tuple{Float64, Float64}}}()
     # bounds = Dict{String, Tuple{Vector{Float64}}}()
     bounds = Dict{String, Tuple{Vararg{Vector{N}}}}()
+    bounds["input"] = (low(input_set), high(input_set))
     generator_map = [("input", i) for (i, _) in enumerate(generators(input_set))]
     split_A = Array{N}(undef, 0, 0)
     split_b = Array{N}(undef, 0)
@@ -284,6 +285,8 @@ returns:
     b - constraint vector for enforcing splits in LP later on
 """
 function get_split_bounds(sz::SplitZonotope, splits::AbstractVector{<:Tuple{<:Integer, <:Real, <:Real}}, l::AbstractVector, u::AbstractVector)   
+    z = sz.z
+
     split_idxs, l_split, u_split = unzip(splits)
     split_idxs = _vec(split_idxs)
     l_split = _vec(l_split)
@@ -302,7 +305,7 @@ function get_split_bounds(sz::SplitZonotope, splits::AbstractVector{<:Tuple{<:In
 
     A = [A_l; A_u]
     b = [b_l; b_u]
-    Â, b̂ = DP.get_constraints_matrix(sz, A, b)
+    Â, b̂ = get_constraints_matrix(sz, A, b)
 
     # take better of bound calculated from zono and bound stored in split
     l[split_idxs] .= max.(l[split_idxs], l_split)
@@ -352,7 +355,7 @@ Sets for both inputs need to be represented as SplitZonotopes.
 args:
     sx - SplitZonotope overapproximating first input
     sy - SplitZonotope overapproximating second input
-    splits - tuple (i, j, l, u) indicating that l ≤ nᵢⱼ ≤ u
+    splits - vector of tuples (i, lx, ux, ly, uy) indicating bounds on the input of neuron i for x and y
 
 returns:
     lx - lower bound on first input (possibly tightened by split)
@@ -362,10 +365,9 @@ returns:
     A - constraint matrix for enforcing splits in LP later on
     b - constraint vector for enforcing splits in LP later on
 """
-function get_split_bounds(sx::SplitZonotope, sy::SplitZonotope, splits::AbstractVector{<:Tuple{<:Integer, <:Integer, <:Real, <:Real}})
-    split_vars = map(x -> x[2], splits)
-    x_splits = map(x -> (x[1], x[3], x[4]), splits[split_vars .== 1])
-    y_splits = map(x -> (x[1], x[3], x[4]), splits[split_vars .== 2])
+function get_split_bounds(sx::SplitZonotope, sy::SplitZonotope, splits::AbstractVector)
+    x_splits = map(x -> (x[1], x[2], x[3]), splits)
+    y_splits = map(x -> (x[1], x[4], x[5]), splits)
 
     lx, ux, A₁, b₁ = get_split_bounds(sx, x_splits)
     ly, uy, A₂, b₂ = get_split_bounds(sy, y_splits)
@@ -377,10 +379,9 @@ function get_split_bounds(sx::SplitZonotope, sy::SplitZonotope, splits::Abstract
 end
 
 
-function get_split_bounds!(sx::SplitZonotope, sy::SplitZonotope, splits::AbstractVector{<:Tuple{<:Integer, <:Integer, <:Real, <:Real}}, layer_name::String)
-    split_vars = map(x -> x[2], splits)
-    x_splits = map(x -> (x[1], x[3], x[4]), splits[split_vars .== 1])
-    y_splits = map(x -> (x[1], x[3], x[4]), splits[split_vars .== 2])
+function get_split_bounds!(sx::SplitZonotope, sy::SplitZonotope, splits::AbstractVector, layer_name::String)
+    x_splits = map(x -> (x[1], x[2], x[3]), splits)
+    y_splits = map(x -> (x[1], x[4], x[5]), splits)
 
     lx, ux, ly, uy = get_bounds!(sx, sy, layer_name)
     lx, ux, A₁, b₁ = get_split_bounds!(sx, x_splits, lx, ux)
