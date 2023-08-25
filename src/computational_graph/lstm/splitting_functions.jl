@@ -102,8 +102,12 @@ function split_split_zonotope(sz::SplitZonotope, input_shape)
         end
 
         for (k, v) in sz.bounds
-            # TODO: is this efficient???
-            z.bounds[k] = deepcopy(v)
+            if k != "input"
+                # don't use the old bounds for input splitting!!!
+                # also input bounds get directly constructed, when the zono is initialized
+                # TODO: is this efficient???
+                z.bounds[k] = deepcopy(v)
+            end
         end
     end
 
