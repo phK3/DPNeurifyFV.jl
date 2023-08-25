@@ -57,3 +57,64 @@ function forward_node(solver::LSTMSolver, L::Flatten, sz::SplitZonotope{N}) wher
     ĉ = reshape(c, :, size(c)[end])
     return SplitZonotope(sz.z, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, size(ĉ))
 end
+
+
+function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Tuple{Integer, SplitZonotope, SplitZonotope}, sx::SplitZonotope; n_samples=100)
+    hs4, input_size = size(lstm_cell.linear_ih.dense.weight)
+    hidden_size = floor(Integer, hs4 / 4)
+        
+
+    g_ih = forward_node(solver, lstm_cell.linear_ih, sx)
+    g_hh = forward_node(solver, lstm_cell.linear_hh, sh)
+
+    g = direct_sum(g_ih, g_hh)
+
+    z = g.z
+    z_i = z[1:hidden_size]
+    z_f = z[  hidden_size+1:2*hidden_size]
+    z_c = z[2*hidden_size+1:3*hidden_size]
+    z_o = z[3*hidden_size+1:4*hidden_size]
+
+    # TODO: fix shape after indexing!!!
+    g_in = SplitZonotope(z_i, g, (hidden_size, g.shape[2:end]...))
+    g_f  = SplitZonotope(z_f, g, (hidden_size, g.shape[2:end]...))
+    g_c  = SplitZonotope(z_c, g, (hidden_size, g.shape[2:end]...))
+    g_o  = SplitZonotope(z_o, g, (hidden_size, g.shape[2:end]...))
+    
+    # i is the loop iteration of the lstm cell 
+    # (lstm_name_5_σy_1, 4)  
+    # --> generator corresponding to 5th lstm unrolling 
+    # --> for 1st σ(x)*y non-linearity
+    # --> for 4th neuron in that σ(x)*y layer 
+    fc = propagate_σ_y(g_f, g_c, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples)
+    ic = propagate_σ_tanh(g_in, g_c, lstm_cell.name * "_$(i)_σtanh_1", n_samples=n_samples)
+    ĉ = direct_sum(fc, ic)
+
+    eĉ, ĝ_o = expand_generators(ĉ, g_o)
+    ĥ = propagate_σ_tanh(ĝ_o, eĉ, lstm_cell.name * "_$(i)_σtanh_2", n_samples=n_samples)
+    
+    return ĥ, ĉ
+end
+
+
+function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonotope; n_samples=100)
+    cell = lstm_layer.cell
+    # counter for unrolling and initial state
+    state = (0, cell.state0...)
+
+    # last dimension is length of the sequence
+    timesteps = sx.shape[end]
+    for i in 1:timesteps
+        sz_lstm = get_tensor_idx(sx, sx.shape, :, i)
+        if state == (0, 0., 0.)
+            # need to generate SplitZono zeros for calculation
+            state = (0, zero(sz_lstm), zero(sz_lstm))
+        end
+
+        h, c = forward_node(solver, cell, state, sz_lstm, n_samples=n_samples)
+        state = (i+1, h, c)
+    end
+
+    n_steps, h, c = state
+    return h, c 
+end
