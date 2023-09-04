@@ -35,6 +35,14 @@ end
 
 
 """
+Return part of zonotope that overapproximates dimensions inds = [i₁, i₂, ...]
+"""
+function Base.getindex(z::Zonotope{N}, inds::AbstractArray{Int}) where N <: Number
+    return Zonotope(z.center[inds], z.generators[inds,:])
+end
+
+
+"""
 In contrast to Julia, Python allows negative indices.
 
 Converts negative indices to positive indices given the length of the array.
