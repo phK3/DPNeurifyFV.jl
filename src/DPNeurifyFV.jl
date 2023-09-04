@@ -1,7 +1,7 @@
 module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
-        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools
+        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -33,6 +33,9 @@ include("computational_graph/lstm/LSTMRelaxation.jl")
 using .LSTMRelaxation
 
 include("computational_graph/lstm/split_zono.jl")
+include("computational_graph/lstm/splitting_functions.jl")
+include("computational_graph/lstm/split_zono_optimization.jl")
+include("computational_graph/lstm/lstm_act_propagation.jl")
 include("computational_graph/lstm/lstm_solver.jl")
 
 # does it get precompiled?
