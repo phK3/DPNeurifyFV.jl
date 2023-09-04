@@ -72,6 +72,12 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
     best_x = nothing
     # For n_steps dequeue a cell, split it, and then
     for i = 1:params.max_steps
+
+        # if less than 100 MB of RAM, run garbage collection
+        if Sys.free_memory() / 2^20 <= 500
+            GC.gc()
+        end
+
         cell, value = peek(cells) # peek instead of dequeue to get value, is there a better way?
         @assert value + TOL[] >= best_lower_bound string("Our highest upper bound must be greater than the highest achieved value. Upper bound: ", value, " achieved value: ", best_lower_bound)
         dequeue!(cells)
