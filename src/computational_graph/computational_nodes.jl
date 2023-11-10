@@ -252,6 +252,26 @@ function forward_node(solver, L::ConvolutionTranspose, x)
 end
 
 
+struct AveragePool <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    avg::MeanPool
+end
+
+
+function AveragePool(inputs, outputs, name, window; pad=0, stride=window)
+    avg = Flux.MeanPool(window, pad=pad, stride=stride)
+
+    return AveragePool(inputs, outputs, name, avg)
+end
+
+
+function forward_node(solver, L::AveragePool, x)
+    return L.avg(x)
+end
+
+
 struct Reshape <: Node
     inputs::AbstractVector
     outputs::AbstractVector

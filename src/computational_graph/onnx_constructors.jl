@@ -206,6 +206,23 @@ function NNL.construct_layer_batch_normalization(::Type{CGType}, name, inputs, o
     println("parsing BatchNormalization")
     return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon)
 end
+
+function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs, data; auto_pad="NOTSET", 
+                                          ceil_mode=0, count_include_pad=0, dilations=nothing, kernel_shape=nothing, 
+                                          pads=nothing, strides=nothing)
+    @assert auto_pad == "NOTSET" "auto_pad currently not supported! (node $name)"
+    @assert ceil_mode == 0 "only ceil_mode = 0 supported! (node $name)"
+    @assert count_include_pad == 0 "only count_include_pad = 0 supported! (node $name)"
+    @assert isnothing(dilations) "dilations not supported! (node $name)"
+    println("parsing AveragePool!")
+
+    strides = isnothing(strides) ? 1 : convert2intOrTuple(strides)
+    dilations = isnothing(dilations) ? 1 : convert2intOrTuple(dilations)
+    pads = isnothing(pads) ? 0 : convert2intOrTuple(pads)
+    window = reverse(Tuple(kernel_shape))
+
+    return AveragePool(inputs, outputs, name, window, stride=strides, pad=pads)   
+end
 function NNL.construct_layer_softmax(::Type{CGType}, name, inputs, outputs, data; axis=-1)
     println("parsing Softmax")
     return Softmax(inputs, outputs, name, axis)
