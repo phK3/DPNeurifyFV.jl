@@ -237,6 +237,19 @@ function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs,
 
     return AveragePool(inputs, outputs, name, window, stride=strides, pad=pads)   
 end
+
+
+function NNL.construct_layer_squeeze(::Type{CGType}, name, inputs, outputs, data, axes)
+    @assert data == NNL.DynamicInput
+    println("parsing Squeeze: axes = $axes")
+    # Flux needs reversed dimensions, but ONNX Squeeze only stores the axes to be squeezed.
+    # so we don't know how many axes there are, which makes it difficult to calculate the right indices.
+    # We therefore subtract the respective index from the length of the ndims of the input array, which is known at runtime.
+    # Since we subtract from the end, we also don't need to add 1 despite Julia being 1-indexed
+    return Squeeze(inputs, outputs, name, axes)
+end
+
+
 function NNL.construct_layer_gather(::Type{CGType}, name, inputs, outputs, data, indices; axis=0)
     println("parsing Gather")
     return Gather(inputs, outputs, name, indices, axis) 

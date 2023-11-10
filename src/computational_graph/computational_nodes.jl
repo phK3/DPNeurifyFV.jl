@@ -595,6 +595,23 @@ function forward_node(solver, L::Transpose, x)
 end
 
 
+struct Squeeze <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    # if axes == nothing, then all singleton dimensions will be removed
+    axes
+end
+
+
+function forward_node(solver, L::Squeeze, x)
+    axes = isnothing(L.axes) ? Tuple(findall(size(x) .== 1)) : ndims(x) .- L.axes
+    @assert all(size(x)[axes] .== 1) "Can't squeeze non-singleton dimensions! Got size(x) = $(size(x)) for axes $axes !"
+
+    return dropdims(x, dims=Tuple(axes))
+end
+
+
 # TODO: Maybe better to use Flux here?
 struct LSTMCell <: Node
     inputs::AbstractVector
