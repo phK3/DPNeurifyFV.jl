@@ -18,7 +18,7 @@ values per dimension, it has to be passed as a TUPLE, not a array.)
 """
 function convert2intOrTuple(v::AbstractArray{<:Integer, 1})
     # TOOD: do we need to revert all of these tuples?
-    return tuple(v...)
+    return reverse(Tuple(v))
 end
 
 function convert2intOrTuple(v::Integer)
