@@ -112,6 +112,14 @@ end
 
 
 
+"""
+Padding in ONNX (that is already reverted) is defined as (pad_1_begin, pad_2_begin, ..., pad_1_end, pad_2_end, ...),
+but Flux needs it in the form of (pad_1_begin, pad_1_end, pad_2_begin, pad_2_end, ...)
+"""
+function convert_onnx_pad(pad::NTuple{N, <:Integer}) where N   
+    half = N ÷ 2
+    return Tuple([ifelse(iseven(i), pad[half + (i ÷ 2)], pad[(i + 1) ÷ 2]) for i in 1:length(pad)])
+end
 
 function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, weights, bias;
                                   auto_pad="NOTSET", dilations=nothing, group=1, kernel_shape=nothing, pads=nothing, strides=nothing)
@@ -120,7 +128,7 @@ function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, w
 
     strides = isnothing(strides) ? 1 : convert2intOrTuple(strides)
     dilations = isnothing(dilations) ? 1 : convert2intOrTuple(dilations)
-    pads = isnothing(pads) ? 0 : convert2intOrTuple(pads)
+    pads = isnothing(pads) ? 0 : convert_onnx_pad(convert2intOrTuple(pads))
 
     # onnx really calculates CrossCorrelation, so need to flip weights for convolution
     weights = flipweights(weights)
