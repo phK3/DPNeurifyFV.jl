@@ -162,12 +162,14 @@ end
 
 function NNL.construct_layer_sigmoid(::Type{CGType}, name, inputs, outputs, data)
     println("parsing Sigmoid ;-)")
-    return Sigmoid(inputs, outputs, name)
+    throw("Sigmoid not implemented!!!")
+    # return Sigmoid(inputs, outputs, name)
 end
 
 function NNL.construct_layer_tanh(::Type{CGType}, name, inputs, outputs, data)
     println("parsing Tahn ;-)")
-    return Tanh(inputs, outputs, name)
+    throw("Tanh not implemented!!!")
+    r# eturn Tanh(inputs, outputs, name)
 end
 
 function NNL.construct_layer_reducesum(::Type{CGType}, name, inputs, outputs, data; axes=nothing, keepdims=1, noop_with_empty_axes=0)
