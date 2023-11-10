@@ -250,6 +250,44 @@ function NNL.construct_layer_squeeze(::Type{CGType}, name, inputs, outputs, data
 end
 
 
+function NNL.construct_layer_lstm(::Type{CGType}, name, inputs, outputs, data, W_ih::AbstractArray{<:M}, W_hh::AbstractArray{<:M}, bias=nothing, sequence_lens=nothing, 
+                                  initial_h=nothing, initial_c=nothing, P=nothing; activation_alpha=nothing, activation_beta=nothing, activations=nothing, clip=nothing,
+                                  direction="forward", hidden_size=-1, input_forget=0, layout=0) where M<:Number
+    @assert data == NNL.DynamicInput "Expected DynamicInput for data but got $data"
+    @assert hidden_size >= 0 "hidden_size must be set!"
+    @assert isnothing(sequence_lens) "implementation can't use sequence_lens, got sequence_lens = $(sequence_lens)"
+    @assert isnothing(P) "Peephole connections are not supported!"
+    @assert isnothing(activation_alpha) && isnothing(activation_beta) && isnothing(activations) "Only standard activations are supported! Got activation_alpha = $(activation_alpha), 
+                                                                                                 activation_beta = $(activation_beta), activations = $activations"
+    @assert isnothing(clip) "implementation doesn't support clipping!"
+    @assert direction == "forward" "reverse or bidirectional not supported! Got $direction"
+    @assert input_forget == 0 "Coupling of input and forget gates is not supported!"
+    # TODO: what is the supported layout???
+    println("parsing LSTM")
+
+    # | Param | ONNX input shape  | required Flux shape |
+    # +-------+-------------------+---------------------+
+    # | W_ih  |(n_i, 4*n_h, dirs) |  (4*n_h, n_i)       |
+    # | W_hh  |(n_h, 4*n_h, dirs) |  (4*n_h, n_h)       |
+    # |b      | (2*4*n_h, dirs)   |  (4*n_h)            |
+  
+    input_size = size(W_ih, 1)
+    hidden_size = size(W_hh, 1)
+
+    num_directions = size(W_ih, 3)  # this should be 1 with asserting direction == "forward"
+    W_ih = W_ih[:,:,1]' # have no bidirectional in Flux, so assume weights for first direction are the ones for forward
+    W_hh = W_hh[:,:,1]' # transpose to get required shape
+
+    # in ONNX biases for ih and hh are stacked, but only one bias is required, which is the result of the addition of both halves
+    bias = isnothing(bias) ? zeros(M, 4*hidden_size) : bias[1:4*hidden_size, 1] .+ bias[4*hidden_size+1:end, 1]
+    initial_h = isnothing(initial_h) ? zeros(M, hidden_size, 1) : initial_h
+    initial_c = isnothing(initial_c) ? zeros(M, hidden_size, 1) : initial_c
+
+    cell = Flux.LSTMCell(W_ih, W_hh, bias, (initial_h, initial_c))
+
+    return LSTMLayer(inputs, outputs, name, cell, num_directions)
+end
+
 function NNL.construct_layer_gather(::Type{CGType}, name, inputs, outputs, data, indices; axis=0)
     println("parsing Gather")
     return Gather(inputs, outputs, name, indices, axis) 

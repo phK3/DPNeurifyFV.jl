@@ -622,12 +622,8 @@ struct LSTMCell <: Node
     state0::AbstractArray
 end
 
-struct LSTMLayer <: Node
-    cell::LSTMCell
-end
 
-
-function LSTMCell(inputs, outputs, name, Wih, Whh, b; state0=nothing)
+function LSTMCell(inputs, outputs, name, Wih::AbstractArray{<:N}, Whh::AbstractArray{<:N}, b::AbstractVector{<:N}; state0=nothing) where N<:Number
     hs4, n_in = size(Wih)
     hidden_size = floor(Integer, hs4 / 4)
 
@@ -640,4 +636,48 @@ function LSTMCell(inputs, outputs, name, Wih, Whh, b; state0=nothing)
 
     return LSTMCell(inputs, outputs, name, linear_ih, linear_hh, state0)
 end
+
+
+#struct LSTMLayer <: Node
+#    cell::LSTMCell
+#end
+
+struct LSTMLayer <: Node
+    # only need LSTMLayer, passing the whole sequence through the unrolling is handled inside the propagation of LSTMLayer
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    cell::Flux.LSTMCell
+    num_directions
+end
+
+
+function extract_cell(lstm::LSTMLayer)
+    W_ih = lstm.cell.Wi
+    W_hh = lstm.cell.Wh
+    b = lstm.cell.b
+    state0 = lstm.cell.state0 
+
+    return LSTMCell(lstm.inputs, lstm.outputs, lstm.name * "_cell", W_ih, W_hh, b, state0=state0)
+end
+
+
+function forward_node(solver, L::LSTMLayer, x)
+    lstm = Flux.Recur(L.cell)
+    y = lstm(x)
+    y_h, y_c = lstm.state
+
+    # in ONNX (already adapted with reversed Flux dimensions), LSTMs have 3 outputs:
+    #   - y concatenated hidden states for all timesteps in the sequence -> (hidden_size, batch_size, num_dirs, sequence_len)
+    #       TODO: num_dirs is not implemented here!!! Maybe just add dummy value of 1?
+    #   - y_h last hidden state (hidden_size, batch_size, num_dirs)
+    #   - y_c last cell state (hidden_size, batch_size, num_dirs)
+    
+    # adding num_dirs dimension
+    y = Flux.unsqueeze(y, dims=3)
+    y_h = Flux.unsqueeze(y_h, dims=3)
+    y_c = Flux.unsqueeze(y_c, dims=3)
+    return y, y_h, y_c
+end
+
     
