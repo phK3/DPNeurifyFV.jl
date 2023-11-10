@@ -207,6 +207,20 @@ function NNL.construct_layer_batch_normalization(::Type{CGType}, name, inputs, o
     return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon)
 end
 
+
+function NNL.construct_layer_transpose(::Type{CGType}, name, inputs, outputs, data; perm=nothing)
+    @assert data == NNL.DynamicInput
+    println("parsing Transpose: $perm")
+
+    # Flux needs WHCN instead of NCHW -> reverse
+    # Since dims are reversed, the index of the smallest dim needs to be largest and the index of the largest dim needs to be 1 (since Julia is 1-indexed)
+    #   -> subract the current index from (max(perm) + 1)
+    perm = Tuple(reverse((maximum(perm) + 1) .- perm))
+    
+    return Transpose(inputs, outputs, name, perm)
+end
+
+
 function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs, data; auto_pad="NOTSET", 
                                           ceil_mode=0, count_include_pad=0, dilations=nothing, kernel_shape=nothing, 
                                           pads=nothing, strides=nothing)

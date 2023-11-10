@@ -582,6 +582,19 @@ function forward_node(solver, L::SplitNode, x)
 end
 
 
+struct Transpose <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    perm
+end
+
+
+function forward_node(solver, L::Transpose, x)
+    return permutedims(x, L.perm)
+end
+
+
 # TODO: Maybe better to use Flux here?
 struct LSTMCell <: Node
     inputs::AbstractVector
