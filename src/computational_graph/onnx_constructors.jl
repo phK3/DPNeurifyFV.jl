@@ -223,6 +223,11 @@ function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs,
 
     return AveragePool(inputs, outputs, name, window, stride=strides, pad=pads)   
 end
+function NNL.construct_layer_gather(::Type{CGType}, name, inputs, outputs, data, indices; axis=0)
+    println("parsing Gather")
+    return Gather(inputs, outputs, name, indices, axis) 
+end
+
 function NNL.construct_layer_softmax(::Type{CGType}, name, inputs, outputs, data; axis=-1)
     println("parsing Softmax")
     return Softmax(inputs, outputs, name, axis)

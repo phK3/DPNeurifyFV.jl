@@ -407,12 +407,20 @@ function Gather(inputs, outputs, name, inds; axis=1)
 end
 
 
-function my_gather(x, inds::Vector{<:Integer}; axis=1)
+function my_gather(x::AbstractArray, inds::Vector{<:Integer}; axis=1)
+    axis = ndims(x) - axis  # NCHW -> WHCN
     x = transpose_tensor(x, axis, ndims(x))
     inds = get_positive_index.(inds, size(x, axis))
 
     g = Flux.NNlib.gather(x, inds)
-    return transpose_tensor(g, axis, ndims(x))
+    g = transpose_tensor(g, axis, ndims(x))
+
+    if lenth(inds) == 1
+        # TODO: can we get rid of this special case?
+        g = g[:,:,1]
+    end
+
+    return g
 end 
 
 
@@ -429,6 +437,7 @@ kwargs:
 returns:
     a tensor of ndims(x)+1, with the first dimension equal to length(inds)
 """
+#=
 function my_gather(x, inds; axis=1)
     x = transpose_tensor(x, axis, ndims(x))
     inds = get_positive_index.(inds, size(x, axis))
@@ -443,6 +452,34 @@ function my_gather(x, inds; axis=1)
     end
     
     return cat(gs..., dims=1)
+end
+=#
+
+"""
+Gather elements from the specified axis of x.
+
+args:
+    x - tensor to gather from
+    inds - vector of tensors/lists of indices
+
+kwargs:
+    axis - axis to take from (1 rows, 2 cols, 3 ...)
+"""
+function my_gather(x::AbstractArray, inds::AbstractVector; axis=1)
+    axis = ndims(x) - axis  # NCHW -> WHCN
+    inds = get_positive_index.(inds, size(x, axis))
+    idxs = [Tuple(ifelse(i == axis, ind, :) for i in 1:ndims(x)) for ind in inds]
+    return [x[idx...] for idx in idxs]
+end
+
+
+function my_gather(x::AbstractArray, inds::Array{N, 0}; axis=1) where N<:Number
+    # special case for zero-dim arrays (arrays holding just one scalar value)
+    # TOOD: can we somehow get rid of that special case???
+    axis = ndims(x) - axis  # NCHW -> WHCN
+    inds = get_positive_index.(inds, size(x, axis))
+    idx = Tuple(ifelse(i == axis, inds[], :) for i in 1:ndims(x))
+    return x[idx...]
 end
 
 
