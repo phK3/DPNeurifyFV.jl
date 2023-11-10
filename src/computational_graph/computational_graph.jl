@@ -133,9 +133,11 @@ function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing, verbos
     #    end
     #end
     
-    verbosity > 0 && println("propagating ", node.name)
     inputs = collect_inputs(nn, node, prop_dict)
+    verbosity > 0 && println("propagating ", node.name)
+    verbosity > 1 && println("\t shape: ", [size(x) for x in inputs])
     ŝ = forward_node(solver, node, inputs...)
+
     
     # TODO: what about nodes with multiple outputs like Split?
     # put "Split_output_0", "Split_output_1" as separate entries into the dict
