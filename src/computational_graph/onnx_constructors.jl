@@ -206,6 +206,10 @@ function NNL.construct_layer_batch_normalization(::Type{CGType}, name, inputs, o
     println("parsing BatchNormalization")
     return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon)
 end
+function NNL.construct_layer_softmax(::Type{CGType}, name, inputs, outputs, data; axis=-1)
+    println("parsing Softmax")
+    return Softmax(inputs, outputs, name, axis)
+end
     
 
 function NNL.construct_network(::Type{CGType}, inputs, outputs, nodes, input_shape, output_shape)

@@ -106,6 +106,20 @@ function forward_node(solver, L::Tanh, x)
 end 
     
 
+struct Softmax <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    axis
+end
+
+
+function forward_node(solver, L::Softmax, x)
+    axis = ndims(x) - L.axis  # NCHW -> WHCN
+    return Flux.NNlib.softmax(x, dims=axis)
+end
+    
+
 struct Concat <: Node
     inputs::AbstractVector
     outputs::AbstractVector
