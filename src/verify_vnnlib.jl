@@ -131,12 +131,15 @@ function verify_vnnlib(solver::DPNFV, network::Network, vnnlib_file, params::Pri
     all_steps = 0
     # if length(specs) > 1, we are dealing with a disjunction of constraints -> can abort, if we found one SAT
     for (input_set, output_set) in specs
+    	GC.gc()
+    	# is this better with memory management?
+    	s_intern = DPNFV(method=solver.method, max_vars=solver.max_vars, var_frac=solver.var_frac, get_fresh_var_idxs=solver.get_fresh_var_idxs)
         
         if output_set isa AbstractPolytope
             println("Checking if contained within polytope")
             
             # contained_within_polytope maximizes violation of polytope's constraints
-            x_star, lower_bound, upper_bound, steps = contained_within_polytope_deep_poly(network, input_set, output_set, params; solver=solver,
+            x_star, lower_bound, upper_bound, steps = contained_within_polytope_deep_poly(network, input_set, output_set, params; solver=s_intern,
                                                                 split=split, concrete_sample=concrete_sample)
             
             result = get_sat(:contained_within_polytope, lower_bound, upper_bound, params.stop_gap) 
@@ -144,7 +147,7 @@ function verify_vnnlib(solver::DPNFV, network::Network, vnnlib_file, params::Pri
             println("Checking if polytope can be reached")
             
             # reaches_polytope minimizes distance to polytope
-            x_star, lower_bound, upper_bound, steps = reaches_polytope_deep_poly(network, input_set, output_set.X, params; solver=solver,
+            x_star, lower_bound, upper_bound, steps = reaches_polytope_deep_poly(network, input_set, output_set.X, params; solver=s_intern,
                                                                 split=split, concrete_sample=concrete_sample)
             result = get_sat(:reaches_polytope, lower_bound, upper_bound, params.stop_gap)
         else
