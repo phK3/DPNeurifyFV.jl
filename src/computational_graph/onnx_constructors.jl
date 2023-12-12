@@ -284,12 +284,17 @@ function NNL.construct_layer_lstm(::Type{CGType}, name, inputs, outputs, data, W
     input_size = size(W_ih, 1)
     hidden_size = size(W_hh, 1)
 
+    # need to reorder columns of W_ih and W_hh
+    # Flux has [i f c o] order for input, forget, cell and output gate, while
+    # ONNX has [i o f c] order
+    reordering = (1:hidden_size) ∪ (2*hidden_size+1:3*hidden_size) ∪ (3*hidden_size+1:4*hidden_size) ∪ (hidden_size+1:2*hidden_size)
+    
     num_directions = size(W_ih, 3)  # this should be 1 with asserting direction == "forward"
-    W_ih = W_ih[:,:,1]' # have no bidirectional in Flux, so assume weights for first direction are the ones for forward
-    W_hh = W_hh[:,:,1]' # transpose to get required shape
+    W_ih = W_ih[:,reordering,1]'  # have no bidirectional in Flux, so assume weights for first direction are the ones for forward
+    W_hh = W_hh[:,reordering,1]'  # transpose to get required shape
 
     # in ONNX biases for ih and hh are stacked, but only one bias is required, which is the result of the addition of both halves
-    bias = isnothing(bias) ? zeros(M, 4*hidden_size) : bias[1:4*hidden_size, 1] .+ bias[4*hidden_size+1:end, 1]
+    bias = isnothing(bias) ? zeros(M, 4*hidden_size) : bias[reordering, 1] .+ bias[reordering .+ 4*hidden_size, 1]
     initial_h = isnothing(initial_h) ? zeros(M, hidden_size, 1) : initial_h
     initial_c = isnothing(initial_c) ? zeros(M, hidden_size, 1) : initial_c
 
@@ -339,3 +344,5 @@ function NNL.construct_network(::Type{CGType}, inputs, outputs, nodes, input_sha
 
     return CompGraph(collect(values(nodes)), input_node, output_node, input_shape, output_shape)
 end
+
+
