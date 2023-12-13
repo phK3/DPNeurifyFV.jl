@@ -3,7 +3,7 @@ module DPNeurifyFV
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
         OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
-import NeuralVerification: affine_map, interval_map
+import NeuralVerification: affine_map, interval_map, NetworkNegPosIdx, LayerNegPosIdx
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
 import VNNLib.NNLoader
 const NV = NeuralVerification
@@ -12,7 +12,6 @@ const NNL = NNLoader
 
 # redefinitions of function defined in NeuralVerification.jl
 # include("overwrite_neural_verification.jl")
-include("network_neg_pos_idx.jl")
 include("util.jl")
 include("symbolic_interval_fv_heur.jl")
 include("fresh_var_heuristic.jl")

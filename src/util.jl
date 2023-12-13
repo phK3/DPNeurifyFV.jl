@@ -68,7 +68,8 @@ function transpose_tensor(x::AbstractArray, d₁::Integer, d₂::Integer)
     return permutedims(x, ds)   
 end
 
-
+# function is already defined in NeuralVerification.jl (at github.com/phK3/NeuralVerification.jl/src/reachability/DeepPolyBounds/symbolic_interval_bounds.jl)
+#=
 function Base.split(H::AbstractHyperrectangle, index::Int)
     lbs, ubs = low(H), high(H)
     split_val = 0.5 * (lbs[index] + ubs[index])
@@ -83,7 +84,7 @@ function Base.split(H::AbstractHyperrectangle, index::Int)
 
     return domain1, domain2
 end
-
+=#
 
 """
 We say that the domain of a hyperrectangle is just itself.
