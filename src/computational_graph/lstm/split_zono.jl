@@ -327,11 +327,12 @@ function get_split_bounds(sz::SplitZonotope, splits::AbstractVector{<:Tuple{<:In
     lmask = l[split_idxs] .< l_split
     umask = u[split_idxs] .> u_split
 
-    # x ≥ l ↔ -x ≤ -l
+    # Gx + c ≥ l ↔ -Gx ≤ c - l
     A_l = .- z.generators[split_idxs[lmask], :]
-    b_l = .- l_split[lmask]
+    b_l = z.center[split_idxs[lmask]] .- l_split[lmask]
+    # Gx + c ≤ u ↔ Gx ≤ u - c
     A_u = z.generators[split_idxs[umask], :]
-    b_u = u_split[umask]
+    b_u = u_split[umask] .- z.center[split_idxs[umask]]
 
     A = [A_l; A_u]
     b = [b_l; b_u]
