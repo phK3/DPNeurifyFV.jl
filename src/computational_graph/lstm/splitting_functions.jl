@@ -80,21 +80,16 @@ function split_input(sz::SplitZonotope, input_shape, split_layer, split_idx)
 end
 
 
-function split_split_zonotope(sz::SplitZonotope, input_shape)
-    # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
-    importance = sum(abs.(sz.z.generators), dims=1)[1,:]
-    split_layer, split_idx = sz.generator_map[argmax(importance)]
+"""
+Ensures that the dictionaries for splits and bounds for each SplitZonotope in zs don't point to the same object.
 
-    if startswith(split_layer, "input")
-        zs, new_splits = split_input(sz, input_shape, split_layer, split_idx)
-    elseif startswith(split_layer, "relu")
-        zs, new_splits = split_relu_layer(sz, input_shape, split_layer, split_idx)
-    elseif startswith(split_layer, "LSTM")
-        zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx)
-    else
-        throw(ArgumentError("Splitting layer $(split_layer) not supported!"))
-    end
-    
+Modifies the dictionaries of the SplitZonotopes in zs!
+
+args:
+    sz - the original SplitZonotope
+    zs - vector of SplitZonotopes sz was split into
+"""
+function generate_separate_split_dicts!(sz::SplitZonotope, zs)
     # make sure children have distinct dictionaries for bounds and splits!
     for z in zs
         for (k, v) in sz.splits
@@ -110,7 +105,75 @@ function split_split_zonotope(sz::SplitZonotope, input_shape)
             end
         end
     end
+end
 
+
+"""
+Adds the splits to the split dictionaries of the split SplitZonotopes in zs.
+
+Modifies the dictionaries of the SplitZonotopes in zs!
+
+args:
+    sz - the original SplitZonotope
+    zs - vector of SplitZonotopes sz was split into
+    split_layer - the name of the layer where the new splits occured
+    new_splits - vector of (neuron_idx, l, u) describing the neuron in the split_layer with new lower and upper bounds on its input.
+"""
+function add_new_splits!(sz::SplitZonotope, zs, split_layer, new_splits)
+     # add new splits
+     if haskey(sz.splits, split_layer)
+        for (z, new_split) in zip(zs, new_splits)
+            push!(z.splits[split_layer], new_split)
+        end
+    else
+        for (z, new_split) in zip(zs, new_splits)
+            z.splits[split_layer] = [new_split]
+        end
+    end
+    
+end
+
+
+function split_split_zonotope(sz::SplitZonotope, input_shape)
+    # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
+    importance = sum(abs.(sz.z.generators), dims=1)[1,:]
+    split_layer, split_idx = sz.generator_map[argmax(importance)]
+
+    return split_split_zonotope(sz, input_shape, split_layer, split_idx)
+end
+
+
+function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split_idx)
+    if startswith(split_layer, "input")
+        zs, new_splits = split_input(sz, input_shape, split_layer, split_idx)
+    elseif startswith(split_layer, "relu")
+        zs, new_splits = split_relu_layer(sz, input_shape, split_layer, split_idx)
+    elseif startswith(split_layer, "LSTM")
+        zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx)
+    else
+        throw(ArgumentError("Splitting layer $(split_layer) not supported!"))
+    end
+    
+    #=
+    # make sure children have distinct dictionaries for bounds and splits!
+    for z in zs
+        for (k, v) in sz.splits
+            z.splits[k] = copy(v)
+        end
+
+        for (k, v) in sz.bounds
+            if k != "input"
+                # don't use the old bounds for input splitting!!!
+                # also input bounds get directly constructed, when the zono is initialized
+                # TODO: is this efficient???
+                z.bounds[k] = deepcopy(v)
+            end
+        end
+    end
+    =#
+    generate_separate_split_dicts!(sz, zs)
+
+    #=
     # add new splits
     if haskey(sz.splits, split_layer)
         for (z, new_split) in zip(zs, new_splits)
@@ -121,6 +184,8 @@ function split_split_zonotope(sz::SplitZonotope, input_shape)
             z.splits[split_layer] = [new_split]
         end
     end
+    =#
+    add_new_splits!(sz, zs, split_layer, new_splits)
 
     return zs  
 end
