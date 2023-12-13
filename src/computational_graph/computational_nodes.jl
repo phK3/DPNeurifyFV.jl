@@ -104,7 +104,7 @@ end
 function forward_node(solver, L::Tanh, x)
     return tanh.(x)
 end 
-    
+
 
 struct Softmax <: Node
     inputs::AbstractVector
@@ -260,7 +260,7 @@ struct AveragePool <: Node
 end
 
 
-function AveragePool(inputs, outputs, name, window; pad=0, stride=window)
+function AveragePool(inputs, outputs, name, window::NTuple; pad=0, stride=window)
     avg = Flux.MeanPool(window, pad=pad, stride=stride)
 
     return AveragePool(inputs, outputs, name, avg)
@@ -421,7 +421,7 @@ function my_gather(x::AbstractArray, inds::Vector{<:Integer}; axis=1)
     end
 
     return g
-end 
+end
 
 
 """
@@ -680,4 +680,11 @@ function forward_node(solver, L::LSTMLayer, x)
     return y, y_h, y_c
 end
 
+
+    
+
+
+    
+
+    
     
