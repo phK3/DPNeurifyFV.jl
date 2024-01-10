@@ -64,6 +64,7 @@ end
 
 LazySets.ngens(sz::SplitZonotope) = ngens(sz.z)
 
+
 """
 Returns the generator matrix of the SplitZonotope in the shape of the input that is overapproximated by it.
 
@@ -136,6 +137,7 @@ function Base.getindex(sz::SplitZonotope{N}, inds::AbstractArray{<:Integer}) whe
 end
 
 
+#=
 """
 Gets SplitZonotope corresponding to a more than one-dimensional index.
 
@@ -164,6 +166,49 @@ function get_tensor_idx(sz::SplitZonotope{N}, dims, inds...) where N <: Number
     # Ĝ[inds..., :] since we want all generators
     ẑ = Zonotope(ĉ[inds...], Ĝ[inds..., :])
     return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, shape)
+end
+=#
+
+
+"""
+Gets SplitZonotope corresponding to a more than one-dimensional index.
+
+If SplitZonotope encloses quantity x with shape (d₁, d₂), then 
+get_tensor_idx(sz, :, 1) will return the part of the SplitZonotope that
+encloses x[:,1].
+"""
+function get_tensor_idx(sz::SplitZonotope, inds...)
+    c = reshape(sz.z.center, sz.shape)
+    G = get_shaped_G(sz)
+
+    ĉ = c[inds...]
+    # can only do [inds, :] if last dim is batch dim and was not 1 in original shape!!!
+    Ĝ = G[inds..., :]
+
+    shape = size(ĉ)
+    ẑ = Zonotope(vec(ĉ), get_matrix_G(shape, Ĝ))
+    return SplitZonotope(ẑ, sz, shape)
+end
+
+
+"""
+Addition of a SplitZonotope sz and a tensor x of the same shape.
+
+In this constellation we can just add the two centers:
+    sẑ = < c + x, G >
+
+args:
+    sz - SplitZonotope
+    x - tensor of the same shape to be added
+
+returns:
+    sẑ - SplitZonotope translated by x
+"""
+function direct_sum(sz::SplitZonotope, x::AbstractArray)
+    c = reshape(sz.z.center, sz.shape)
+    # only store zonotopes for vectors
+    ĉ = vec(c .+ x)
+    return SplitZonotope(Zonotope(ĉ, sz.z.generators), sz)
 end
 
 
@@ -248,6 +293,17 @@ function expand_generators(sz₁::SplitZonotope, sz₂::SplitZonotope)
     ŝz₂ = SplitZonotope(z₂, sz₂.splits, sz₂.bounds, copy(generator_map), sz₂.split_A, sz₂.split_b, sz₂.shape)
 
     return ŝz₁, ŝz₂
+end
+
+
+"""
+Convert array x to a SplitZonotope with the same generators as sz.
+"""
+function expand_generators(sz::SplitZonotope, x::AbstractArray)
+    # convert x to a constant SplitZonotope with the same generators as sz
+    sx = direct_sum(zero(sz), x)
+
+    return sz, sx
 end
 
 
