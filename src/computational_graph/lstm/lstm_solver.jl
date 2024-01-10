@@ -146,3 +146,37 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
     n_steps, h, c = state
     return h, c 
 end
+
+
+for T in [Transpose, AveragePool, Squeeze, Gather]  # why can't we just use L::Union{Transpose, AveragePool} ??? would be prettier
+    """
+    Generically propagates a SplitZonotope forward through the computational graph.
+
+    This method only works for layers that don't add constants (or whose relaxations don't add constants)!
+    Currently those are
+    - Transpose
+    - AveragePool
+
+    For all other layers, custom methods need to be implemented!
+    (or at least a method without adding the bias has to be provided to propagate the generator matrix)
+
+    The propagation always follows the pattern of 
+    1) reshaping center and generator matrix to the input dims of the layer
+    2) applying the layer (w/o bias for the generator matrix)
+    3) reshaping to vector and matrix shape
+    4) returning SplitZonotope
+    """
+    @eval begin function forward_node(solver::LSTMSolver, L::$T, sz::SplitZonotope)
+            c = reshape(sz.z.center, sz.shape)
+            G = get_shaped_G(sz)
+
+            ĉ = forward_node(solver, L, c)
+            # TODO: can we define methods like Ĝ = forward_node(solver, L, G, bias=false) for propagating the generator matrix?
+            Ĝ = forward_node(solver, L, G)
+
+            shape = size(ĉ)
+            ẑ = Zonotope(vec(ĉ), get_matrix_G(shape, Ĝ))
+            return SplitZonotope(ẑ, sz, shape)
+        end
+    end
+end
