@@ -233,13 +233,25 @@ function verify_vnnlib_directory(solver::DPNFV, dir::String, params::PriorityOpt
 
         if netpath != old_netpath
             println("-- loading network ", netpath)
-            net = NNL.load_network_dict(CGType, string(dir, "/", netpath))
+            net = try
+                NNL.load_network_dict(CGType, string(dir, "/", netpath))
+            catch e
+                println("Error encountered: $e")
+                println("skipping network!")
+                push!(networks, netpath)
+                push!(properties, propertypath)
+                push!(results, "error")
+                all_steps[i] = 0
+                times[i] = 0
+                continue
+            end
+            
             old_netpath = netpath
         end
 
         # TODO: maybe include keyword arguments for ZoPE and DPNeurifyFV?
         time = @elapsed x_star, y_star, steps, result = verify_vnnlib(solver, net, string(dir, "/", propertypath), params, 
-                                                                split=split, concrete_sample=concrete_sample, eager=eager)
+                                                                      split=split, concrete_sample=concrete_sample, eager=eager)
 
         push!(networks, netpath)
         push!(properties, propertypath)
