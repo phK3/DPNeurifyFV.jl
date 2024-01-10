@@ -6,7 +6,15 @@ struct LSTMSolver <: Solver end
 function forward_node(solver::LSTMSolver, L::Linear, sz::SplitZonotope)
     # TODO: use L.dense, but somehow ignore the bias?
     # TODO: figure out way for Float32/Float64 conversion
-    ẑ = LazySets.affine_map(Float64.(L.dense.weight), sz.z, Float64.(L.dense.bias))
+    
+    # CAN'T use LazySets.affine_map since, it only yields **one** generator (i.e. summarizes the generators)
+    # when the result is only one-dimensional (see https://github.com/JuliaReach/LazySets.jl/blob/ded315e296ab240a54176f07477343cdfe3f95b1/src/Interfaces/AbstractZonotope.jl#L288)
+    # ẑ = LazySets.affine_map(Float64.(L.dense.weight), sz.z, Float64.(L.dense.bias))
+
+    # therefore, we do it ourself:
+    Ĝ = L.dense.weight * sz.z.generators
+    ĉ = L.dense.weight * sz.z.center .+ L.dense.bias
+    ẑ = Zonotope(ĉ, Ĝ)
 
     ĉ = L.dense(reshape(sz.z.center, sz.shape))
     shape = size(ĉ)
