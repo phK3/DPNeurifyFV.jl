@@ -86,7 +86,8 @@ function forward_node(solver::LSTMSolver, L::Flatten, sz::SplitZonotope{N}) wher
 end
 
 
-function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Tuple{Integer, SplitZonotope, SplitZonotope}, sx::SplitZonotope; n_samples=100)
+function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Union{Tuple{Integer, SplitZonotope, SplitZonotope},Tuple{Integer, AbstractArray, AbstractArray}}, 
+                      sx::SplitZonotope; n_samples=100)
     hs4, input_size = size(lstm_cell.linear_ih.dense.weight)
     hidden_size = floor(Integer, hs4 / 4)
         
@@ -113,7 +114,8 @@ function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Tupl
     # --> generator corresponding to 5th lstm unrolling 
     # --> for 1st σ(x)*y non-linearity
     # --> for 4th neuron in that σ(x)*y layer 
-    fc = propagate_σ_y(g_f, g_c, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples)
+    ĝ_f, sĉ = expand_generators(g_f, sc)
+    fc = propagate_σ_y(ĝ_f, sĉ, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples)
     ic = propagate_σ_tanh(g_in, g_c, lstm_cell.name * "_$(i)_σtanh_1", n_samples=n_samples)
     ĉ = direct_sum(fc, ic)
 
@@ -125,20 +127,19 @@ end
 
 
 function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonotope; n_samples=100)
-    cell = lstm_layer.cell
+    # TODO: cleaner lstm_cell/flux_cell construct?
+    lstm_cell = extract_cell(lstm_layer)
+    flux_cell = lstm_layer.cell
     # counter for unrolling and initial state
-    state = (0, cell.state0...)
+    state = (0, flux_cell.state0...)
 
     # last dimension is length of the sequence
     timesteps = sx.shape[end]
     for i in 1:timesteps
-        sz_lstm = get_tensor_idx(sx, sx.shape, :, i)
-        if state == (0, 0., 0.)
-            # need to generate SplitZono zeros for calculation
-            state = (0, zero(sz_lstm), zero(sz_lstm))
-        end
+        # shape is (features, batch, sequence_length)
+        sz_lstm = get_tensor_idx(sx, :, :, i)
 
-        h, c = forward_node(solver, cell, state, sz_lstm, n_samples=n_samples)
+        h, c = forward_node(solver, lstm_cell, state, sz_lstm, n_samples=n_samples)
         state = (i+1, h, c)
     end
 
