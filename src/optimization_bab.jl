@@ -65,7 +65,8 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
         res = overestimate_cell(cell)
         #println(res)
         val, sym_out = res
-        enqueue!(cells, sym_out, val)
+        # need to add timestamp to have strict ordering even if values are the same.
+        enqueue!(cells, sym_out, (val, time()))
     end
 
     best_lower_bound = -Inf
@@ -78,7 +79,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
             GC.gc()
         end
 
-        cell, value = peek(cells) # peek instead of dequeue to get value, is there a better way?
+        cell, (value, timestamp) = peek(cells) # peek instead of dequeue to get value, is there a better way?
         @assert value + TOL[] >= best_lower_bound string("Our highest upper bound must be greater than the highest achieved value. Upper bound: ", value, " achieved value: ", best_lower_bound)
         dequeue!(cells)
 
@@ -142,11 +143,11 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
             end
 
             new_value, new_sym_out = overestimate_cell(new_cell)
-            enqueue!(cells, new_sym_out, new_value)
+            enqueue!(cells, new_sym_out, (new_value, time()))
         end
     end
     # The largest value in our queue is the approximate optimum
-    cell, value = peek(cells)
+    cell, (value, timestamp) = peek(cells)
     input_in_cell, lower_bound = achievable_value(cell)
     if lower_bound > best_lower_bound
         best_lower_bound = lower_bound
