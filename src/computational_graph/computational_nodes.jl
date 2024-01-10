@@ -415,7 +415,7 @@ function my_gather(x::AbstractArray, inds::Vector{<:Integer}; axis=1)
     g = Flux.NNlib.gather(x, inds)
     g = transpose_tensor(g, axis, ndims(x))
 
-    if lenth(inds) == 1
+    if length(inds) == 1
         # TODO: can we get rid of this special case?
         g = g[:,:,1]
     end
@@ -619,7 +619,8 @@ struct LSTMCell <: Node
     name::String
     linear_ih::Linear
     linear_hh::Linear
-    state0::AbstractArray
+    # (hidden_state, cell_state)
+    state0::Tuple{AbstractArray, AbstractArray}
 end
 
 
@@ -628,10 +629,11 @@ function LSTMCell(inputs, outputs, name, Wih::AbstractArray{<:N}, Whh::AbstractA
     hidden_size = floor(Integer, hs4 / 4)
 
     linear_ih = Linear([], [], name * "_linear_ih", Wih, b)
-    linear_hh = Linear([], [], name * "_linear_hh", Whh, zeros(hs4))
+    linear_hh = Linear([], [], name * "_linear_hh", Whh, zeros(eltype(Whh), hs4))
 
     if isnothing(state0)
-        state0 = zeros(n_in)
+        # (hidden_state, cell_state)
+        state0 = (zeros(hidden_size), zeros(hidden_size))
     end
 
     return LSTMCell(inputs, outputs, name, linear_ih, linear_hh, state0)
