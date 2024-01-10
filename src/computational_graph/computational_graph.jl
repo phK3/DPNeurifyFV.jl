@@ -30,7 +30,7 @@ struct ConcreteExecution <: Solver end
 
 
 function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node, input_shape, output_shape)
-    @assert length(in_node.inputs) == 1 "Input node should not have the iput value as input! Has $(in_node.inputs)"
+    @assert length(in_node.inputs) == 1 "Input node should not have the input value as input! Has $(in_node.inputs)"
     @assert length(out_node.outputs) == 1 "Output node should only have one output value! Has $(out_node.outputs)"
     
     node_dict = Dict()
@@ -113,6 +113,15 @@ end
 """
 Propagates values given in the propagation dictionary through the computational graph.
 The dictionary is modified in the process and contains the results of the computation.
+
+args:
+    solver - the solver to use for propagation
+    nn - the computational graph to propagate through
+    node - the output node for which we want to obtain the propagation results
+
+kwargs:
+    prop_dict - the dictionary of intermediate output values (can be empty)
+    verbosity
 """
 function propagate!(solver, nn::CompGraph, node::Node; prop_dict=nothing, verbosity=0)
     # should we only allow non-empty or non-nothing dicts?
