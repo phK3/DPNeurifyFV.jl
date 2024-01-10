@@ -64,6 +64,52 @@ end
 
 LazySets.ngens(sz::SplitZonotope) = ngens(sz.z)
 
+"""
+Returns the generator matrix of the SplitZonotope in the shape of the input that is overapproximated by it.
+
+If the SplitZonotope overapproximates a tensor of shape (d₁, d₂, ..., dₙ), the generator matrix will have shape 
+(d₁, d₂, ..., dₙ, n_gens), as the error terms will be stacked in the batch dimension.
+
+If the overapproximated tensor has shape (d₁, d₂, ..., dₙ, 1), assume that the last dimension is the batch dimension.
+I.e. the generator matrix will then still have shape (d₁, d₂, ..., dₙ, n_gens).
+
+!!! be careful, if the last dimension is 1 but not the batch dimension !!!
+
+args:
+    sz - the SplitZonotope from which we want to get the shaped generator matrix
+
+returns:
+    G - the generator matrix in the shape of the overapproximated input with the error terms stacked in the batch dimension.
+"""
+function get_shaped_G(sz::SplitZonotope)
+    # put equations into batch dimension
+    # TODO: maybe explicitly track batch dimension entry in a member variable of SplitZonotope?
+    if (sz.shape[end] == 1) && length(sz.shape) > 1
+        G = reshape(sz.z.generators, (sz.shape[1:end-1]..., :))
+    else
+        G = reshape(sz.z.generators, (sz.shape..., :))
+    end
+
+    return G
+end
+
+
+"""
+Converts a generator matrix in the shape of the overapproximated input of a SplitZonotope with the error terms stacked in the
+batch dimension to a regular matrix (tensor of order 2) to be stored in a Zonotope.
+
+args:
+    shape - shape of the overapproximated input (i.e. without the batch dimension/with 1 at the place of the batch dimension)
+    G - generator matrix in the shape of the overapproximated tensor
+
+returns:
+    Ĝ - reshaped G to a regular 2d matrix
+"""
+function get_matrix_G(shape::NTuple, G::AbstractArray)
+    # we need as many rows as the zonotope has dimensions
+    return reshape(G, (prod(shape), :))
+end
+
 
 """
 Returns a SplitZonotope representing the 0ⁿ vector with a zero generator matrix
