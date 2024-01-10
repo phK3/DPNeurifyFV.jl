@@ -24,10 +24,29 @@ end
 
 
 function forward_node(solver::LSTMSolver, L::AddConst, sz::SplitZonotope)
+    return direct_sum(sz, L.c)
+end
+
+
+function forward_node(solver::LSTMSolver, L::Convolution, sz::SplitZonotope)
     c = reshape(sz.z.center, sz.shape)
-    # only store zonotopes for vectors
-    ĉ = vec(c .+ L.c)
-    return SplitZonotope(Zonotope(ĉ, sz.z.generators), sz)
+    ĉ = L.conv(c)
+
+    # put equations into batch dimension
+    if (sz.shape[end] == 1) && length(sz.shape) > 1
+        G = reshape(sz.z.generators, (sz.shape[1:end-1]..., :))
+    else
+        G = reshape(sz.z.generators, (sz.shape..., :))
+    end
+
+    # need to handle conv ourselves, because we don't want to add bias to generator matrix
+    # see https://github.com/FluxML/Flux.jl/blob/f4b47611cb731b41879a0af10439026a67c942e1/src/layers/conv.jl#L197-L221
+    Ĝ = Flux.conv(G, L.conv.weight, Flux.conv_dims(L.conv, G))
+
+    shape = size(ĉ)
+
+    ẑ = Zonotope(Float64.(vec(ĉ)), length(Ĝ) > 0 ? Float64.(reshape(Ĝ, (:, size(Ĝ)[end]))) : Matrix{Float64}(undef, length(ĉ), 0))
+    return SplitZonotope(ẑ, sz, shape)
 end
 
 
