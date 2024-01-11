@@ -124,7 +124,7 @@ returns:
 """
 function get_relaxation_σ_tanh(lx, ux, ly, uy; n_samples=100)
     h(x,y) = σ(x)*tanh(y)
-    a, b, c = get_linear_approximation(lx, ux, ly, ux, h, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, h, n_samples=n_samples)
     xs, ys = get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
     ϵs = h.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
@@ -198,7 +198,7 @@ returns:
 """
 function get_relaxation_σ_y(lx, ux, ly, uy; n_samples=100)
     g(x,y) = σ(x)*y
-    a, b, c = get_linear_approximation(lx, ux, ly, ux, g, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, g, n_samples=n_samples)
     xs, ys = get_critical_points_σ_y(lx, ux, ly, uy, a, b, c)
     ϵs = g.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
@@ -207,7 +207,7 @@ function get_relaxation_σ_y(lx, ux, ly, uy; n_samples=100)
 
     c += 0.5 * (ϵₗ + ϵᵤ)
     ϵ = 0.5 * (ϵᵤ - ϵₗ)
-    
+
     return a, b, c, ϵ
 end
 
