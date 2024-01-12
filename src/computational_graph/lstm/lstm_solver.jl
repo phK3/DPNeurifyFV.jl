@@ -113,7 +113,7 @@ function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Unio
     # (lstm_name_5_σy_1, 4)  
     # --> generator corresponding to 5th lstm unrolling 
     # --> for 1st σ(x)*y non-linearity
-    # --> for 4th neuron in that σ(x)*y layer 
+    # --> for 4th neuron in that σ(x)*y layer
     ĝ_f, sĉ = expand_generators(g_f, sc)
     fc = propagate_σ_y(ĝ_f, sĉ, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples)
     ic = propagate_σ_tanh(g_in, g_c, lstm_cell.name * "_$(i)_σtanh_1", n_samples=n_samples)
@@ -137,7 +137,8 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
     timesteps = sx.shape[end]
     for i in 1:timesteps
         # shape is (features, batch, sequence_length)
-        sz_lstm = get_tensor_idx(sx, :, :, i)
+        # need index [:,:,i:i] s.t. batch dimension is retained ([:,:,i] would return one less dimension)
+        sz_lstm = get_tensor_idx(sx, :, :, i:i)
 
         h, c = forward_node(solver, lstm_cell, state, sz_lstm, n_samples=n_samples)
         state = (i+1, h, c)
