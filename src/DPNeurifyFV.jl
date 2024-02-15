@@ -48,6 +48,15 @@ println("precompiling...")
 end
 
 
+# use this env, whenever you use Gurobi, so output doesn't get cluttered by licensing information
+const GRB_ENV = Ref{Gurobi.Env}()
+
+function __init__()
+    # needs to be created at runtime
+    GRB_ENV[] = Gurobi.Env()
+end
+
+
 export 
     NetworkNegPosIdx,
     DPNFV,
