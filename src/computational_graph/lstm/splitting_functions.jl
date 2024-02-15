@@ -154,38 +154,14 @@ function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split
         throw(ArgumentError("Splitting layer $(split_layer) not supported!"))
     end
     
-    #=
-    # make sure children have distinct dictionaries for bounds and splits!
-    for z in zs
-        for (k, v) in sz.splits
-            z.splits[k] = copy(v)
-        end
-
-        for (k, v) in sz.bounds
-            if k != "input"
-                # don't use the old bounds for input splitting!!!
-                # also input bounds get directly constructed, when the zono is initialized
-                # TODO: is this efficient???
-                z.bounds[k] = deepcopy(v)
-            end
-        end
-    end
-    =#
     generate_separate_split_dicts!(sz, zs)
-
-    #=
-    # add new splits
-    if haskey(sz.splits, split_layer)
-        for (z, new_split) in zip(zs, new_splits)
-            push!(z.splits[split_layer], new_split)
-        end
-    else
-        for (z, new_split) in zip(zs, new_splits)
-            z.splits[split_layer] = [new_split]
-        end
-    end
-    =#
     add_new_splits!(sz, zs, split_layer, new_splits)
 
     return zs  
+end
+
+
+# just a dummy method for now
+function split_multiple_times(sz::SplitZonotope, n)
+    return [sz]
 end
