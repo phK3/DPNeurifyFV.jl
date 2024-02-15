@@ -236,7 +236,7 @@ function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs,
                                           pads=nothing, strides=nothing)
     @assert auto_pad == "NOTSET" "auto_pad currently not supported! (node $name)"
     @assert ceil_mode == 0 "only ceil_mode = 0 supported! (node $name)"
-    @assert count_include_pad == 0 "only count_include_pad = 0 supported! (node $name)"
+    @assert count_include_pad == 0 || all(pads .== 0) "only count_include_pad = 0 supported! (node $name) (exception, when pads = 0 in every entry)"
     @assert isnothing(dilations) "dilations not supported! (node $name)"
     println("parsing AveragePool!")
 
