@@ -64,6 +64,13 @@ end
 
 LazySets.ngens(sz::SplitZonotope) = ngens(sz.z)
 
+# returns radius of input domain of the split zonotope
+function LazySets.radius(sz::SplitZonotope)
+    l, u = sz.bounds["input"]
+    H = Hyperrectangle(low=l, high=u)
+    return radius(H)
+end
+
 
 """
 Returns the generator matrix of the SplitZonotope in the shape of the input that is overapproximated by it.
