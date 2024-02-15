@@ -407,6 +407,52 @@ function Gather(inputs, outputs, name, inds; axis=1)
 end
 
 
+
+"""
+!!! taken from https://github.com/FluxML/ONNX.jl/blob/2a676647d26f458cf026b6352065223e059c8a14/src/ops.jl#L137 !!!
+
+    take(data, idxs; dim=ndims(data))
+
+Take elements from an array along an axis. For example, for a 4D data
+and dim=3, it is roughly equivalent to `data[:, :, idxs, :]`, but allows
+multidimensional idxs. See `numpy.take` for a more detailed explanation
+of the concept.
+
+In the context of ONNX, `take` is used to implement Gather operation.
+We do NOT record this function directly to the tape during loading though,
+but instead use a more ONNX-friendly wrapper `onnx_gather()`.
+
+Note: in ONNX, Gather is different from GatherElements, GatherND and
+Julia's `NNlib.gather()`.
+"""
+function take(
+        data::AbstractArray{T, N}, idxs::AbstractArray{Int, M};
+        dim=ndims(data)) where {T, N, M}
+    if length(idxs) == 1
+        # special case, works as getindex
+        return data[idxs]
+    end
+    # we will take slices of data of this size
+    size_before = (size(data)[1:dim-1]...,)
+    size_after = (size(data)[dim+1:ndims(data)]...,)
+    # and put them into output array at out[:, :, ..., idxs[i, j, ...]]
+    out = similar(data, (size_before..., size(idxs)..., size_after...))
+    colons_before = [(:) for _=1:dim-1]
+    colons_after = [(:) for _=dim+1:ndims(data)]
+    # iteration over idxs doesn't depend on data or dimension
+    # we iterate over the last index purely due to memory layout
+    for i=1:size(idxs, ndims(idxs))
+        # R - slice of idxs (not slice of data!)
+        R = [[(:) for _=1:ndims(idxs)-1]..., i]
+        # ensure I = idxs[R...] is itself an array and not a scalar
+        I = [idxs[R...]...,]
+        slice = data[colons_before..., I, colons_after...]
+        out[colons_before..., R..., colons_after...] = slice
+    end
+    return out
+end
+
+
 function my_gather(x::AbstractArray, inds::Vector{<:Integer}; axis=1)
     axis = ndims(x) - axis  # NCHW -> WHCN
     x = transpose_tensor(x, axis, ndims(x))
@@ -475,7 +521,7 @@ end
 
 function my_gather(x::AbstractArray, inds::Array{N, 0}; axis=1) where N<:Number
     # special case for zero-dim arrays (arrays holding just one scalar value)
-    # TOOD: can we somehow get rid of that special case???
+    # TODO: can we somehow get rid of that special case???
     axis = ndims(x) - axis  # NCHW -> WHCN
     inds = get_positive_index.(inds, size(x, axis))
     idx = Tuple(ifelse(i == axis, inds[], :) for i in 1:ndims(x))

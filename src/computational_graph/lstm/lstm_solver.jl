@@ -137,7 +137,7 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
     timesteps = sx.shape[end]
     for i in 1:timesteps
         # shape is (features, batch, sequence_length)
-        # need index [:,:,i:i] s.t. batch dimension is retained ([:,:,i] would return one less dimension)
+        # need index [:,:,i:i] s.t. last dimension is retained ([:,:,i] would return one less dimension)
         sz_lstm = get_tensor_idx(sx, :, :, i:i)
 
         h, c = forward_node(solver, lstm_cell, state, sz_lstm, n_samples=n_samples)

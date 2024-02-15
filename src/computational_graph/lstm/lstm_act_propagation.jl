@@ -1,6 +1,5 @@
 
 
-
 function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100)
     x = sx.z
     y = sy.z
