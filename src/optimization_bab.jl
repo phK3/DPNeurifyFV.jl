@@ -158,6 +158,125 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
 end
 
 
+"""
+overestimate_cell : cell -> (x, lower_bound, upper_bound, cell_out) returns concrete input x for current lower bound and overestimate of value as well as cell propagated through the nn
+"""
+function NPO.general_priority_optimization(start_cell, overestimate_cell, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)   
+    # set timer
+    t_start = time()
+
+    initial_cells = split_multiple_times(start_cell, params.initial_splits)
+    # Create your queue, then add your original new_cells
+    cells = PriorityQueue(Base.Order.Reverse) # pop off largest first
+
+
+    best_lower_bound = -Inf
+    best_x = nothing
+
+    # add with priority
+    for cell in initial_cells
+        res = overestimate_cell(cell)
+        #println(res)
+        x, lower_bound, upper_bound, sym_out = res
+        # need to add timestamp to have strict ordering even if values are the same.
+        enqueue!(cells, sym_out, (upper_bound, time()))
+
+        if lower_bound > best_lower_bound
+            best_lower_bound = lower_bound
+            best_x = x
+        end
+    end
+
+    
+    # For n_steps dequeue a cell, split it, and then
+    for i = 1:params.max_steps
+
+        # if less than 100 MB of RAM, run garbage collection
+        if Sys.free_memory() / 2^20 <= 500
+            GC.gc()
+        end
+
+        cell, (value, timestamp) = peek(cells) # peek instead of dequeue to get value, is there a better way?
+        @assert value + TOL[] >= best_lower_bound string("Our highest upper bound must be greater than the highest achieved value. Upper bound: ", value, " achieved value: ", best_lower_bound)
+        dequeue!(cells)
+
+        # We've passed some threshold on our upper bound that is satisfactory, so we return
+        if value < upper_bound_threshold
+            println("Returning early because of upper bound threshold")
+            return best_x, best_lower_bound, value, i
+        end
+
+        # Early stopping
+        if params.early_stop
+            t_now = time()
+            elapsed_time = t_now - t_start
+
+            if i % params.stop_frequency == 0
+                input_in_cell, lower_bound = achievable_value(cell)
+                if lower_bound > best_lower_bound
+                    best_lower_bound = lower_bound
+                    best_x = input_in_cell
+                end
+
+                if ((value .- lower_bound) <= params.stop_gap
+                    || lower_bound > lower_bound_threshold
+                    || elapsed_time >= params.timeout)
+
+                    print_progress(params.verbosity, i, lower_bound, best_lower_bound,
+                                    lower_bound_threshold, value, cell, elapsed_time)
+
+                    return best_x, best_lower_bound, value, i
+                end
+            end
+
+            if params.verbosity >= 1 && i % params.print_frequency == 0
+                print_progress(params.verbosity, i, lower_bound, best_lower_bound,
+                                lower_bound_threshold, value, cell, elapsed_time)
+            end
+
+            if params.plotting && i % params.plot_frequency == 0
+                push!(params.history_vals, value)
+                push!(params.history_lbs, best_lower_bound)
+                push!(params.history_ts, elapsed_time)
+            end
+        end
+
+        new_cells = split(cell)
+        # Enqueue each of the new cells
+        for new_cell in new_cells
+            x, lower_bound, upper_bound, sym_out = overestimate_cell(new_cell)
+
+            # If you've made the max objective cell tiny
+            # break (otherwise we end up with zero radius cells)
+            if radius(new_cell) < NeuralVerification.TOL[]
+                # Return a concrete value and the upper bound from the parent cell
+                # that was just dequeued, as it must have higher value than all other cells
+                # that were on the queue, and they constitute a tiling of the space
+                if lower_bound > best_lower_bound
+                    best_lower_bound = lower_bound
+                    best_x = x
+                end
+
+                return best_x, best_lower_bound, value, i
+            end
+
+            enqueue!(cells, sym_out, (upper_bound, time()))
+        end
+    end
+    
+    # shouldn't need this case anymore as all cells achievable value is evaluated before they are put in the queue
+    # The largest value in our queue is the approximate optimum
+    #cell, (value, timestamp) = peek(cells)
+    #input_in_cell, lower_bound = achievable_value(cell)
+    #if lower_bound > best_lower_bound
+    #    best_lower_bound = lower_bound
+    #    best_x = input_in_cell
+    #end
+
+    return best_x, best_lower_bound, value, params.max_steps
+end
+
+
 function NPO.general_priority_optimization(start_cell, relaxed_optimize_cell,
                                        evaluate_objective, params::PriorityOptimizerParameters,
                                        maximize; bound_threshold_realizable=(maximize ? Inf : -Inf),
