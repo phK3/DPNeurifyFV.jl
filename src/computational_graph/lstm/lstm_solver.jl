@@ -19,7 +19,12 @@ function forward_node(solver::LSTMSolver, L::Linear, sz::SplitZonotope)
     ĉ = L.dense(reshape(sz.z.center, sz.shape))
     shape = size(ĉ)
 
-    return SplitZonotope(ẑ, sz, shape)
+    sẑ = SplitZonotope(ẑ, sz, shape)
+    if L.outputs == ["spec_out"]
+        l, u = get_bounds!(sẑ, "spec_out")
+    end
+
+    return sẑ
 end
 
 

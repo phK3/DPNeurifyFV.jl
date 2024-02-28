@@ -11,8 +11,9 @@ args:
 kwargs:
     opt - the optimizer for the LP
     opt_idx - the dimension of the SplitZonotope to maximize
+    with_output_bounds - include known output bounds if available
 """
-function build_model(sz::SplitZonotope; opt=Gurobi.Optimizer, opt_idx=1, silent=true, maximize=true)
+function build_model(sz::SplitZonotope; opt=Gurobi.Optimizer, opt_idx=1, silent=true, maximize=true, with_output_bounds=true)
     z = sz.z
     m, n = size(sz.split_A)
 
@@ -28,6 +29,13 @@ function build_model(sz::SplitZonotope; opt=Gurobi.Optimizer, opt_idx=1, silent=
 
     A = [sz.split_A zeros(m, ngens(z) - n)]
     @constraint(model, split_constraint, A * x .<= sz.split_b)
+    
+    if with_output_bounds && ("spec_out" in keys(sz.bounds))
+        l, u = sz.bounds["spec_out"]
+        @constraint(model, out_ub, z.generators * x .+ z.center .<= u)
+        @constraint(model, out_lb, z.generators * x .+ z.center .>= l)
+    end
+
     return model
 end
 
@@ -93,14 +101,14 @@ returns:
       bds - a vector of concrete bounds for each value overapproximated by the SplitZonotope
       xs - a matrix where each column is a concrete input for the network derived from the LP maximization for each value overapproximated by the zonotope
 """
-function optimize_bounds(sz::SplitZonotope; upper=true, opt=() -> Gurobi.Optimizer(GRB_ENV[]))
+function optimize_bounds(sz::SplitZonotope; upper=true, opt=() -> Gurobi.Optimizer(GRB_ENV[]), with_output_bounds=true)
     n_in = findlast(x -> first(x) == "input", sz.generator_map)  # all input vars are in the input layer
     n_out = sz.shape[1]
     bds = zeros(n_out)
     X = zeros(n_in, n_out)  # one column vector for the maximizer/minimizer of each output
 
     for i in 1:n_out
-        model = build_model(sz, opt_idx=i, maximize=upper, opt=opt)
+        model = build_model(sz, opt_idx=i, maximize=upper, opt=opt, with_output_bounds=with_output_bounds)
         optimize!(model)
 
         if termination_status(model) == OPTIMAL
@@ -112,6 +120,12 @@ function optimize_bounds(sz::SplitZonotope; upper=true, opt=() -> Gurobi.Optimiz
         else
             throw(InvalidStateException("The LP was not infeasible and we did not find an optimal solution", :not_infeasible_not_optimal))
         end
+    end
+
+    if with_output_bounds && ("spec_out" in keys(sz.bounds))
+        # update stored bounds
+        l, u = sz.bounds["spec_out"]
+        sz.bounds["spec_out"] = upper ? (copy(l), min.(u, bds)) : (max.(l, bds), copy(u))
     end
 
     l, u = sz.bounds["input"]
