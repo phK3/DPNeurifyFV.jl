@@ -52,7 +52,7 @@ end
 """
 overestimate_cell : cell -> (val, cell_out) returns overestimate of value as well as cell propagated through the nn
 """
-function NPO.general_priority_optimization(start_cell, overestimate_cell, achievable_value, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)   
+function NPO.general_priority_optimization(start_cell, overestimate_cell, achievable_value, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)
     # set timer
     t_start = time()
 
@@ -106,7 +106,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
                     || elapsed_time >= params.timeout)
 
                     print_progress(params.verbosity, i, lower_bound, best_lower_bound,
-                                    lower_bound_threshold, value, cell, elapsed_time)
+                        lower_bound_threshold, value, cell, elapsed_time)
 
                     return best_x, best_lower_bound, value, i
                 end
@@ -114,7 +114,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, achiev
 
             if params.verbosity >= 1 && i % params.print_frequency == 0
                 print_progress(params.verbosity, i, lower_bound, best_lower_bound,
-                                lower_bound_threshold, value, cell, elapsed_time)
+                    lower_bound_threshold, value, cell, elapsed_time)
             end
 
             if params.plotting && i % params.plot_frequency == 0
@@ -161,7 +161,7 @@ end
 """
 overestimate_cell : cell -> (x, lower_bound, upper_bound, cell_out) returns concrete input x for current lower bound and overestimate of value as well as cell propagated through the nn
 """
-function NPO.general_priority_optimization(start_cell, overestimate_cell, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)   
+function NPO.general_priority_optimization(start_cell, overestimate_cell, params::PriorityOptimizerParameters, lower_bound_threshold, upper_bound_threshold, split)
     # set timer
     t_start = time()
 
@@ -170,6 +170,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
     cells = PriorityQueue(Base.Order.Reverse) # pop off largest first
 
 
+    lower_bound = -Inf
     best_lower_bound = -Inf
     best_x = nothing
 
@@ -187,7 +188,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
         end
     end
 
-    
+
     # For n_steps dequeue a cell, split it, and then
     for i = 1:params.max_steps
 
@@ -212,18 +213,12 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
             elapsed_time = t_now - t_start
 
             if i % params.stop_frequency == 0
-                input_in_cell, lower_bound = achievable_value(cell)
-                if lower_bound > best_lower_bound
-                    best_lower_bound = lower_bound
-                    best_x = input_in_cell
-                end
-
                 if ((value .- lower_bound) <= params.stop_gap
                     || lower_bound > lower_bound_threshold
                     || elapsed_time >= params.timeout)
 
                     print_progress(params.verbosity, i, lower_bound, best_lower_bound,
-                                    lower_bound_threshold, value, cell, elapsed_time)
+                        lower_bound_threshold, value, cell, elapsed_time)
 
                     return best_x, best_lower_bound, value, i
                 end
@@ -231,7 +226,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
 
             if params.verbosity >= 1 && i % params.print_frequency == 0
                 print_progress(params.verbosity, i, lower_bound, best_lower_bound,
-                                lower_bound_threshold, value, cell, elapsed_time)
+                    lower_bound_threshold, value, cell, elapsed_time)
             end
 
             if params.plotting && i % params.plot_frequency == 0
@@ -246,24 +241,24 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
         for new_cell in new_cells
             x, lower_bound, upper_bound, sym_out = overestimate_cell(new_cell)
 
+            if lower_bound > best_lower_bound
+                best_lower_bound = lower_bound
+                best_x = x
+            end
+
             # If you've made the max objective cell tiny
             # break (otherwise we end up with zero radius cells)
             if radius(new_cell) < NeuralVerification.TOL[]
                 # Return a concrete value and the upper bound from the parent cell
                 # that was just dequeued, as it must have higher value than all other cells
                 # that were on the queue, and they constitute a tiling of the space
-                if lower_bound > best_lower_bound
-                    best_lower_bound = lower_bound
-                    best_x = x
-                end
-
                 return best_x, best_lower_bound, value, i
             end
 
             enqueue!(cells, sym_out, (upper_bound, time()))
         end
     end
-    
+
     # shouldn't need this case anymore as all cells achievable value is evaluated before they are put in the queue
     # The largest value in our queue is the approximate optimum
     #cell, (value, timestamp) = peek(cells)
@@ -277,15 +272,13 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
 end
 
 
-function NPO.general_priority_optimization(start_cell, relaxed_optimize_cell,
-                                       evaluate_objective, params::PriorityOptimizerParameters,
-                                       maximize; bound_threshold_realizable=(maximize ? Inf : -Inf),
-                                       bound_threshold_approximate=(maximize ? -Inf : Inf),
-                                       split=split_largest_interval)
+function NPO.general_priority_optimization(start_cell, relaxed_optimize_cell, evaluate_objective, params::PriorityOptimizerParameters, maximize; 
+                                           bound_threshold_realizable=(maximize ? Inf : -Inf), bound_threshold_approximate=(maximize ? -Inf : Inf),
+                                           split=split_largest_interval)
     if maximize
         return general_priority_optimization(start_cell, relaxed_optimize_cell, evaluate_objective,
-                                             params, bound_threshold_realizable,
-                                             bound_threshold_approximate, split)
+            params, bound_threshold_realizable,
+            bound_threshold_approximate, split)
     else
         # overestimate_cell = cell -> -relaxed_optimize_cell(cell)
         overestimate_cell = cell -> begin
@@ -297,8 +290,26 @@ function NPO.general_priority_optimization(start_cell, relaxed_optimize_cell,
             return input, -result
         end
         x, lower, upper, steps = general_priority_optimization(start_cell, overestimate_cell,
-                                                               neg_evaluate_objective, params,
-                                                               -bound_threshold_realizable,
+            neg_evaluate_objective, params,
+            -bound_threshold_realizable,
+            -bound_threshold_approximate, split)
+        return x, -upper, -lower, steps
+    end
+end
+
+
+function NPO.general_priority_optimization(start_cell, overapprox_with_input, params::PriorityOptimizerParameters, maximize; 
+                                           bound_threshold_realizable=(maximize ? Inf : -Inf), bound_threshold_approximate=(maximize ? -Inf : Inf),
+                                           split=split_largest_interval)
+    if maximize
+        return general_priority_optimization(start_cell, overapprox_with_input, params, bound_threshold_realizable, bound_threshold_approximate, split)
+    else
+        overapprox_with_input_neg = cell -> begin
+            x, lower_bound, upper_bound, out_cell = overapprox_with_input(cell)
+            return x, -upper_bound, -lower_bound, out_cell
+        end
+
+        x, lower, upper, steps = general_priority_optimization(start_cell, overapprox_with_input_neg, params, -bound_threshold_realizable,
                                                                -bound_threshold_approximate, split)
         return x, -upper, -lower, steps
     end
@@ -312,7 +323,7 @@ end
 
 
 function optimize_linear_deep_poly(network, input_set, coeffs, params::PriorityOptimizerParameters; maximize=true, solver=DPNFV(),
-                              split=split_largest_interval, concrete_sample=:Center)
+    split=split_largest_interval, concrete_sample=:Center)
     min_sign_flip = maximize ? 1.0 : -1.0
 
     # should we include the preprocessing in the timout???
@@ -332,7 +343,8 @@ function optimize_linear_deep_poly(network, input_set, coeffs, params::PriorityO
         # since we used min_sign_flip, when merging the coeffs into the NN, we need to
         # add min_sign_flip here too
         achievable_value = cell -> (domain(cell).center, min_sign_flip * compute_output(network, domain(cell).center)[1])
-    else concrete_sample == :BoundsMaximizer
+    else
+        concrete_sample == :BoundsMaximizer
         function achievable_value(cell)
             x_star = maximizer(cell)
             x_center = domain(cell).center
@@ -366,8 +378,8 @@ If the upper bound on the maximum is < 0 -> contained in polytope.
 If we find a point that violates one constraint of the polytope -> not contained in polytope.
 """
 function contained_within_polytope_deep_poly(network, input_set, polytope, params::PriorityOptimizerParameters; solver=DPNeurifyFV(),
-                                            split=split_largest_interval, concrete_sample=:Center)
-    min_sign_flip = 1.  # we want to maximize violation of polytope to prove containment
+    split=split_largest_interval, concrete_sample=:Center)
+    min_sign_flip = 1.0  # we want to maximize violation of polytope to prove containment
     A, b = tosimplehrep(polytope)
     network = merge_into_network(network, A, b)
     network = NetworkNegPosIdx(network)
@@ -408,7 +420,7 @@ function contained_within_polytope_deep_poly(network, input_set, polytope, param
     # bound_threshold_realizable = 0 (-> if we find some concrete input x with NN(x) > 0, then we are not in the polytope)
     # bound_threshold_approximate = 0 (-> if we can prove that NN(x) < 0 for all x, then we are guaranteed to be in the polytope)
     return general_priority_optimization(initial_sym, approximate_optimize_cell, achievable_value, params, true,
-                                             split=split, bound_threshold_realizable=0., bound_threshold_approximate=0.)
+        split=split, bound_threshold_realizable=0.0, bound_threshold_approximate=0.0)
 end
 
 
@@ -421,8 +433,8 @@ If the lower bound on the minimal violation is > 0 -> guaranteed to be outside p
 If we find a point that satisfies all of the polytope's constraints -> intersects with polytope
 """
 function reaches_polytope_deep_poly(network, input_set, polytope, params::PriorityOptimizerParameters; solver=DPNeurifyFV(),
-                                    split=split_largest_interval, concrete_sample=:Center)
-    min_sign_flip = -1.  # we want to minimize violation of polytope to prove that we stay outside
+    split=split_largest_interval, concrete_sample=:Center)
+    min_sign_flip = -1.0  # we want to minimize violation of polytope to prove that we stay outside
     A, b = tosimplehrep(polytope)
     network = merge_into_network(network, A, b)
     network = NetworkNegPosIdx(network)
@@ -460,7 +472,7 @@ function reaches_polytope_deep_poly(network, input_set, polytope, params::Priori
     end
 
     return general_priority_optimization(initial_sym, approximate_optimize_cell, achievable_value, params, false,
-                                             split=split, bound_threshold_realizable=0., bound_threshold_approximate=0.)
+        split=split, bound_threshold_realizable=0.0, bound_threshold_approximate=0.0)
 end
 
 
