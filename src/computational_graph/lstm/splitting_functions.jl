@@ -19,12 +19,11 @@ function get_split_bounds(splits::Dict, bounds::Dict, layer_name::String, idx::I
     if haskey(splits, layer_name)
         idxs, lxs, uxs, lys, uys = unzip(splits[layer_name])
 
-        idx = findfirst(x -> x == idx, idxs)
         if !isnothing(idx)
-            lx = max(lx, lxs[idx])
-            ux = min(ux, uxs[idx])
-            ly = max(ly, lys[idx])
-            uy = min(uy, uys[idx])
+            lx = max(lx, maximum(lxs[idxs .== idx], init=-Inf))
+            ux = min(ux, minimum(uxs[idxs .== idx], init=Inf))
+            ly = max(ly, maximum(lys[idxs .== idx], init=-Inf))
+            uy = min(uy, minimum(uys[idxs .== idx], init=Inf))
         end
     end
 
