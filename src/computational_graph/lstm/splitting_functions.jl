@@ -31,20 +31,104 @@ function get_split_bounds(splits::Dict, bounds::Dict, layer_name::String, idx::I
 end
 
 
+function split_bivariate_optimal(f_overapprox, lx, ux, ly, uy; n_test=10)
+    x_best = 0.5*(lx + ux)
+    ϵx = Inf
+    mxs = range(lx, ux, length=n_test+2)[2:end-1]
+    for mx in mxs
+        a₁, b₁, c₁, ϵ₁ = f_overapprox(lx, mx, ly, uy)
+        a₂, b₂, c₂, ϵ₂ = f_overapprox(mx, ux, ly, uy)
+
+        ϵ = max(abs(ϵ₁), abs(ϵ₂))
+        if ϵ < ϵx
+            ϵx = ϵ
+            x_best = mx
+        end
+    end
+
+    y_best = 0.5*(ly + uy)
+    ϵy = Inf
+    mys = range(ly, uy, length=n_test+2)[2:end-1]
+    for my in mys
+        a₁, b₁, c₁, ϵ₁ = f_overapprox(lx, ux, ly, my)
+        a₂, b₂, c₂, ϵ₂ = f_overapprox(lx, ux, my, uy)
+
+        ϵ = max(abs(ϵ₁), abs(ϵ₂))
+        if ϵ < ϵx
+            ϵy = ϵ
+            y_best = my
+        end
+    end
+
+    if ϵx < ϵy
+        new_splits = [(lx, x_best, ly, uy), (x_best, ux, ly, uy)]
+    else
+        new_splits = [(lx, ux, ly, y_best), (lx, ux, y_best, uy)]
+    end
+
+    return new_splits
+end
+
+
 """
 Split two inputs of LSTM activation function into four quadrants.
+
+args
+    sz - the SplitZonotope that is the output from the current overapproximation
+    input_shape - the input shape of the neural network
+    split_layer - the name of the layer where the split is located
+    split_idx - the index of the neuron in the split_layer to be split
+
+kwargs:
+    split_method - different methods to subdivide the current input domain of the split neuron
 """
-function split_lstm_layer(sz::SplitZonotope, input_shape, split_layer, split_idx)
+function split_lstm_layer(sz::SplitZonotope, input_shape, split_layer, split_idx; split_method=:zero)
     lx, ux, ly, uy = get_split_bounds(sz.splits, sz.bounds, split_layer, split_idx)
-    mx = 0.5 * (lx + ux)
-    my = 0.5 * (ly + uy)
+    
+    # TODO: remove debug output
+    #println("layer: ", split_layer, ", idx: ", split_idx, " -> ", (lx, ux), " × ", (ly, uy))
+
+    if split_method == :zero
+        # first split at the origin/the axes before splitting the domain into four equal quadrants
+        mx = lx < 0 && ux > 0 ? 0. : 0.5 * (lx + ux)
+        my = ly < 0 && uy > 0 ? 0. : 0.5 * (ly + uy)
+
+        new_splits = [(split_idx, lx, mx, ly, my), (split_idx, lx, mx, my, uy),
+                (split_idx, mx, ux, ly, my), (split_idx, mx, ux, my, uy)]
+    elseif split_method == :center
+        # split the domain into four equal quadrants
+        mx = 0.5 * (lx + ux)
+        my = 0.5 * (ly + uy)
+
+        new_splits = [(split_idx, lx, mx, ly, my), (split_idx, lx, mx, my, uy),
+                (split_idx, mx, ux, ly, my), (split_idx, mx, ux, my, uy)]
+    elseif split_method == :threshold_range
+        # as σ(x) ≈ 0 for x ≤ -5 and σ(x) ≈ 1 for x ≥ 5 use this for initial splits
+        θ = 3.
+        my = ly < 0 && uy > 0 ? 0. : 0.5 * (ly + uy)
+        if lx < -θ && ux > θ
+            new_splits = [(split_idx, lx, -θ, ly, uy), (split_idx, -θ, θ, ly, my),
+                          (split_idx, -θ, θ, my, uy), (split_idx, θ, ux, ly, uy)]
+        else
+            mx = lx < 0 && ux > 0 ? 0. : 0.5 * (lx + ux)
+            new_splits = [(split_idx, lx, mx, ly, my), (split_idx, lx, mx, my, uy),
+                    (split_idx, mx, ux, ly, my), (split_idx, mx, ux, my, uy)]
+        end
+    elseif split_method == :optimal
+        if occursin("σy", split_layer)
+            splits = split_bivariate_optimal((lx, ux, ly, uy) -> get_relaxation_σ_y(lx, ux, ly, uy, n_samples=100), lx, ux, ly, uy)
+        elseif occursin("σtanh", split_layer)
+            splits = split_bivariate_optimal((lx, ux, ly, uy) -> get_relaxation_σ_tanh(lx, ux, ly, uy, n_samples=100), lx, ux, ly, uy)
+        end
+
+        new_splits = [(split_idx, splits[1]...), (split_idx, splits[2]...)]
+    else
+        throw(ArgumentError("Splitting method $(split_method) not known!"))
+    end
 
     l, u = sz.bounds["input"]
     input_set = Hyperrectangle(low=l, high=u)
-    zs = [SplitZonotope(input_set, input_shape) for i in 1:4]
-
-    new_splits = [(split_idx, lx, mx, ly, my), (split_idx, lx, mx, my, uy),
-                (split_idx, mx, ux, ly, my), (split_idx, mx, ux, my, uy)]
+    zs = [SplitZonotope(input_set, input_shape) for i in 1:length(new_splits)]
 
     return zs, new_splits
 end
@@ -133,22 +217,22 @@ function add_new_splits!(sz::SplitZonotope, zs, split_layer, new_splits)
 end
 
 
-function split_split_zonotope(sz::SplitZonotope, input_shape)
+function split_split_zonotope(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
     # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
     importance = sum(abs.(sz.z.generators), dims=1)[1,:]
     split_layer, split_idx = sz.generator_map[argmax(importance)]
 
-    return split_split_zonotope(sz, input_shape, split_layer, split_idx)
+    return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)
 end
 
 
-function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split_idx)
+function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split_idx; lstm_split_method=:zero)
     if startswith(split_layer, "input")
         zs, new_splits = split_input(sz, input_shape, split_layer, split_idx)
     elseif startswith(split_layer, "relu")
         zs, new_splits = split_relu_layer(sz, input_shape, split_layer, split_idx)
     elseif startswith(split_layer, "LSTM")
-        zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx)
+        zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx, split_method=lstm_split_method)
     else
         throw(ArgumentError("Splitting layer $(split_layer) not supported!"))
     end
