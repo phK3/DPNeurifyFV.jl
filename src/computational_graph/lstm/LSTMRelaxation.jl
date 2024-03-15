@@ -3,16 +3,49 @@
 
 module LSTMRelaxation
 
-using PolynomialRoots, LinearAlgebra
+using PolynomialRoots, LinearAlgebra, JuMP, Gurobi
+
+# use this env, whenever you use Gurobi, so output doesn't get cluttered by licensing information
+const GRB_ENV = Ref{Gurobi.Env}()
 
 # sigmoid and its inverse
 σ = x -> 1 / (1 + exp(-x))
 σinv = y -> log(y / (1 - y))
 
+function __init__()
+    # needs to be created at runtime
+    GRB_ENV[] = Gurobi.Env()
+end
 
 
+
+"""
+Uniformly samples n points in the interval [l, u]
+"""
 function sample_uniform_bounds(l, u, n)
     return rand(n) .* (u - l) .+ l
+end
+
+
+function linear_approximation_lp(X, y; opt=() -> Gurobi.Optimizer(GRB_ENV[]), silent=true)
+    model = Model(opt)
+    silent && set_silent(model)
+
+    @variable(model, c[1:3])
+    @variable(model, ϵ >= 0)
+
+    @constraint(model, c_lb, X*c .- ϵ .<= y)
+    @constraint(model, c_ub, X*c .+ ϵ .>= y)
+
+    @objective(model, Min, ϵ)
+    
+    optimize!(model)
+
+    if termination_status(model) != OPTIMAL
+        throw(InvalidStateException("The LP could not be solved to optimality!", :not_optimal))
+    end
+    
+    return value.(c)
 end
 
 
@@ -22,14 +55,21 @@ and fitting least squares approximation.
 
 Returns vector β s.t. β₁x + β₂y + β₃ is the linear approximation
 """
-function get_linear_approximation(lx, ux, ly, uy, f; n_samples=100)
+function get_linear_approximation(lx, ux, ly, uy, f; n_samples=100, method=:lp)
     xs = sample_uniform_bounds(lx, ux, n_samples)
     ys = sample_uniform_bounds(ly, uy, n_samples)
     
     X = [xs ys ones(n_samples)]
     y = f.(xs, ys)
-    
-    β = X \ y
+
+    if method == :least_squares
+        β = X \ y
+    elseif method == :lp
+        β = linear_approximation_lp(X, y)
+    else
+        throw(ArgumentError("Unknown method $(method)!"))
+    end
+
     return β
 end
 
