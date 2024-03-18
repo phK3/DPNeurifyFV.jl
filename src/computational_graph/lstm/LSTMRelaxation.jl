@@ -3,7 +3,7 @@
 
 module LSTMRelaxation
 
-using PolynomialRoots, LinearAlgebra, JuMP, Gurobi
+using PolynomialRoots, LinearAlgebra, JuMP, Gurobi, Memoization
 
 # use this env, whenever you use Gurobi, so output doesn't get cluttered by licensing information
 const GRB_ENV = Ref{Gurobi.Env}()
@@ -49,23 +49,80 @@ function linear_approximation_lp(X, y; opt=() -> Gurobi.Optimizer(GRB_ENV[]), si
 end
 
 
+function linear_approximation_remezlike(lx, ux, ly, uy, f; opt=() -> Gurobi.Optimizer(GRB_ENV[]), silent=true)
+    X = [lx ly 1.; lx uy 1.; ux ly 1.; ux uy 1.; 0.5 * (lx + ux) 0.5 * (ly + uy) 1.]
+    y = f.(X[:,1], X[:,2])
+
+    model = JuMP.Model(opt)
+    silent && set_silent(model)
+
+    @variable(model, c[1:3])
+    @variable(model, ϵ >= 0)
+
+    @constraint(model, c_lb, X*c .- ϵ .<= y)
+    @constraint(model, c_ub, X*c .+ ϵ .>= y)
+
+    @objective(model, Min, ϵ)
+    
+    optimize!(model)
+    
+    cnt = -1
+    i = 0
+    while (cnt != 0) && (i < 10)
+        cnt = 0
+
+        ϵ_opt = objective_value(model)
+
+        ĉ = value.(c)
+        xs, ys = get_critical_points_σ_y(lx, ux, ly, uy, ĉ[1], ĉ[2], ĉ[3])
+        ϵs = f.(xs, ys) .- (ĉ[1] .* xs .+ ĉ[2] .* ys .+ ĉ[3])
+
+        for (ϵ_i, x_i, y_i) in zip(ϵs, xs, ys)
+            if abs(ϵ_i) > abs(ϵ_opt) + 1e-4
+                @constraint(model, [x_i y_i 1.]*c .- ϵ .<= f(x_i, y_i))
+                @constraint(model, [x_i y_i 1.]*c .+ ϵ .>= f(x_i, y_i))
+                cnt += 1
+            end
+        end
+
+        ϵₗ = minimum(ϵs)
+        ϵᵤ = maximum(ϵs)
+        ϵ_shift = 0.5 * (ϵᵤ - ϵₗ)
+        #println("ϵ_shift = ", ϵ_shift, ", ϵ_opt = ", ϵ_opt, " , added ", cnt, " points")
+
+        optimize!(model)
+        i += 1
+    end
+
+    return value.(c)  
+end
+
+
 """
 Calculates linear approximation of function f(x,y) by sampling points in box-bounds of x, y
 and fitting least squares approximation.
 
 Returns vector β s.t. β₁x + β₂y + β₃ is the linear approximation
 """
-function get_linear_approximation(lx, ux, ly, uy, f; n_samples=100, method=:lp)
-    xs = sample_uniform_bounds(lx, ux, n_samples)
-    ys = sample_uniform_bounds(ly, uy, n_samples)
-    
-    X = [xs ys ones(n_samples)]
-    y = f.(xs, ys)
-
+@memoize function get_linear_approximation(lx, ux, ly, uy, f; n_samples=100, method=:remezlike)
     if method == :least_squares
+        xs = sample_uniform_bounds(lx, ux, n_samples)
+        ys = sample_uniform_bounds(ly, uy, n_samples)
+        
+        X = [xs ys ones(n_samples)]
+        y = f.(xs, ys)
+
         β = X \ y
     elseif method == :lp
+        xs = sample_uniform_bounds(lx, ux, n_samples)
+        ys = sample_uniform_bounds(ly, uy, n_samples)
+        
+        X = [xs ys ones(n_samples)]
+        y = f.(xs, ys)
+
         β = linear_approximation_lp(X, y)
+    elseif method == :remezlike 
+        β = linear_approximation_remezlike(lx, ux, ly, uy, f)
     else
         throw(ArgumentError("Unknown method $(method)!"))
     end

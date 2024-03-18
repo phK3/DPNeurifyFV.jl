@@ -64,3 +64,31 @@ The compilation can take long itself (it took ~10mins on my laptop), but subsequ
 julia --sysimage ./sys_dpneurifyfv.so 
 ```
 starts a Julia session with the sysimage loaded.
+
+
+## Todo LSTM Solver
+
+- [x] include bounds of output layer in LP, s.t. we get monotonically decreasing loss
+- [x] Use solution of LP for propagating concrete input through the NN
+- [x] Split LSTM functions at origin first
+- [ ] find better splitting for LSTM functions after origin split
+- [x] implement Remez-like algorithm instead of sampling-based LP
+- [x] use memoization to avoid recomputing all of the LPs
+
+### LSTM Solver Development
+
+- We get too many splits that probably don't really help in reducing the overapproximation: We need less splits (do we really need 4 subsets every time?) and we need to improve the splitting point
+
+#### Better Plan for Splitting
+
+1) Use function approximation that doesn't require linear regression (e.g. Chebyshev approximation or Galerkin method, ...)
+2) Find best splitting point along one variable by just proposing some splitting point and calculating linear approximation on both halves along with their error. Take the splitting point which minimizes the error on both sides (this is just finding the minimum of a one dimensional function)
+3) Ultimately the LSTM activation function is 5-dimensional, so do this for each of the five variables
+
+#### Overapproximations for LSTM Functions
+
+- Overapproximations calculated via LPs are vastly superior to overapproximations given by linear least squares regression, but a single forward pass is then also more than 10x slower!
+- added *Remez-like* algorithm that doesn't just sample some points and then fits the minimax linear approximation via LP, but starts from the corner points, fits the LP (with only those 4 points), then only adds points where the maximum error is greater than the LP estimate. In this way the number of constraints is way smaller than with the sampling LP and the process is deterministic.
+    - runtime improved by about 2x
+    - bounds also significantly improved (also roughly 2x)
+- added memoization to cache calls to the LP solver (if we split in layer $n$, we don't need to recompute the relaxations for the $n-1$ layers before it) Also offers sigificant speedup
