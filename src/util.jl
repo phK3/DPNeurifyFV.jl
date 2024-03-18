@@ -352,6 +352,8 @@ Overrides the usual plot() function by redirecting it to plot_zono
 -> to use it just call plot(z)
 """
 @recipe function plot_zono(z::Zonotope)
+    label --> get(plotattributes, :label, nothing)
+    seriesalpha --> get(plotattributes, :seriesalpha, nothing)
     c_series = get(plotattributes, :seriescolor, nothing)
     c_line = get(plotattributes, :linecolor, nothing)
     if !isnothing(c_line)

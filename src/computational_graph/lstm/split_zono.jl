@@ -543,3 +543,41 @@ function get_split_bounds!(sx::SplitZonotope, sy::SplitZonotope, splits::Abstrac
 
     return lx, ux, ly, uy, A, b   
 end
+
+
+"""
+Converts the SplitZonotope into an equivalent HPolytope.
+
+Note that the dimensionality of this polytope is larger than the dimensionality of the SplitZonotope since we add
+variables for each error term and for the output dimension (the dimension of the zonotope).
+
+The constraint represenation is
+[split_A    0] ≤ split_b
+[G         -I] ≤ -c
+[-G         I] ≤ c 
+[-I         0] ≤ 1
+[ I         0] ≤ 1
+
+Zero-entries in the constraints matrix are removed.
+"""
+function convert_to_polytope(sz::SplitZonotope)
+    n_gens = size(sz.z.generators, 2)
+    m_split, n_split = size(sz.split_A)
+    d_sz = dim(sz.z)
+
+    # only have to add zeros for the generators that were added after the split layer.
+    # handling up to the split layer is managed during propagation
+    n_add_gens = n_gens - n_split
+    # also have to add variables describing the output of the zonotope (or the current layer)
+    A = [sz.split_A zeros(m_split, n_add_gens + d_sz);
+         sz.z.generators .-I(d_sz);   # zonotope generator matrix: Gx + c = y ↔ Gx - y ≤ -c and -Gx + y ≤ c
+         .- sz.z.generators I(d_sz);
+         .-I(n_gens) zeros(n_gens, d_sz);  # error terms ≥ -1
+         I(n_gens) zeros(n_gens, d_sz)]    # error terms ≤ 1
+
+    b = [sz.split_b; .-sz.z.center; sz.z.center; ones(2*n_gens)]
+
+    nzs = vec(sum(abs.(A), dims=2) .!= 0)
+
+    return HPolytope(A[nzs,:], b[nzs])
+end
