@@ -30,8 +30,11 @@ function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_sa
     @assert sx.splits == sy.splits
     # sx and sy should have the same generators!
     @assert sx.generator_map == sy.generator_map
+
     # TODO: real split_A and split_b
-    sz = SplitZonotope(ẑ, sx.splits, sx.bounds, copy(sx.generator_map), Â, b̂, sx.shape)
+    layer_importance = vec(sum(abs.(x.generators) .+ abs.(y.generators), dims=1))
+    importance = [sx.importance .+ sy.importance .+ layer_importance; zeros(dim(x))]
+    sz = SplitZonotope(ẑ, sx.splits, sx.bounds, copy(sx.generator_map), Â, b̂, sx.shape, importance)
     push!(sz.generator_map, [(name, i) for i in 1:dim(x)]...)
     return sz
 end
@@ -67,7 +70,11 @@ function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n
     # sx and sy should have the same generators!
     @assert sx.generator_map == sy.generator_map
     # TODO: real split_A and split_b
-    sz = SplitZonotope(ẑ, sx.splits, sx.bounds, copy(sx.generator_map), Â, b̂, sx.shape)
+    layer_importance = vec(sum(abs.(x.generators) .+ abs.(y.generators), dims=1))
+    importance = [sx.importance .+ sy.importance .+ layer_importance; zeros(dim(x))]
+    sz = SplitZonotope(ẑ, sx.splits, sx.bounds, copy(sx.generator_map), Â, b̂, sx.shape, importance)
     push!(sz.generator_map, [(name, i) for i in 1:dim(x)]...)
+
+    @assert length(sz.importance) == length(sz.generator_map)
     return sz
 end
