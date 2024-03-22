@@ -27,6 +27,7 @@ struct SplitZonotope{N} <: AbstractZonotope{N}
     split_A::AbstractMatrix{N}
     split_b::AbstractVector{N}
     shape
+    importance::AbstractVector{N}
 end
 
 
@@ -40,9 +41,10 @@ function SplitZonotope(input_set::AbstractHyperrectangle{N}, shape) where N <: N
     bounds = Dict{String, Tuple{Vararg{Vector{N}}}}()
     bounds["input"] = (low(input_set), high(input_set))
     generator_map = [("input", i) for (i, _) in enumerate(generators(input_set))]
+    importance = zeros(N, length(generator_map))
     split_A = Array{N}(undef, 0, 0)
     split_b = Array{N}(undef, 0)
-    return SplitZonotope(z, splits, bounds, generator_map, split_A, split_b, shape)
+    return SplitZonotope(z, splits, bounds, generator_map, split_A, split_b, shape, importance)
 end  
 
 
@@ -53,12 +55,12 @@ end
 
 
 function SplitZonotope(ẑ::Zonotope{N}, sz::SplitZonotope{N}) where N <: Number
-    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape)
+    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape, sz.importance)
 end
 
 
 function SplitZonotope(ẑ::Zonotope{N}, sz::SplitZonotope{N}, shape) where N <: Number
-    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, shape)
+    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, shape, sz.importance)
 end
 
 
@@ -133,14 +135,14 @@ function Base.zero(sz::SplitZonotope{N}) where N <: Number
     # no split constraints in zero
     split_A = Array{N}(undef, 0, 0)
     split_b = Array{N}(undef, 0)
-    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, split_A, split_b, sz.shape)
+    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, split_A, split_b, sz.shape, sz.importance)
 end
 
 
 function Base.getindex(sz::SplitZonotope{N}, inds::AbstractArray{<:Integer}) where N <: Number
     z = sz.z
     ẑ = Zonotope(z.center[inds], z.generators[inds, :])
-    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b)
+    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.importance)
 end
 
 
@@ -252,6 +254,7 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
     z = direct_sum(sz₁.z, sz₂.z, common_gens₁, common_gens₂)
 
     generator_map = [sz₁.generator_map[common_gens₁]; sz₁.generator_map[distinct₁]; sz₂.generator_map[distinct₂]]
+    importance = [sz₁.importance[common_gens₁]; sz₁.importance[distinct₁]; sz₂.importance[distinct₂]]
 
     if size(sz₁.split_A, 1) == 0
         # there are no split constraints in sz₁
@@ -284,7 +287,7 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
     end
 
     # TODO: do both split zonotopes really necessarily have the same bounds?
-    return SplitZonotope(z, merge(sz₁.splits, sz₂.splits), sz₁.bounds, generator_map, split_A, split_b, sz₁.shape)
+    return SplitZonotope(z, merge(sz₁.splits, sz₂.splits), sz₁.bounds, generator_map, split_A, split_b, sz₁.shape, importance)
 end
 
 
@@ -307,8 +310,8 @@ function expand_generators(sz₁::SplitZonotope, sz₂::SplitZonotope)
     z₁ = Zonotope(sz₁.z.center, [sz₁.z.generators[:, common_gens₁] sz₁.z.generators[:, distinct₁] zeros(m₁, length(distinct₂))])
     z₂ = Zonotope(sz₂.z.center, [sz₂.z.generators[:, common_gens₂] zeros(m₂, length(distinct₁)) sz₂.z.generators[:, distinct₂]])
 
-    ŝz₁ = SplitZonotope(z₁, sz₁.splits, sz₁.bounds, generator_map, sz₁.split_A, sz₁.split_b, sz₁.shape)
-    ŝz₂ = SplitZonotope(z₂, sz₂.splits, sz₂.bounds, copy(generator_map), sz₂.split_A, sz₂.split_b, sz₂.shape)
+    ŝz₁ = SplitZonotope(z₁, sz₁.splits, sz₁.bounds, generator_map, sz₁.split_A, sz₁.split_b, sz₁.shape, importance)
+    ŝz₂ = SplitZonotope(z₂, sz₂.splits, sz₂.bounds, copy(generator_map), sz₂.split_A, sz₂.split_b, sz₂.shape, copy(importance))
 
     return ŝz₁, ŝz₂
 end
@@ -328,7 +331,7 @@ end
 
 function hadamard_prod(a::AbstractVector{N}, sz::SplitZonotope{N}) where N <: Number
     ẑ = Zonotope(a .* sz.z.center, a .* sz.z.generators)
-    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape)
+    return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape, sz.importance)
 end
 
 

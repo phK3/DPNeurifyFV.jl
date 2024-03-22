@@ -220,6 +220,12 @@ end
 function split_split_zonotope(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
     # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
     importance = sum(abs.(sz.z.generators), dims=1)[1,:]
+function split_split_zonotope_importance(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
+    # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
+    split_layer, split_idx = sz.generator_map[argmax(sz.importance)]
+
+    return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)
+end
     split_layer, split_idx = sz.generator_map[argmax(importance)]
 
     return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)

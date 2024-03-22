@@ -76,9 +76,11 @@ function forward_node(solver::LSTMSolver, L::Relu, sz::SplitZonotope)
     E = β .* I(dim(z))[:, crossing]
     ẑ = Zonotope(ĉ, [Ĝ E])
 
+    layer_importance = vec(sum(abs.(z.generators[crossing, :]), dims=1))
+    importance = [sz.importance .+ layer_importance; zeros(sum(crossing))]
     # register new generators in generator_map
 
-    sẑ = SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, Â, b̂, sz.shape)
+    sẑ = SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, Â, b̂, sz.shape, importance)
     push!(sẑ.generator_map, [(L.name, i) for i in (1:dim(z))[crossing]]...)
     return sẑ
 end
