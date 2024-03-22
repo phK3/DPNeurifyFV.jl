@@ -220,12 +220,28 @@ end
 function split_split_zonotope(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
     # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
     importance = sum(abs.(sz.z.generators), dims=1)[1,:]
+
+    split_layer, split_idx = sz.generator_map[argmax(importance)]
+
+    return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)
+end
+
+
 function split_split_zonotope_importance(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
     # need ...[1,:] since importance would be (1,n_gens) matrix, but need vector idx
     split_layer, split_idx = sz.generator_map[argmax(sz.importance)]
 
     return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)
 end
+
+
+function split_split_zonotope_error_based(sz::SplitZonotope, input_shape; lstm_split_method=:zero)
+    # convert to Error based symbolic interval representation
+    Ĝ = 2*sz.z.generators
+    ĉ = sz.z.center .- sz.z.generators * ones(size(sz.z.generators, 2))
+    # TODO: do we really always want the sum?
+    importance = sum(Ĝ, dims=1)[1,:]
+
     split_layer, split_idx = sz.generator_map[argmax(importance)]
 
     return split_split_zonotope(sz, input_shape, split_layer, split_idx, lstm_split_method=lstm_split_method)
@@ -235,7 +251,7 @@ end
 function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split_idx; lstm_split_method=:zero)
     if startswith(split_layer, "input")
         zs, new_splits = split_input(sz, input_shape, split_layer, split_idx)
-    elseif startswith(split_layer, "relu")
+    elseif startswith(split_layer, "Relu")
         zs, new_splits = split_relu_layer(sz, input_shape, split_layer, split_idx)
     elseif startswith(split_layer, "LSTM")
         zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx, split_method=lstm_split_method)
