@@ -35,6 +35,37 @@ end
 
 
 """
+Returns indices a_inds, b_inds of elements occuring both in a and b, s.t.
+a[a_inds] == b[b_inds]
+"""
+function common_inds(a, b)
+    common1 = filter(!isnothing, indexin(b, a))
+    common2 = (1:length(b))[.~isnothing.(indexin(b, a))]
+    return common1, common2
+end
+
+
+"""
+Returns indices a_inds, b_inds of elements occuring both in a and b, s.t.
+a[a_inds] == b[b_inds], as well as indices a_diff, b_diff, s.t. 
+a[a_diff] are all elements in a that don't occur in b (and similar for b_diff)
+
+returns 
+    a_inds
+    b_inds
+    a_diff
+    b_diff
+"""
+function common_and_diff_inds(a, b)
+    common1, common2 = common_inds(a, b)
+    distinct1 = setdiff(1:length(a), common1)
+    distinct2 = setdiff(1:length(b), common2)
+    
+    return common1, common2, distinct1, distinct2
+end
+
+
+"""
 Return part of zonotope that overapproximates dimensions inds = [i₁, i₂, ...]
 """
 function Base.getindex(z::Zonotope{N}, inds::AbstractArray{Int}) where N <: Number

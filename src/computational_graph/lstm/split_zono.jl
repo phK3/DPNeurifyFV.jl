@@ -247,14 +247,10 @@ end
 
 
 function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <: Number
-    # indices in sz₁.generator_map, s.t. sz₂.generator_map[i] = sz₁.generator_map[common_gens₁[i]]
-    common_gens₁ = filter(!isnothing, indexin(sz₂.generator_map, sz₁.generator_map))
-    common_gens₂ = filter(!isnothing, indexin(sz₁.generator_map, sz₂.generator_map))
+    common_gens₁, common_gens₂, distinct₁, distinct₂ = common_and_diff_inds(sz₁.generator_map, sz₂.generator_map)
 
     z = direct_sum(sz₁.z, sz₂.z, common_gens₁, common_gens₂)
 
-    distinct₁ = setdiff(1:ngens(sz₁), common_gens₁)
-    distinct₂ = setdiff(1:ngens(sz₂), common_gens₂)
     generator_map = [sz₁.generator_map[common_gens₁]; sz₁.generator_map[distinct₁]; sz₂.generator_map[distinct₂]]
 
     if size(sz₁.split_A, 1) == 0
@@ -265,6 +261,11 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
         # there are no split constraints in sz₂
         split_A = sz₁.split_A
         split_b = sz₁.split_b
+    elseif sz₁.split_A == sz₂.split_A
+        # TODO: also care about, when single rows are identical
+        split_A = sz₁.split_A
+        # take tighter right hand side of each
+        split_b = min.(sz₁.split_b, sz₂.split_b)
     else
         # matrices might not yet have splits involving all generators 
         # (then dimension of split matrix is smaller than number of generators)
@@ -275,9 +276,10 @@ function direct_sum(sz₁::SplitZonotope{N}, sz₂::SplitZonotope{N}) where N <:
         # now construct new matrix
         m₁ = size(sz₁.split_A, 1)
         m₂ = size(sz₂.split_A, 1)
+
         # (A[common and in matrix right now]) (zeros for common, but not in matrix) (A[only in matrix]) (zeros for other matrix)
-        split_A = [sz₁.split_A[:, cg₁] zeros(m₁, ngens(sz₁) - length(cg₁)) sz₁.split_A[:, d₁]    zeros(m₁, length(d₂));
-                   sz₂.split_A[:, cg₂] zeros(m₂, ngens(sz₂) - length(cg₂)) zeros(m₂, length(d₁)) sz₂.split_A[:, d₁]    ] 
+        split_A = [sz₁.split_A[:, cg₁] zeros(m₁, max(0, length(cg₂) - length(cg₁))) sz₁.split_A[:, d₁]    zeros(m₁, length(d₂));
+                   sz₂.split_A[:, cg₂] zeros(m₂, max(0, length(cg₁) - length(cg₂))) zeros(m₂, length(d₁)) sz₂.split_A[:, d₁]    ] 
         split_b = [sz₁.split_b; sz₂.split_b]
     end
 
@@ -296,11 +298,9 @@ returns:
             added empty generators for distinct generators of sz₁
 """
 function expand_generators(sz₁::SplitZonotope, sz₂::SplitZonotope)
-    common_gens₁ = filter(!isnothing, indexin(sz₂.generator_map, sz₁.generator_map))
-    common_gens₂ = filter(!isnothing, indexin(sz₁.generator_map, sz₂.generator_map))
-    distinct₁ = setdiff(1:ngens(sz₁), common_gens₁)
-    distinct₂ = setdiff(1:ngens(sz₂), common_gens₂)
+    common_gens₁, common_gens₂, distinct₁, distinct₂ = common_and_diff_inds(sz₁.generator_map, sz₂.generator_map)
     generator_map = [sz₁.generator_map[common_gens₁]; sz₁.generator_map[distinct₁]; sz₂.generator_map[distinct₂]]
+    importance = [sz₁.importance[common_gens₁]; sz₁.importance[distinct₁]; sz₂.importance[distinct₂]]
 
     m₁ = size(sz₁.z.center, 1)
     m₂ = size(sz₂.z.center, 1)
