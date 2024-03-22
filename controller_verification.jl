@@ -1,6 +1,6 @@
 
 using DPNeurifyFV, LazySets, PyVnnlib, NeuralVerification, JuMP, 
-      LinearAlgebra, Flux, Gurobi
+      LinearAlgebra, Flux, Gurobi, Accessors
 import VNNLib.NNLoader as NNL
 
 const NV = NeuralVerification
@@ -22,6 +22,16 @@ end
 
 
 # verification works on logits, not on softmax output, so remove last layer
+#n_out = DP.get_producer(nn, DP.get_producer(nn, "output").inputs[1])
+#n_out = @set n_out.outputs = ["output"]  # make new output node also produce "output"
+#nn.nodes[n_out.name] = n_out
+#nn.out_dict["output"] = n_out
+#for (k, v) in nn.out_dict
+#      if v.name == n_out.name
+#            nn.out_dict[k] = n_out
+#      end
+#end
+#nn_logits = DP.CompGraph(nn.nodes, nn.in_node, n_out, nn.out_dict, nn.input_shape, nn.output_shape)
 nn_logits = DP.CompGraph(nn.nodes, nn.in_node, DP.get_producer(nn, "input.8"), nn.out_dict, nn.input_shape, nn.output_shape)
 
 
@@ -36,11 +46,34 @@ sz = DP.SplitZonotope(input_set, nn_logits.input_shape)
 ẑ = DP.propagate(DP.LSTMSolver(), nn_logits, sz)
 
 
+
 # optimization
 out_spec = HPolytope([1. 0 0 0 0;], [5.])  # test if first output is always less equal 5
 
 params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
 solver = DP.LSTMSolver()
-split_method = sz -> DP.split_split_zonotope(sz, nn_logits.input_shape)
+split_method = sz -> DP.split_split_zonotope(sz, nn_logits.input_shape, lstm_split_method=:zero)
+DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
 
-DP.contained_within_polytope_sz(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
+
+# with other splitting heuristic
+params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
+solver = DP.LSTMSolver()
+split_method = sz -> DP.split_split_zonotope_importance(sz, nn_logits.input_shape, lstm_split_method=:optimal)
+
+DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
+
+## with ESIP heuristic
+params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
+solver = DP.LSTMSolver()
+split_method = sz -> DP.split_split_zonotope_error_based(sz, nn_logits.input_shape, lstm_split_method=:optimal)
+
+DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
+
+
+# comparing to optimization run with different params
+params = DP.PriorityOptimizerParameters(max_steps=10, print_frequency=1, stop_frequency=1, verbosity=2, timeout=900)
+solver = DP.LSTMSolver()
+split_method = sz -> DP.split_split_zonotope(sz, nn_logits.input_shape, lstm_split_method=:optimal)
+
+DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
