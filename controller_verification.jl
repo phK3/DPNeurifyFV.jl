@@ -7,7 +7,7 @@ const NV = NeuralVerification
 const DP = DPNeurifyFV
 
 
-onnx_path   = "../underwater/lstm_no_initial_state-sim.onnx"
+onnx_path = "./networks/lstm_no_initial_state-sim.onnx"
 nn = NNL.load_network_dict(DP.CGType, onnx_path)
 
 
