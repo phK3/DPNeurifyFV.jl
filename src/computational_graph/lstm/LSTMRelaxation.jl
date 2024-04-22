@@ -49,9 +49,22 @@ function linear_approximation_lp(X, y; opt=() -> Gurobi.Optimizer(GRB_ENV[]), si
 end
 
 
-function linear_approximation_remezlike(lx, ux, ly, uy, f; opt=() -> Gurobi.Optimizer(GRB_ENV[]), silent=true)
+"""
+Calculate linear approximation by starting with vertices and adding most violating points according to exact function.
+
+args:
+    lx - concrete lower bound on x 
+    ux - concrete upper bound on x 
+    ly - concrete lower bound on y 
+    uy - concrete upper bound on y 
+    f  - callable exact function to overapproximate 
+    fun - (symbol) type of the function to overapproximate (:σy or :σtanh)
+"""
+function linear_approximation_remezlike(lx, ux, ly, uy, f, fun; opt=() -> Gurobi.Optimizer(GRB_ENV[]), silent=true)
     X = [lx ly 1.; lx uy 1.; ux ly 1.; ux uy 1.; 0.5 * (lx + ux) 0.5 * (ly + uy) 1.]
     y = f.(X[:,1], X[:,2])
+
+    critical_points_fun = fun == :σy ? get_critical_points_σ_y : get_critical_points_σ_tanh
 
     model = JuMP.Model(opt)
     silent && set_silent(model)
@@ -74,7 +87,7 @@ function linear_approximation_remezlike(lx, ux, ly, uy, f; opt=() -> Gurobi.Opti
         ϵ_opt = objective_value(model)
 
         ĉ = value.(c)
-        xs, ys = get_critical_points_σ_y(lx, ux, ly, uy, ĉ[1], ĉ[2], ĉ[3])
+        xs, ys = critical_points_fun(lx, ux, ly, uy, ĉ[1], ĉ[2], ĉ[3])
         ϵs = f.(xs, ys) .- (ĉ[1] .* xs .+ ĉ[2] .* ys .+ ĉ[3])
 
         for (ϵ_i, x_i, y_i) in zip(ϵs, xs, ys)
@@ -103,8 +116,11 @@ Calculates linear approximation of function f(x,y) by sampling points in box-bou
 and fitting least squares approximation.
 
 Returns vector β s.t. β₁x + β₂y + β₃ is the linear approximation
+
+args
+    fun - (symbol) type of function to overapproximate either :σy or :σtanh
 """
-@memoize function get_linear_approximation(lx, ux, ly, uy, f; n_samples=100, method=:remezlike)
+@memoize function get_linear_approximation(lx, ux, ly, uy, f, fun; n_samples=100, method=:remezlike)
     if method == :least_squares
         xs = sample_uniform_bounds(lx, ux, n_samples)
         ys = sample_uniform_bounds(ly, uy, n_samples)
@@ -122,7 +138,7 @@ Returns vector β s.t. β₁x + β₂y + β₃ is the linear approximation
 
         β = linear_approximation_lp(X, y)
     elseif method == :remezlike 
-        β = linear_approximation_remezlike(lx, ux, ly, uy, f)
+        β = linear_approximation_remezlike(lx, ux, ly, uy, f, fun)
     else
         throw(ArgumentError("Unknown method $(method)!"))
     end
@@ -221,7 +237,7 @@ returns:
 """
 function get_relaxation_σ_tanh(lx, ux, ly, uy; n_samples=100)
     h(x,y) = σ(x)*tanh(y)
-    a, b, c = get_linear_approximation(lx, ux, ly, uy, h, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, h, :σtanh, n_samples=n_samples)
     xs, ys = get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
     ϵs = h.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
@@ -295,7 +311,7 @@ returns:
 """
 function get_relaxation_σ_y(lx, ux, ly, uy; n_samples=100)
     g(x,y) = σ(x)*y
-    a, b, c = get_linear_approximation(lx, ux, ly, uy, g, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, g, :σy, n_samples=n_samples)
     xs, ys = get_critical_points_σ_y(lx, ux, ly, uy, a, b, c)
     ϵs = g.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
