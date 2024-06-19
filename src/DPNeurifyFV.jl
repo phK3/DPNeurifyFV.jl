@@ -1,7 +1,8 @@
 module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
-        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP, RecipesBase, Memoization
+        OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP, RecipesBase, Memoization,
+        PolynomialRoots
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map, NetworkNegPosIdx, LayerNegPosIdx
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -13,6 +14,8 @@ const NNL = NNLoader
 # redefinitions of function defined in NeuralVerification.jl
 # include("overwrite_neural_verification.jl")
 include("util.jl")
+include("generic_bab.jl")
+
 include("symbolic_interval_fv_heur.jl")
 include("fresh_var_heuristic.jl")
 include("dp_neurify_fv.jl")
@@ -34,6 +37,7 @@ using .LSTMRelaxation
 include("computational_graph/lstm/split_zono.jl")
 include("computational_graph/lstm/splitting_functions.jl")
 include("computational_graph/lstm/split_zono_optimization.jl")
+include("computational_graph/lstm/LSTMRelaxationZono.jl")
 include("computational_graph/lstm/lstm_act_propagation.jl")
 include("computational_graph/lstm/lstm_solver.jl")
 

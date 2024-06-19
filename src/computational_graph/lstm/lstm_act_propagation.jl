@@ -1,6 +1,6 @@
 
 
-function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100)
+function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false)
     x = sx.z
     y = sy.z
 
@@ -15,8 +15,16 @@ function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_sa
         b̂ = sx.split_b
     end
         
-
-    relaxations = get_relaxation_σ_y.(lx, ux, ly, uy, n_samples=n_samples)
+    if use_zono
+        zonos = Vector{Zonotope}()
+        for i in 1:dim(sx.z)
+            zono = Zonotope([sx.z.center[i], sy.z.center[i]], [sx.z.generators[i,:]'; sy.z.generators[i,:]'])
+            push!(zonos, zono)
+        end
+        relaxations = get_relaxation_σy_zono.(zonos; n_samples=100, max_steps=10000, optimality_gap=1e-8, printing=false)
+    else
+        relaxations = get_relaxation_σ_y.(lx, ux, ly, uy, n_samples=n_samples)
+    end
     M = reduce(hcat, [collect(r) for r in relaxations])'
 
     ĉ = M[:,1] .* x.center .+ M[:,2] .* y.center .+ M[:,3]
@@ -40,7 +48,7 @@ function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_sa
 end
 
 
-function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100)
+function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false)
     x = sx.z
     y = sy.z
 
@@ -54,8 +62,17 @@ function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n
         Â = sx.split_A
         b̂ = sx.split_b
     end
-
-    relaxations = get_relaxation_σ_tanh.(lx, ux, ly, uy, n_samples=n_samples)
+    
+    if use_zono
+        zonos = Vector{Zonotope}()
+        for i in 1:dim(sx.z)
+            zono = Zonotope([sx.z.center[i], sy.z.center[i]], [sx.z.generators[i,:]'; sy.z.generators[i,:]'])
+            push!(zonos, zono)
+        end
+        relaxations = get_relaxation_σtanh_zono.(zonos; n_samples=100, max_steps=10000, optimality_gap=1e-8, printing=false)
+    else
+        relaxations = get_relaxation_σ_tanh.(lx, ux, ly, uy, n_samples=n_samples)
+    end
     M = reduce(hcat, [collect(r) for r in relaxations])'
 
     ĉ = M[:,1] .* x.center .+ M[:,2] .* y.center .+ M[:,3]
