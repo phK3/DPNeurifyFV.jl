@@ -74,6 +74,10 @@ starts a Julia session with the sysimage loaded.
 - [ ] find better splitting for LSTM functions after origin split
 - [x] implement Remez-like algorithm instead of sampling-based LP
 - [x] use memoization to avoid recomputing all of the LPs
+- [ ] remove redundant/zero generators from zonotopes
+- [ ] find sweet-spot for order reduction and interval-BaB
+- [ ] include DeepPoly backsubstitution for bounds tightening
+- [ ] find better initialization for ZonoRelaxation of LSTM functions?
 
 ### LSTM Solver Development
 
