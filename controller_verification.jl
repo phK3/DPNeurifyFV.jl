@@ -45,12 +45,13 @@ sz = DP.SplitZonotope(input_set, nn_logits.input_shape)
 # propagate through the network
 ẑ = DP.propagate(DP.LSTMSolver(), nn_logits, sz)
 
-
+sz = DP.SplitZonotope(input_set, nn_logits.input_shape)
+ẑ_zono = DP.propagate(DP.LSTMSolver(use_zonotope_domain=true), nn_logits, sz)
 
 # optimization
 out_spec = HPolytope([1. 0 0 0 0;], [5.])  # test if first output is always less equal 5
 
-params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
+params = DP.PriorityOptimizerParameters(max_steps=10, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
 solver = DP.LSTMSolver()
 split_method = sz -> DP.split_split_zonotope(sz, nn_logits.input_shape, lstm_split_method=:zero)
 DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
@@ -64,7 +65,7 @@ split_method = sz -> DP.split_split_zonotope_importance(sz, nn_logits.input_shap
 DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
 
 ## with ESIP heuristic
-params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
+params = DP.PriorityOptimizerParameters(max_steps=100000, print_frequency=1, stop_frequency=1, verbosity=2, timeout=3600, plotting=true, plot_frequency=1)
 solver = DP.LSTMSolver()
 split_method = sz -> DP.split_split_zonotope_error_based(sz, nn_logits.input_shape, lstm_split_method=:optimal)
 
@@ -72,8 +73,17 @@ DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split
 
 
 # comparing to optimization run with different params
-params = DP.PriorityOptimizerParameters(max_steps=10, print_frequency=1, stop_frequency=1, verbosity=2, timeout=900)
+params = DP.PriorityOptimizerParameters(max_steps=10000, print_frequency=1, stop_frequency=1, verbosity=2, timeout=3600, plotting=true, plot_frequency=1)
 solver = DP.LSTMSolver()
 split_method = sz -> DP.split_split_zonotope(sz, nn_logits.input_shape, lstm_split_method=:optimal)
+
+DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
+
+
+
+# with linear approximation based on zonotope domain
+params = DP.PriorityOptimizerParameters(max_steps=100, print_frequency=1, stop_frequency=1, verbosity=2, timeout=300)
+solver = DP.LSTMSolver(use_zonotope_domain=true)
+split_method = sz -> DP.split_split_zonotope_importance(sz, nn_logits.input_shape, lstm_split_method=:optimal)
 
 DP.contained_within_polytope_sz_lp(nn_logits, input_set, out_spec, params, split=split_method, solver=solver)
