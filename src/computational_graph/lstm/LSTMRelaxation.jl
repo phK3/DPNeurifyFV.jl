@@ -173,14 +173,16 @@ function get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
     # max at boundary x
     for x in [lx, ux]
         γ = b / σ(x)
-        # solve 1 - t - γ = 0 ⇔ (1 - γ) - t = 0
-        ts = roots([1 - γ, -1])
-        t = Float64.(ts[1])  # should only have one solution
-        if abs(t) <= 1
-            y = atanh(t)
-            if ly <= y && y <= uy
-                push!(xs, x)
-                push!(ys, y)
+        # solve 1 - t² - γ = 0 ⇔ (1 - γ) - t² = 0
+        ts = roots([1 - γ, 0, -1])
+        t = Float64.(filter(x -> imag(x) == 0, ts))
+        for t̂ in t
+            if abs(t̂) <= 1
+                y = atanh(t̂)
+                if ly <= y && y <= uy
+                    push!(xs, x)
+                    push!(ys, y)
+                end
             end
         end
     end
