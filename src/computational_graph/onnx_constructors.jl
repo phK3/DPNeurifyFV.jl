@@ -121,7 +121,7 @@ function convert_onnx_pad(pad::NTuple{N, <:Integer}) where N
     return Tuple([ifelse(iseven(i), pad[half + (i ÷ 2)], pad[(i + 1) ÷ 2]) for i in 1:length(pad)])
 end
 
-function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, weights, bias;
+function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, weights, bias=false;
                                   auto_pad="NOTSET", dilations=nothing, group=1, kernel_shape=nothing, pads=nothing, strides=nothing)
     @assert auto_pad == "NOTSET" "auto_pad currently not supported! (node $name)"
     println("parsing Conv!")

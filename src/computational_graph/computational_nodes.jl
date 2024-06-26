@@ -165,7 +165,7 @@ kwargs:
     double_precision - whether to use double precision weights
 """
 function Convolution(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, 
-                    weight, bias; stride=1, pad=0, dilation=1, groups=1, double_precision=false) where S
+                    weight, bias=false; stride=1, pad=0, dilation=1, groups=1, double_precision=false) where S
     # TODO: is this correct?
     kernel_size = size(weight)[1:end-2]
     in_channels, out_channels = size(weight)[end-1:end]
