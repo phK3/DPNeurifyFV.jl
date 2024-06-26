@@ -15,7 +15,7 @@ struct Linear <: Node
 end
 
 
-function Linear(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, W::AbstractMatrix{N}, b::AbstractVector{N}; double_precision=false) where {S,N<:Number}
+function Linear(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, W::AbstractMatrix{WN}, b::AbstractVector{BN}; double_precision=false) where {S,WN<:Number,BN<:Number}
     n_out, n_in = size(W)
 
     if double_precision
