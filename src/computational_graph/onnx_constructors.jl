@@ -169,7 +169,7 @@ end
 function NNL.construct_layer_tanh(::Type{CGType}, name, inputs, outputs, data)
     println("parsing Tahn ;-)")
     throw("Tanh not implemented!!!")
-    r# eturn Tanh(inputs, outputs, name)
+    # return Tanh(inputs, outputs, name)
 end
 
 function NNL.construct_layer_reducesum(::Type{CGType}, name, inputs, outputs, data; axes=nothing, keepdims=1, noop_with_empty_axes=0)
@@ -249,6 +249,13 @@ function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs,
 end
 
 
+function NNL.construct_layer_dropout(::Type{CGType}, name, inputs, outputs, data, ratio=0.5, training_mode=false)
+    @assert data == NNL.DynamicInput
+    println("Parsing Dropout!")
+    return DropoutLayer(inputs, outputs, name, ratio, training_mode)
+end
+
+
 function NNL.construct_layer_squeeze(::Type{CGType}, name, inputs, outputs, data, axes)
     @assert data == NNL.DynamicInput
     println("parsing Squeeze: axes = $axes")
@@ -313,6 +320,10 @@ function NNL.construct_layer_softmax(::Type{CGType}, name, inputs, outputs, data
     return Softmax(inputs, outputs, name, axis)
 end
     
+function NNL.construct_layer_concat(::Type{CGType}, name, inputs, outputs, data...; axis=nothing)
+    @assert !isnothing(axis) "Concatenation layer requires axis!"
+    return Concat(inputs, outputs, name, axis)
+end
 
 function NNL.construct_network(::Type{CGType}, inputs, outputs, nodes, input_shape, output_shape)
     println("Constructing the whole NN -- yay -- :-)")

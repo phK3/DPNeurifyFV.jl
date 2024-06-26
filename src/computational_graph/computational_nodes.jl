@@ -128,8 +128,8 @@ struct Concat <: Node
 end
 
 
-function forward_node(solver, L::Concat, x₁, x₂)
-    return cat(x₁, x₂, dims=L.dim)
+function forward_node(solver, L::Concat, xs...)
+    return cat(xs..., dims=L.dim)
 end
 
 
@@ -269,6 +269,21 @@ end
 
 function forward_node(solver, L::AveragePool, x)
     return L.avg(x)
+end
+
+
+struct DropoutLayer <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+    ratio
+    training_mode
+end
+
+
+function forward_node(solver, L::DropoutLayer, x)
+    # dropout doesn't do anything at inference time
+    return x
 end
 
 
