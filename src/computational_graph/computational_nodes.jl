@@ -534,7 +534,7 @@ function my_gather(x::AbstractArray, inds::AbstractVector; axis=1)
 end
 
 
-function my_gather(x::AbstractArray, inds::Array{N, 0}; axis=1) where N<:Number
+function my_gather(x::AbstractArray, inds::AbstractArray{N, 0}; axis=1) where N<:Number
     # special case for zero-dim arrays (arrays holding just one scalar value)
     # TODO: can we somehow get rid of that special case???
     axis = ndims(x) - axis  # NCHW -> WHCN
