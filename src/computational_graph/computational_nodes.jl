@@ -580,12 +580,13 @@ args:
     steps - stepsizes, s.t. steps[axis] are the steps for that axis
 """
 function my_slice(x::AbstractArray, starts, stops, axes; steps=1)
+    axes = ndims(x) .- axes  # NCHW -> WHCN
     starts0 = ones(Integer, ndims(x))
     stops0  = [size(x)...]
     steps0  = ones(Integer, ndims(x))
     
-    starts0[axes] .= starts
-    stops0[axes] .= stops
+    starts0[axes] .= starts .+ 1  # indexing in onnx is zero-based
+    stops0[axes] .= stops # no addition, since onnx excludes the ends, while julia includes them
     steps0[axes] .= steps
     
     starts0 = clamp.(starts0, zero(starts0),  size(x))
