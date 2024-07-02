@@ -2,7 +2,7 @@ module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
         OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP, RecipesBase, Memoization,
-        PolynomialRoots
+        PolynomialRoots, SparseArrays
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map, NetworkNegPosIdx, LayerNegPosIdx
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -24,6 +24,9 @@ include("overwrite_zope.jl")
 include("verify_vnnlib.jl")
 include("computational_graph/computational_graph.jl")
 include("computational_graph/computational_nodes.jl")
+include("computational_graph/graph_rewriting/node_constants.jl")
+include("computational_graph/graph_rewriting/convert2dense.jl")
+include("computational_graph/graph_rewriting/summarize_linear_layers.jl")
 include("computational_graph/symbolic_interval_graph.jl")
 include("computational_graph/dp_neurify_fv_graph.jl")
 include("computational_graph/onnx_constructors.jl")
