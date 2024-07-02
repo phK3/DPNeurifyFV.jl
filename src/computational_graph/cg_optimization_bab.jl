@@ -17,10 +17,17 @@ function merge_into_network(nn::CompGraph, A::AbstractMatrix, b::AbstractVector)
     out_dict = copy(nn.out_dict)
     out_dict[spec_node.outputs[1]] = spec_node
 
+    usage_map = copy(nn.usage_map)
+    if haskey(usage_map, spec_node.inputs[1])
+        usage_map[spec_node.inputs[1]] += 1
+    else
+        usage_map[spec_node.inputs[1]] = 1
+    end
+
     in_shape = nn.input_shape
     out_shape = (size(b), 1)  # with batch dim
 
-    return CompGraph(nodes, in_node, out_node, out_dict, in_shape, out_shape)
+    return CompGraph(nodes, in_node, out_node, out_dict, usage_map, in_shape, out_shape)
 end
 
 

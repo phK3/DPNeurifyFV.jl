@@ -16,6 +16,8 @@ struct CompGraph
     out_node::Node
     # dict: output names -> node producing that output
     out_dict::Dict
+    # dict: output names -> number of nodes requiring this output as input
+    usage_map::Dict
     input_shape
     output_shape
 end
@@ -48,6 +50,7 @@ function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node, input_s
     end
 
     parents_dict = Dict()
+    usage_map = Dict()
     for n in nodes
         if n.name == in_node.name
             # input node has no parent nodes, just the input values
@@ -55,9 +58,17 @@ function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node, input_s
         end
         # all nodes producing inputs that node n needs are parents of n
         parents_dict[n.name] = [output_dict[i] for i in n.inputs]
+
+        for i in n.inputs
+            if haskey(usage_map, i)
+                usage_map[i] += 1
+            else
+                usage_map[i] = 1
+            end
+        end
     end
         
-    return CompGraph(node_dict, in_node, out_node, output_dict, input_shape, output_shape)
+    return CompGraph(node_dict, in_node, out_node, output_dict, usage_map, input_shape, output_shape)
 end
 
 
