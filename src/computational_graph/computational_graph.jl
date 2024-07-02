@@ -192,3 +192,68 @@ function propagate(nn::CompGraph, x; verbosity=0)
     solver = ConcreteExecution()
     return propagate(solver, nn, x, verbosity=verbosity)
 end
+
+
+"""
+Generates png file with drawing of the computational graph.
+
+The graph drawing makes use of the dot program for drawing directed graphs. 
+The program needs to be installed separately.
+
+args:
+    nn - the computational graph to visualize
+
+kwargs
+    filename - (defaults to graph.dot) the filename of the dot file that is generated
+    display - (defaults to true) whether to directly display the resulting png image 
+"""
+function show_graph(nn; filename="./graph.dot", display=true)
+    if isnothing(Sys.which("dot"))
+        throw(ErrorException("Displaying the computational graph requires a working installation of dot!\nTry sudo apt-get install graphviz"))
+    end
+
+    in_shape = map(s -> ifelse(typeof(s) <: Integer, s, 1), nn.input_shape)
+    x = zeros(in_shape)
+    ydict = propagate(ConcreteExecution(), nn, x, return_dict=true)
+    ydict["input"] = x  # why is this not stored?
+
+    open(filename, "w") do file
+        write(file, "digraph {\n")
+
+        # add input node 
+        write(file, "\t1 [label=\"input\", style=filled, fillcolor=red];\n")
+        # add all other nodes
+        node_map = Dict("input" => 1)
+        for (i, n) in enumerate(values(nn.nodes))
+            node_map[n.name] = i + 1  # first is input
+
+            if linear_nodes[typeof(n)]
+                write(file, "\t$(i+1) [label=\"$(n.name)\"];\n")
+            else
+                style = "filled"
+                fillcolor = "red"
+                write(file, "\t$(i+1) [label=\"$(n.name)\", style=$style, fillcolor=$fillcolor];\n")
+            end
+        end
+
+        for (j, n) in enumerate(values(nn.nodes))
+            for i in get_inputs(n)
+                if i == "input"
+                    src = 1
+                else
+                    src = node_map[nn.out_dict[i].name]
+                end
+                dst = j+1
+                label = size(ydict[i])
+                write(file, "\t$src -> $dst [label=\"$label\"];\n")
+            end
+        end
+        write(file, "}")
+    end
+
+    run(pipeline(`dot -Tpng $filename`, stdout="$filename.png"))
+
+    if display
+        run(`xdg-open $filename.png`, wait=false)
+    end
+end
