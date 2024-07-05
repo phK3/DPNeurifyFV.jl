@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "aa77235e6cb2d60e0ca987b84044f40d35b492b6"
+project_hash = "a87f858f4f2f07c6119bb94080d044af93217855"
 
 [[deps.AMD]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse_jll"]
@@ -1968,7 +1968,7 @@ version = "0.1.4"
 
 [[deps.VNNLib]]
 deps = ["LinearAlgebra", "MLStyle", "Mmap", "ONNXRunTime", "ProtoBuf", "SymbolicUtils", "Tokenize"]
-git-tree-sha1 = "129ea2501ea8cdeb3a9f1fc1175de0920bf98ea4"
+git-tree-sha1 = "800f75b9291822f68a61e7d6505b4696ef2010b5"
 repo-rev = "extension"
 repo-url = "https://github.com/phK3/VNNLib.jl"
 uuid = "286915b0-5841-4eea-9013-d818f395ad8c"
