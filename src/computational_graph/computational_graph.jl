@@ -68,6 +68,8 @@ function CompGraph(nodes::AbstractVector, in_node::Node, out_node::Node, input_s
         end
     end
         
+    input_shape = map(s -> ifelse(typeof(s) <: Integer, s, 1), input_shape)
+    output_shape = map(s -> ifelse(typeof(s) <: Integer, s, 1), output_shape)
     return CompGraph(node_dict, in_node, out_node, output_dict, usage_map, input_shape, output_shape)
 end
 
