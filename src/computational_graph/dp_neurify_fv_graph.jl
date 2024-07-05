@@ -206,10 +206,8 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     
     importance = zero(s.importance)
     unfixed_mask = (low(domain(s)) .< high(domain(s)))
+
     importance[unfixed_mask] .= s.importance[unfixed_mask] .+ layer_importance[1:end-1]
-    
-    # this only works, if all inputs are unfixed!!!
-    # importance = s.importance .+ layer_importance[1:end-1]  # constant term doesn't need importance
 
     fv_idxs = solver.get_fresh_var_idxs(s.max_vars, current_n_vars, ll, uu, solver.var_frac)
     n_vars = length(fv_idxs)
@@ -244,10 +242,17 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
         Û = [Û[:, 1:n_sym] zeros(n_neurons, n_vars) Û[:, end]]
     end
 
+    # add variable indices to list
+    var_ids = [s.var_ids; [(L.name, v) for v in fv_idxs]]
+    # TODO: if we have to copy them, it doesn't make sense to preallocate them to the right size 
+    # in the SymcolicInterval already!!!
+    var_los = copy(s.var_los)
+    var_his = copy(s.var_his)
+
     for (i, v) in enumerate(fv_idxs)
         # store symbolic bounds on fresh variables
-        s.var_los[current_n_vars + i, :] .= subs_LL[v, :]
-        s.var_his[current_n_vars + i, :] .= subs_UU[v, :]
+        var_los[current_n_vars + i, :] .= subs_LL[v, :]
+        var_his[current_n_vars + i, :] .= subs_UU[v, :]
 
         # set corresponding entry to unit vec
         L̂[v, :] .= unit_vec(n_sym + i, n_sym + 1 + n_vars)
@@ -262,7 +267,7 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
 
 
     output = SymbolicIntervalGraph(L, U, domain(s), s.lbs, s.ubs, 
-                                   s.var_los, s.var_his, s.var_ids, 
+                                   var_los, var_his, var_ids, 
                                    s.max_vars, importance)
 
     return output
