@@ -46,6 +46,42 @@ end
 
 
 """
+Given arrays a₁, ..., aₙ with some common entries, computes list of distinct elements dlist with length N and mapping 
+dictfun: entrytype -> [1,N] s.t. if a₁[i] == a₂[j], then dictfun[a₁[i]] == dictfun[a₂[j]].
+
+The dictfun can be accessed using broadcasting, i.e. the indices for elements of a₁ can be obtained as dictfun.(a₁) .
+
+Usage is mostly for creating arrays where all of the shared elements are at the same position in each of the arrays:
+âᵢ = zeros(N)
+a̋ᵢ[dictfun.(aᵢ)] .= aᵢ
+
+args:
+    vs - vararg of arrays
+
+returns:
+    dictfun - function mapping array elements to unique indices in [1,N]
+    dlist - list of unique elements in the arrays, has length N
+"""
+function common_inds(vs::Vararg{<:AbstractArray{T}}) where T
+    d = Dict{T, eltype(keys(vs[1]))}()
+    cnt = 0
+    for (i, v) in enumerate(vs)
+        for val in v
+            if !haskey(d, val)
+                cnt += 1
+                d[val] = cnt
+            end
+        end
+    end
+
+    ind_max = cnt
+    dictfun = x -> d[x]
+
+    return dictfun, collect(keys(d))
+end
+
+
+"""
 Returns indices a_inds, b_inds of elements occuring both in a and b, s.t.
 a[a_inds] == b[b_inds], as well as indices a_diff, b_diff, s.t. 
 a[a_diff] are all elements in a that don't occur in b (and similar for b_diff)
