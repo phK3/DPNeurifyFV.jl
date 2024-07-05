@@ -16,26 +16,14 @@ end
 
 
 function Linear(inputs::AbstractVector{S}, outputs::AbstractVector{S}, name::S, W::AbstractMatrix{WN}, b::AbstractVector{BN}; double_precision=false) where {S,WN<:Number,BN<:Number}
-    n_out, n_in = size(W)
-
     if double_precision
-        dense = Dense(n_in => n_out) |> f64
-        dense⁺ = Dense(n_in => n_out) |> f64
-        dense⁻ = Dense(n_in => n_out) |> f64
-    else
-        dense = Dense(n_in => n_out)
-        dense⁺ = Dense(n_in => n_out)
-        dense⁻ = Dense(n_in => n_out)
+        W = Float64.(W)
+        b = Float64.(b)
     end
 
-    dense.weight .= W
-    dense.bias .= b
-
-    dense⁺.weight .= max.(0, W)
-    dense⁺.bias .= zero(dense.bias)
-
-    dense⁻.weight .= min.(0, W)
-    dense⁻.bias .= zero(dense.bias)
+    dense = Dense(W, b)
+    dense⁺ = Dense(max.(zero(WN), W), zero(b))
+    dense⁻ = Dense(min.(zero(WN), W), zero(b))
 
     return Linear(inputs, outputs, name, dense, dense⁺, dense⁻)
 end
