@@ -1,12 +1,12 @@
 
 
-function summarize_linear_layers(cg::CompGraph, n::Linear, output, summarized_names; verbosity=0, double_precision=false)
+function summarize_linear_layers(cg::CompGraph, n::Linear, output, summarized_names; verbosity=0, sparse_threshold=0.9, double_precision=false)
     n_out = length(n.dense.bias)
-    summarize_linear_layers(cg, n, I(n_out), zeros(n_out), output, summarized_names, verbosity=verbosity, double_precision=double_precision)
+    summarize_linear_layers(cg, n, I(n_out), zeros(n_out), output, summarized_names, verbosity=verbosity, sparse_threshold=sparse_threshold, double_precision=double_precision)
 end
 
 
-function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::AbstractArray, output, summarized_names; verbosity=0, double_precision=false)
+function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::AbstractArray, output, summarized_names; verbosity=0, sparse_threshold=0.9, double_precision=false)
     verbosity > 1 && println("enter ", n.name, " (linear)")
     # can only have one input node
     # is of course linear
@@ -17,8 +17,6 @@ function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::
     b̂ = W*bₗ + b
 
     in_node = n.inputs[1] == get_input_name(cg) ? get_input_name(cg) : get_producer(cg, n.inputs[1])
-    @show in_node
-    @show cg.in_node
 
     # TODO: can't just check length(cg.in_node.outputs) as it is only 1 output, but it is used by many nodes!!!
     if in_node == cg.in_node && cg.usage_map[n.inputs[1]] > 1
@@ -27,6 +25,7 @@ function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::
             # if we reduced, we would get one input node for each downstream node
             verbosity > 0 && println("\tsummarize: ", summarized_names)
             nodes = Vector{Node}()
+            Ŵ = sum(Ŵ .== 0)/length(Ŵ) > sparse_threshold ? sparse(Ŵ) : Ŵ
             node = Linear(n.inputs, output, join(summarized_names, "+"), Ŵ, b̂, double_precision=double_precision)
             push!(nodes, node)
             return nodes
@@ -35,15 +34,16 @@ function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::
         # can't reduce further
         summarized_names = [summarized_names; n.name]
         verbosity > 0 && println("\tsummarize: ", summarized_names)
+        Ŵ = sum(Ŵ .== 0)/length(Ŵ) > sparse_threshold ? sparse(Ŵ) : Ŵ
         node = Linear([get_input_name(cg)], output, join(summarized_names, "+"), Ŵ, b̂, double_precision=double_precision)
         return [node]
     else
-        return summarize_linear_layers(cg, in_node, Ŵ, b̂, output, [summarized_names; n.name], verbosity=verbosity, double_precision=double_precision)
+        return summarize_linear_layers(cg, in_node, Ŵ, b̂, output, [summarized_names; n.name], verbosity=verbosity, sparse_threshold=sparse_threshold, double_precision=double_precision)
     end
 end
 
 
-function summarize_linear_layers(cg::CompGraph, n::Node, output, summarized_names; verbosity=0, double_precision=false)
+function summarize_linear_layers(cg::CompGraph, n::Node, output, summarized_names; verbosity=0, sparse_threshold=0.9, double_precision=false)
     # only enter the version without W, b when there was no prior linear layer
     verbosity > 0 && println("enter ", n.name, " (non-linear)")
     nodes = Vector{Node}()  # have to give type, otherwise it will only have the type of n
@@ -52,7 +52,7 @@ function summarize_linear_layers(cg::CompGraph, n::Node, output, summarized_name
         if in_arg != get_input_name(cg)
             # if in_arg == input, we can just do nothing 
             in_node = get_producer(cg, in_arg)
-            summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, double_precision=double_precision)
+            summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, sparse_threshold=sparse_threshold, double_precision=double_precision)
             nodes = [nodes; summarized_nodes]
         end
     end
@@ -78,9 +78,10 @@ kwargs:
 returns:
     Summarized nodes contained in CompGraph from output to the parents of this node.
 """
-function summarize_linear_layers(cg::CompGraph, n::Node, W::AbstractArray, b::AbstractArray, output, summarized_names; verbosity=0, double_precision=false)
+function summarize_linear_layers(cg::CompGraph, n::Node, W::AbstractArray, b::AbstractArray, output, summarized_names; verbosity=0, sparse_threshold=0.9, double_precision=false)
     verbosity > 0 && println("enter ", n.name, " (non-linear)")
     verbosity > 0 && println("\tsummarize: ", summarized_names)
+    W = sum(W .== 0)/length(W) > sparse_threshold ? sparse(W) : W
     node = Linear(n.outputs, output, join(summarized_names, "+"), W, b, double_precision=double_precision)
     
     nodes = Vector{Node}()
@@ -90,7 +91,7 @@ function summarize_linear_layers(cg::CompGraph, n::Node, W::AbstractArray, b::Ab
         if in_arg != get_input_name(cg)
             # if in_arg == input, we can just do nothing 
             in_node = get_producer(cg, in_arg)
-            summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, double_precision=double_precision)
+            summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, sparse_threshold=sparse_threshold, double_precision=double_precision)
             nodes = [nodes; summarized_nodes]
         end
     end
@@ -113,16 +114,17 @@ args:
 
 kwargs:
     verbosity - print message when entering each node and which nodes are summarized
+    sparse_threshold - if the weight matrix has more than sparse_threshold zeros, it is converted to a sparse matrix
     double_precision - whether to use double precision for the new layers
 
 returns:
     CompGraph with summarized linear layers
 """
-function summarize_linear_layers(cg::CompGraph; verbosity=0, double_precision=false)
+function summarize_linear_layers(cg::CompGraph; verbosity=0, sparse_threshold=0.9, double_precision=false)
     in_shape = cg.input_shape
     out_shape = cg.output_shape
 
-    nodes = summarize_linear_layers(cg, cg.out_node, cg.out_node.outputs, [], verbosity=verbosity, double_precision=double_precision)
+    nodes = summarize_linear_layers(cg, cg.out_node, cg.out_node.outputs, [], verbosity=verbosity, sparse_threshold=sparse_threshold, double_precision=double_precision)
 
     if maximum([cg.usage_map[o] for o in cg.in_node.outputs]) > 1
         # we have to add it manually here, we skip adding it in the call above as it would be added by every of its child nodes
