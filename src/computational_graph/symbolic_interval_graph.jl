@@ -358,6 +358,84 @@ function add_constant(s::SymbolicIntervalGraph, c)
 end
 
 
+"""
+Returns versions of symbolic intervals s.t. the same column indices correspond to the same (fresh) variables.
+
+If Xᵢ are the coefficients of the input variables in sᵢ and Cᵢ are the coefficients of the fresh variables that appear in both
+s₁ and s₂ and Dᵢ are the coefficients of the fresh variables that only appear in sᵢ, then e.g. the lower
+symbolic bounds looked like
+    s₁.Low = [X₁ C₁ D₁]
+    s₂.Low = [X₂ C₂ D₂]  
+(note that the Cᵢ and Dᵢ may have interleaving columns in practice)
+After expanding the variables of each symbolic interval to the whole set of fresh vars, we will get
+    ŝ₁.Low = [X₁ C₁ D₁ 0 ]
+    ŝ₂.Low = [X₂ C₂ 0  D₂]
+
+args:
+    s₁ - symbolic interval whose variables should be expanded
+    s₂ - symbolic interval whose variables should be expanded
+"""
+function expand_vars(s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
+    common₁, common₂, diff₁, diff₂ = common_and_diff_inds(s₁.var_ids, s₂.var_ids)
+    var_ids = [s₁.var_ids[common₁]; s₁.var_ids[diff₁]; s₂.var_ids[diff₂]]
+    var_los = [s₁.var_los[common₁,:]; s₁.var_los[diff₁,:]; s₂.var_los[diff₂,:]]
+    var_his = [s₁.var_his[common₁,:]; s₁.var_his[diff₁,:]; s₂.var_his[diff₂,:]]
+    
+    n_in = get_n_in(s₁)
+    L₁ = [s₁.Low[:,1:n_in] s₁.Low[:, common₁ .+ n_in] s₁.Low[:, diff₁ .+ n_in]             zeros(size(s₁.Low,1), length(diff₂)) s₁.Low[:,end]]
+    L₂ = [s₂.Low[:,1:n_in] s₂.Low[:, common₂ .+ n_in] zeros(size(s₂.Low,1), length(diff₁)) s₂.Low[:, diff₂ .+ n_in]             s₂.Low[:,end]]
+
+    U₁ = [s₁.Up[:,1:n_in] s₁.Up[:, common₁ .+ n_in] s₁.Up[:, diff₁ .+ n_in]         zeros(size(s₁.Up,1), length(diff₂)) s₁.Up[:,end]]
+    U₂ = [s₂.Up[:,1:n_in] s₂.Up[:, common₂ .+ n_in] zeros(size(s₂.Up,1), length(diff₁)) s₂.Up[:, diff₂ .+ n_in]         s₂.Up[:,end]]
+
+    # TODO: truncate some variables via interval arithmetic to ensure we don't get more than the initial max_vars variables!!!
+    # right now only want to get it to work
+    max_vars = max(s₁.max_vars, s₂.max_vars, length(var_ids))
+    # importance is only defined on input vars, which should be the same for both (since we assume a unique input)
+    ŝ₁ = SymbolicIntervalGraph(L₁, U₁, s₁.domain, s₁.lbs, s₁.ubs, var_los, var_his, var_ids, max_vars, s₁.importance)
+    ŝ₂ = SymbolicIntervalGraph(L₂, U₂, s₂.domain, s₂.lbs, s₂.ubs, var_los, var_his, var_ids, max_vars, s₂.importance)
+    return ŝ₁, ŝ₂
+end
+
+
+function expand_vars(ss::Vararg{SymbolicIntervalGraph})
+    dictfun, dlist = common_inds([s.var_ids for s in ss]...)
+    N = length(dlist)
+
+    var_ids = dlist
+    lbs = merge([s.lbs for s in ss]...)
+    ubs = merge([s.ubs for s in ss]...)
+
+    # assume all have the same number of inputs, as we only allow NNs with unique input
+    n_in = get_n_unfixed(ss[1])  
+    var_los = zeros(N, n_in + 1)
+    var_his = zeros(N, n_in + 1)
+
+    for s in ss
+        inds = dictfun.(s.var_ids)
+        var_los[inds,:] .= s.var_los[1:length(inds),:]
+        var_his[inds,:] .= s.var_his[1:length(inds),:]
+    end
+
+    ŝs = Vector{SymbolicIntervalGraph}(undef, length(ss))
+    for (i, s) in enumerate(ss)
+        L = zeros(size(s.Low,1), N + n_in + 1)
+        L[:,1:n_in] .= s.Low[:,1:n_in]
+        L[:,end] .= s.Low[:,end]
+        L[:,dictfun.(s.var_ids) .+ n_in] .= s.Low[:,n_in+1:end-1]
+
+        U = zeros(size(s.Up,1), N + n_in + 1)
+        U[:,1:n_in] .= s.Up[:,1:n_in]
+        U[:,end] .= s.Up[:,end]
+        U[:,dictfun.(s.var_ids) .+ n_in] .= s.Up[:,n_in+1:end-1]
+
+        ŝs[i] = SymbolicIntervalGraph(L, U, s.domain, lbs, ubs, var_los, var_his, var_ids, N, s.importance)
+    end
+
+    return ŝs
+end
+
+
 
 """
 Bisect input interval of dimension i of domain of symbolic interval.

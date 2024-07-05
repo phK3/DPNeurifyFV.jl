@@ -12,6 +12,20 @@ function forward_node(solver::DPNFV, L::Linear, s::SymbolicIntervalGraph)
 end
 
 
+function forward_node(solver::DPNFV, L::Concat, ss::Vararg{SymbolicIntervalGraph})
+    @assert L.dim == 1 "Only vertical concatenation is supported for now!"
+
+    ŝs = expand_vars(ss...)
+
+    L̂ = vcat([s.Low for s in ŝs]...)
+    Û = vcat([s.Up  for s in ŝs]...)
+
+    importance = vec(sum(hcat([s.importance for s in ŝs]...), dims=2))
+    ŝ = SymbolicIntervalGraph(L̂, Û, ŝs[1].domain, ŝs[1].lbs, ŝs[1].ubs, ŝs[1].var_los, ŝs[1].var_his, ŝs[1].var_ids, ŝs[1].max_vars, importance)
+    return ŝ
+end
+
+
 function forward_node(solver::DPNFV, L::Add, s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
     # TODO: check fresh variables
     Low = s₁.Low .+ s₂.Low
