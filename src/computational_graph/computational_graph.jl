@@ -94,6 +94,13 @@ get_producer(nn::CompGraph, o) = nn.out_dict[o]
 get_input_shape(nn::CompGraph) = nn.input_shape
 get_output_shape(nn::CompGraph) = nn.output_shape
 
+"""
+Returns the name of the input to this computational graph.
+
+We assume that a computational graph only has one input!
+"""
+get_input_name(nn::CompGraph) = nn.in_node.inputs[1]
+
 
 """
 Get inputs to the node in a network from the propagation dictionary.
@@ -214,10 +221,11 @@ function show_graph(nn; filename="./graph.dot", display=true)
         throw(ErrorException("Displaying the computational graph requires a working installation of dot!\nTry sudo apt-get install graphviz"))
     end
 
+    input_name = get_input_name(nn)
     in_shape = map(s -> ifelse(typeof(s) <: Integer, s, 1), nn.input_shape)
     x = zeros(in_shape)
     ydict = propagate(ConcreteExecution(), nn, x, return_dict=true)
-    ydict["input"] = x  # why is this not stored?
+    ydict[input_name] = x  # why is this not stored?
 
     open(filename, "w") do file
         write(file, "digraph {\n")
@@ -225,7 +233,7 @@ function show_graph(nn; filename="./graph.dot", display=true)
         # add input node 
         write(file, "\t1 [label=\"input\", style=filled, fillcolor=red];\n")
         # add all other nodes
-        node_map = Dict("input" => 1)
+        node_map = Dict(input_name => 1)
         for (i, n) in enumerate(values(nn.nodes))
             node_map[n.name] = i + 1  # first is input
 
@@ -240,7 +248,7 @@ function show_graph(nn; filename="./graph.dot", display=true)
 
         for (j, n) in enumerate(values(nn.nodes))
             for i in get_inputs(n)
-                if i == "input"
+                if i == input_name
                     src = 1
                 else
                     src = node_map[nn.out_dict[i].name]

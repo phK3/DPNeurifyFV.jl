@@ -134,7 +134,7 @@ function cg2dense(cg::CompGraph; sparse_threshold=0.9, double_precision=false, v
     in_shape = map(s -> ifelse(typeof(s) <: Integer, s, 1), cg.input_shape)
     x = zeros(in_shape)
     ydict = propagate(ConcreteExecution(), cg, x, return_dict=true)
-    ydict["input"] = x  # why is this not stored?
+    ydict[get_input_name(cg)] = x  # why is this not stored?
 
     in_node = cg.in_node
     out_node = cg.out_node

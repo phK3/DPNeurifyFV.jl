@@ -16,7 +16,7 @@ function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::
     Ŵ = W*Wₗ
     b̂ = W*bₗ + b
 
-    in_node = n.inputs[1] == "input" ? "input" : get_producer(cg, n.inputs[1])
+    in_node = n.inputs[1] == get_input_name(cg) ? get_input_name(cg) : get_producer(cg, n.inputs[1])
     @show in_node
     @show cg.in_node
 
@@ -30,12 +30,12 @@ function summarize_linear_layers(cg::CompGraph, n::Linear, W::AbstractArray, b::
             node = Linear(n.inputs, output, join(summarized_names, "+"), Ŵ, b̂, double_precision=double_precision)
             push!(nodes, node)
             return nodes
-    elseif in_node == "input"
+    elseif in_node == get_input_name(cg)
         # now we are at the input node and it had only one output
         # can't reduce further
         summarized_names = [summarized_names; n.name]
         verbosity > 0 && println("\tsummarize: ", summarized_names)
-        node = Linear(["input"], output, join(summarized_names, "+"), Ŵ, b̂, double_precision=double_precision)
+        node = Linear([get_input_name(cg)], output, join(summarized_names, "+"), Ŵ, b̂, double_precision=double_precision)
         return [node]
     else
         return summarize_linear_layers(cg, in_node, Ŵ, b̂, output, [summarized_names; n.name], verbosity=verbosity, double_precision=double_precision)
@@ -49,7 +49,7 @@ function summarize_linear_layers(cg::CompGraph, n::Node, output, summarized_name
     nodes = Vector{Node}()  # have to give type, otherwise it will only have the type of n
     push!(nodes, n)
     for in_arg in n.inputs
-        if in_arg != "input"
+        if in_arg != get_input_name(cg)
             # if in_arg == input, we can just do nothing 
             in_node = get_producer(cg, in_arg)
             summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, double_precision=double_precision)
@@ -87,7 +87,7 @@ function summarize_linear_layers(cg::CompGraph, n::Node, W::AbstractArray, b::Ab
     push!(nodes, n)
     push!(nodes, node)
     for in_arg in n.inputs
-        if in_arg != "input"
+        if in_arg != get_input_name(cg)
             # if in_arg == input, we can just do nothing 
             in_node = get_producer(cg, in_arg)
             summarized_nodes = summarize_linear_layers(cg, in_node, [in_arg], [], verbosity=verbosity, double_precision=double_precision)
@@ -130,7 +130,8 @@ function summarize_linear_layers(cg::CompGraph; verbosity=0, double_precision=fa
         push!(nodes, cg.in_node)
     end
 
-    in_nodes = filter(x -> "input" in x.inputs, collect(values(nodes)))
+    input_name = get_input_name(cg)
+    in_nodes = filter(x -> input_name in x.inputs, collect(values(nodes)))
     out_nodes = filter(x -> x.outputs == cg.out_node.outputs, collect(values(nodes)))
     @assert length(in_nodes) == 1 "Only networks with a unique input node are supported! Got input nodes $(in_nodes)"
     @assert length(out_nodes) == 1 "Only networks with a unique output node are supported! Got output nodes $(out_nodes)"
