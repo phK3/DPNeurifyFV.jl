@@ -2,7 +2,7 @@ module DPNeurifyFV
 
 using LazySets, NeuralVerification, Parameters, LinearAlgebra, DataStructures, NeuralPriorityOptimizer, CSV, 
         OnnxReader, VnnlibParser, Flux, VNNLib, PyVnnlib, PrecompileTools, Gurobi, JuMP, RecipesBase, Memoization,
-        PolynomialRoots, SparseArrays
+        PolynomialRoots, SparseArrays, ONNXRunTime
 using NeuralVerification: TOL, Layer, Network, AbstractNetwork, ActivationFunction, ReLU, Id, n_nodes, relaxed_relu_gradient, compute_output
 import NeuralVerification: affine_map, interval_map, NetworkNegPosIdx, LayerNegPosIdx
 import NeuralPriorityOptimizer: split_hyperrectangle, split_largest_interval, split_multiple_times
@@ -10,6 +10,13 @@ import VNNLib.NNLoader
 const NV = NeuralVerification
 const NPO = NeuralPriorityOptimizer
 const NNL = NNLoader
+const OX = ONNXRunTime
+
+
+# output information about node construction when reading onnx files
+const VERBOSE_ONNX = Ref(false)
+set_onnx_verbosity(v::Bool) = (VERBOSE_ONNX[] = v)
+
 
 # redefinitions of function defined in NeuralVerification.jl
 # include("overwrite_neural_verification.jl")
@@ -62,7 +69,6 @@ function __init__()
     # needs to be created at runtime
     GRB_ENV[] = Gurobi.Env()
 end
-
 
 export 
     NetworkNegPosIdx,
