@@ -161,5 +161,6 @@ function cg2dense(cg::CompGraph; sparse_threshold=0.9, double_precision=false, v
         end
     end
 
-    return CompGraph(nodes, in_node, out_node, prod(in_shape), prod(out_shape))
+    # add batch dimension to the input and output shapes
+    return CompGraph(nodes, in_node, out_node, (prod(in_shape), 1), (prod(out_shape), 1))
 end
