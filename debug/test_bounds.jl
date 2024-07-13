@@ -30,6 +30,7 @@ function random_testing(nn, input_set::Hyperrectangle, symdict::Dict{A,B}; n_tes
     l = low(input_set)
     u = high(input_set)
 
+    max_err = 0.
     errs = []
     err_dict = Dict{A, Vector{Int}}()
     for i in 1:n_test
@@ -46,6 +47,8 @@ function random_testing(nn, input_set::Hyperrectangle, symdict::Dict{A,B}; n_tes
             if maximum(low_vio) > 0 || maximum(up_vio) > 0
                 println("Error at $k:\n\tlow_vio: ", maximum(low_vio), "\n\tup_vio : ", maximum(up_vio))
 
+                max_err = max(max_err, maximum(low_vio), maximum(up_vio))
+
                 if haskey(err_dict, k)
                     push!(err_dict[k], i)
                 else
@@ -61,7 +64,7 @@ function random_testing(nn, input_set::Hyperrectangle, symdict::Dict{A,B}; n_tes
         end
     end
 
-    return errs, err_dict
+    return max_err, errs, err_dict
 end
 
 
@@ -83,10 +86,10 @@ function random_testing(solver, nn::DP.CompGraph; n_test=1, widths=nothing, verb
         hi = lo .+ widths[i]
 
         input_set = Hyperrectangle(low=lo, high=hi)
-        err_inputs, err_dict = random_testing(solver, nn, input_set, n_test=n_test)
+        max_err, err_inputs, err_dict = random_testing(solver, nn, input_set, n_test=n_test)
 
         if length(err_inputs) > 0   
-            err_width_dict[widths[i]] = (input_set, err_inputs, err_dict)
+            err_width_dict[widths[i]] = (max_err, input_set, err_inputs, err_dict)
         end
     end
 
@@ -109,14 +112,14 @@ function test_property(solver, nn::DP.CompGraph, property_path; n_test=1, verbos
     # they might differ in the output constraint, if the original specification is a disjunction of output constraints.
     input_set, _ = specs[1]
 
-    errs, err_dict = random_testing(solver, nn, input_set; n_test=n_test)
+    max_err, errs, err_dict = random_testing(solver, nn, input_set; n_test=n_test)
 
     if compressed
         # compress if it was compressed before
         run(`gzip $(property_path)`)
     end
 
-    return errs, err_dict    
+    return max_err, errs, err_dict    
 end
 
 
@@ -129,7 +132,7 @@ args:
     benchmark_dir - directory containing `instances.csv` with paths to the benchmark's networks and properties
 
 kwargs:
-    tests_per_network - number of properties to check for each network 
+    tests_per_network - number of properties to check for each network (but can at most test all of the properties for that NN) 
     n_test - number of concrete inputs to sample for each check
     linearize - (bool) true iff networks theoretically linear layers should be converted to dense layers
     summarize - (bool) true iff consecutive linear layers should be summarized into one linear layer
@@ -138,7 +141,7 @@ kwargs:
 returns:
     errdict - dict mapping networkpath to either an error message, if the network could not be loaded or a list of concrete inputs violating the symbolic bounds
 """
-function test_benchmark(solver, benchmark_dir; tests_per_network=2, n_test=1, linearize=true, summarize=true, verbosity=0)
+function test_benchmark(solver, benchmark_dir; tests_per_network=2, n_test=1, linearize=true, summarize=true, double_precision=true, verbosity=0)
     f = CSV.File(joinpath(benchmark_dir, "instances.csv"), header=false)
 
     network_dict = Dict{String, Vector{Int}}()
@@ -157,7 +160,7 @@ function test_benchmark(solver, benchmark_dir; tests_per_network=2, n_test=1, li
 
         full_netpath = joinpath(benchmark_dir, netpath)
         compressed = false
-        if !isfile(full_netpath)
+        if !isfile(full_netpath) && !occursin("transformer", full_netpath)  # this is a hack for cgan!
             compressed = true
             run(`gunzip $(full_netpath).gz`)
         end
@@ -167,11 +170,11 @@ function test_benchmark(solver, benchmark_dir; tests_per_network=2, n_test=1, li
             nn = NNL.load_network_dict(DP.CGType, full_netpath)
 
             if linearize
-                nn = DP.cg2dense(nn)
+                nn = DP.cg2dense(nn, double_precision=double_precision)
             end
 
             if summarize
-                nn = DP.summarize_linear_layers(nn)
+                nn = DP.summarize_linear_layers(nn, double_precision=double_precision)
             end
 
             nn
