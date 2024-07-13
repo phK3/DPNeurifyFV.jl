@@ -375,6 +375,7 @@ args:
     s₁ - symbolic interval whose variables should be expanded
     s₂ - symbolic interval whose variables should be expanded
 """
+#=
 function expand_vars(s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
     common₁, common₂, diff₁, diff₂ = common_and_diff_inds(s₁.var_ids, s₂.var_ids)
     var_ids = [s₁.var_ids[common₁]; s₁.var_ids[diff₁]; s₂.var_ids[diff₂]]
@@ -396,6 +397,7 @@ function expand_vars(s₁::SymbolicIntervalGraph, s₂::SymbolicIntervalGraph)
     ŝ₂ = SymbolicIntervalGraph(L₂, U₂, s₂.domain, s₂.lbs, s₂.ubs, var_los, var_his, var_ids, max_vars, s₂.importance)
     return ŝ₁, ŝ₂
 end
+=#
 
 
 function expand_vars(ss::Vararg{SymbolicIntervalGraph})
