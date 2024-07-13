@@ -3,11 +3,33 @@ using DPNeurifyFV
 const DP = DPNeurifyFV
 
 
+
+function write_counterexample(x, y, out_file)
+    open(out_file, "w") do f
+        for (i, xᵢ) in enumerate(x)
+            if i == 1
+                println(f, "((X_", i, " ", xᵢ, ")")
+            else
+                println(f, " (X_", i, " ", xᵢ, ")")
+            end
+        end
+
+        for (i, yᵢ) in enumerate(y)
+            if i == length(y)
+                println(f, " (Y_", i, " ", yᵢ, "))")
+            else
+                println(f, " (Y_", i, " ", yᵢ, ")")
+            end
+        end
+    end
+end
+
+
 function verify_an_instance(onnx_file, vnnlib_file, timeout)
     params = DP.PriorityOptimizerParameters(max_steps=999999999, print_frequency=100, timeout=timeout, stop_frequency=1, verbosity=2)
     solver = DPNFV(method=:DeepPolyRelax, max_vars=10)
 
-    x_star, y_star, all_steps, result = DP.verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true)
+    x_star, y_star, all_steps, result = DP.verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true, check_onnx=true)
 
     if result == "SAT"
         return "sat", x_star, y_star
@@ -29,21 +51,7 @@ function main(args)
         write(io, result)
 
         if result == "sat"
-            for (i, x) in enumerate(vec(x_star))
-                if i == 0
-                    write(io, "\n(")
-                else
-                    write(io, "\n")
-                end
-
-                write(io, "(X_$i $x)")
-            end
-
-            for (i, y) in enumerate(vec(y_star))
-                write(io, "\n(Y_$i $y)")
-            end
-
-            write(io, ")")
+            write_counterexample(x_star, y_star, out_file)
         end
     end
 end
