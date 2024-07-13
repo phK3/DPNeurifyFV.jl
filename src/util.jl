@@ -15,6 +15,8 @@ _vec(x) = [x]
 _vec(x::AbstractArray) = x
 
 
+reversedims(A::AbstractArray) = permutedims(A, reverse(tuple(1:ndims(A)...)))
+
 
 """
 Given array of tuples a, returns tuple of arrays.
