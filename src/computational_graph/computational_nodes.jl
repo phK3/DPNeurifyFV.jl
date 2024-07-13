@@ -1,5 +1,17 @@
 
 
+struct DummyInputNode <: Node
+    inputs::AbstractVector
+    outputs::AbstractVector
+    name
+end
+
+
+function forward_node(solver, L::DummyInputNode, x)
+    return x
+end
+
+
 struct Linear <: Node
     # vector of identifiers for each input
     inputs::AbstractVector

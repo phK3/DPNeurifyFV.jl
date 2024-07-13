@@ -36,51 +36,51 @@ struct CGType <: NNL.NetworkType end
 
 
 function NNL.construct_layer_add(::Type{CGType}, name, inputs, outputs, a, b)
-    println("node $name: a = $a, b = $b\n")
+    VERBOSE_ONNX[] && println("node $name: a = $a, b = $b\n")
     return Add(inputs, outputs, name)
 end
 
 function NNL.construct_layer_add(::Type{CGType}, name, inputs, outputs, a::Type{NNL.DynamicInput}, b)
-    println("node $name: add constant\n")
+    VERBOSE_ONNX[] && println("node $name: add constant\n")
     return AddConst(inputs, outputs, name, b)
 end
 
 function NNL.construct_layer_add(::Type{CGType}, name, inputs, outputs, a, b::Type{NNL.DynamicInput})
-    println("node $name: add constant\n")
+    VERBOSE_ONNX[] && println("node $name: add constant\n")
     return AddConst(inputs, outputs, name, a)
 end
 
 function NNL.construct_layer_sub(::Type{CGType}, name, inputs, outputs, a, b)
-    println("node $name: a = $a, b = $b\n")
-    println("parsing Sub with 2 inputs")
+    VERBOSE_ONNX[] && println("node $name: a = $a, b = $b\n")
+    VERBOSE_ONNX[] && println("parsing Sub with 2 inputs")
     return Sub(inputs, outputs, name)
 end
 
 function NNL.construct_layer_sub(::Type{CGType}, name, inputs, outputs, a::Type{NNL.DynamicInput}, b)
-    println("node $name: sub constant\n")
+    VERBOSE_ONNX[] && println("node $name: sub constant\n")
     return AddConst(inputs, outputs, name, .-b)
 end
 
 function NNL.construct_layer_sub(::Type{CGType}, name, inputs, outputs, a, b::Type{NNL.DynamicInput})
     # here the variable input is subtracted from the constant, so can't handle it with add
-    println("node $name: sub constant\n")
+    VERBOSE_ONNX[] && println("node $name: sub constant\n")
     return SubConst(inputs, outputs, name, a)
 end
 
 
 function NNL.construct_layer_mul(::Type{CGType}, name, inputs, outputs, a::Type{NNL.DynamicInput}, b::Type{NNL.DynamicInput})
-    println("node $name: multiply")
+    VERBOSE_ONNX[] && println("node $name: multiply")
     return Mul(inputs, outputs, name)
 end
 
 function NNL.construct_layer_div(::Type{CGType}, name, inputs, outputs, a::Type{NNL.DynamicInput}, b::Type{NNL.DynamicInput})
-    println("node $name: div")
+    VERBOSE_ONNX[] && println("node $name: div")
     return Div(inputs, outputs, name)
 end
 
 
 function NNL.construct_layer_matmul(::Type{CGType}, name, inputs, outputs, weight, x::Type{NNL.DynamicInput})
-    println("parsing Matmul with input :-)")
+    VERBOSE_ONNX[] && println("parsing Matmul with input :-)")
     #println("node $name with params $weight and x is $x")
     #println("weight <: DynamicInput? ", typeof(weight) <: NNL.DynamicInput)
     #println("x <: DynamicInput? ", typeof(x) <: NNL.DynamicInput)
@@ -90,7 +90,7 @@ end
 
 # TODO: is Type{NNL.DynamicInput} what we really want here?
 function NNL.construct_layer_matmul(::Type{CGType}, name, inputs, outputs, x::Type{NNL.DynamicInput}, weight)
-    println("parsing Matmul with input :-)")
+    VERBOSE_ONNX[] && println("parsing Matmul with input :-)")
     # TODO: do we have to transpose matrix if it is x * W instead of W*x?
     #println("node $name with params $weight and x is $x")
     return Linear(inputs, outputs, name, weight, zero(weight[:,1]))
@@ -98,7 +98,7 @@ end
 
 function NNL.construct_layer_gemm(::Type{CGType}, name, inputs, outputs, A, B, C; alpha=1., beta=1., transA=0, transB=0)
     @assert (transA == 0 && A == NNL.DynamicInput) "General Gemm not supported"
-    println("parsing Gemm of $(typeof(A)), $(typeof(B)), $(typeof(C))")
+    VERBOSE_ONNX[] && println("parsing Gemm of $(typeof(A)), $(typeof(B)), $(typeof(C))")
     if transB == 0
         W = alpha .* B
     else
@@ -124,7 +124,7 @@ end
 function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, weights, bias=false;
                                   auto_pad="NOTSET", dilations=nothing, group=1, kernel_shape=nothing, pads=nothing, strides=nothing)
     @assert auto_pad == "NOTSET" "auto_pad currently not supported! (node $name)"
-    println("parsing Conv!")
+    VERBOSE_ONNX[] && println("parsing Conv!")
 
     strides = isnothing(strides) ? 1 : convert2intOrTuple(strides)
     dilations = isnothing(dilations) ? 1 : convert2intOrTuple(dilations)
@@ -139,7 +139,7 @@ end
 
 function NNL.construct_layer_conv_transpose(::Type{CGType}, name, inputs, outputs, data, weights, bias;
                                             auto_pad="NOTSET", dilations=nothing, group=1, kernel_shape=nothing, output_padding=nothing, output_shape=nothing, pads=nothing, strides=nothing)
-    println("constructing convT!")
+    VERBOSE_ONNX[] && println("constructing convT!")
     @assert auto_pad == "NOTSET" "auto_pad currently not supported! (node $name)"
     @assert data == NNL.DynamicInput "Expected DynamicInput for data, but got $data"
     strides = isnothing(strides) ? 1 : convert2intOrTuple(strides)
@@ -156,37 +156,37 @@ end
 
 
 function NNL.construct_layer_relu(::Type{CGType}, name, inputs, outputs, data)
-    println("parsing ReLU :-)")
+    VERBOSE_ONNX[] && println("parsing ReLU :-)")
     return Relu(inputs, outputs, name)
 end
 
 function NNL.construct_layer_sigmoid(::Type{CGType}, name, inputs, outputs, data)
-    println("parsing Sigmoid ;-)")
+    VERBOSE_ONNX[] && println("parsing Sigmoid ;-)")
     throw("Sigmoid not implemented!!!")
     # return Sigmoid(inputs, outputs, name)
 end
 
 function NNL.construct_layer_tanh(::Type{CGType}, name, inputs, outputs, data)
-    println("parsing Tahn ;-)")
+    VERBOSE_ONNX[] && println("parsing Tahn ;-)")
     throw("Tanh not implemented!!!")
     # return Tanh(inputs, outputs, name)
 end
 
 function NNL.construct_layer_reducesum(::Type{CGType}, name, inputs, outputs, data; axes=nothing, keepdims=1, noop_with_empty_axes=0)
-    println("parsing ReduceSum ;-/")
+    VERBOSE_ONNX[] && println("parsing ReduceSum ;-/")
     return ReduceSum(name, inputs, outputs, axes, keepdims == 1)
 end
     
 
 function NNL.construct_layer_flatten(::Type{CGType}, name, inputs, outputs, data; axis=1)
-    println("parsing flatten :-)")
+    VERBOSE_ONNX[] && println("parsing flatten :-)")
     return Flatten(inputs, outputs, name)
 end
 
 
 function NNL.construct_layer_reshape(::Type{CGType}, name, inputs, outputs, data, shape)
     @assert data == NNL.DynamicInput
-    println("parsing reshape: $shape")
+    VERBOSE_ONNX[] && println("parsing reshape: $shape")
 
     # Flux needs WHCN instead of NCHW -> reverse
     # Julia needs : for calculate dim instead of -1 for python
@@ -205,7 +205,7 @@ end
 
 
 function NNL.construct_layer_slice(::Type{CGType}, name, inputs, outputs, data, starts, ends, axes, steps)
-    println("parsing slice")
+    VERBOSE_ONNX[] && println("parsing slice")
     return Slice(inputs, outputs, name, starts, ends, axes, steps=steps)
 end
 
@@ -213,14 +213,14 @@ end
 function NNL.construct_layer_batch_normalization(::Type{CGType}, name, inputs, outputs, X, scale, B, input_mean, input_var; 
                                                  epsilon=1e-5, momentum=0.9, training_mode=0)
     @assert X == NNL.DynamicInput
-    println("parsing BatchNormalization")
+    VERBOSE_ONNX[] && println("parsing BatchNormalization")
     return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon)
 end
 
 
 function NNL.construct_layer_transpose(::Type{CGType}, name, inputs, outputs, data; perm=nothing)
     @assert data == NNL.DynamicInput
-    println("parsing Transpose: $perm")
+    VERBOSE_ONNX[] && println("parsing Transpose: $perm")
 
     # Flux needs WHCN instead of NCHW -> reverse
     # Since dims are reversed, the index of the smallest dim needs to be largest and the index of the largest dim needs to be 1 (since Julia is 1-indexed)
@@ -238,7 +238,7 @@ function NNL.construct_layer_average_pool(::Type{CGType}, name, inputs, outputs,
     @assert ceil_mode == 0 "only ceil_mode = 0 supported! (node $name)"
     @assert count_include_pad == 0 || all(pads .== 0) "only count_include_pad = 0 supported! (node $name) (exception, when pads = 0 in every entry)"
     @assert isnothing(dilations) "dilations not supported! (node $name)"
-    println("parsing AveragePool!")
+    VERBOSE_ONNX[] && println("parsing AveragePool!")
 
     strides = isnothing(strides) ? 1 : convert2intOrTuple(strides)
     dilations = isnothing(dilations) ? 1 : convert2intOrTuple(dilations)
@@ -251,14 +251,14 @@ end
 
 function NNL.construct_layer_dropout(::Type{CGType}, name, inputs, outputs, data, ratio=0.5, training_mode=false)
     @assert data == NNL.DynamicInput
-    println("Parsing Dropout!")
+    VERBOSE_ONNX[] && println("Parsing Dropout!")
     return DropoutLayer(inputs, outputs, name, ratio, training_mode)
 end
 
 
 function NNL.construct_layer_squeeze(::Type{CGType}, name, inputs, outputs, data, axes)
     @assert data == NNL.DynamicInput
-    println("parsing Squeeze: axes = $axes")
+    VERBOSE_ONNX[] && println("parsing Squeeze: axes = $axes")
     # Flux needs reversed dimensions, but ONNX Squeeze only stores the axes to be squeezed.
     # so we don't know how many axes there are, which makes it difficult to calculate the right indices.
     # We therefore subtract the respective index from the length of the ndims of the input array, which is known at runtime.
@@ -280,7 +280,7 @@ function NNL.construct_layer_lstm(::Type{CGType}, name, inputs, outputs, data, W
     @assert direction == "forward" "reverse or bidirectional not supported! Got $direction"
     @assert input_forget == 0 "Coupling of input and forget gates is not supported!"
     # TODO: what is the supported layout???
-    println("parsing LSTM")
+    VERBOSE_ONNX[] && println("parsing LSTM")
 
     # | Param | ONNX input shape  | required Flux shape |
     # +-------+-------------------+---------------------+
@@ -311,12 +311,12 @@ function NNL.construct_layer_lstm(::Type{CGType}, name, inputs, outputs, data, W
 end
 
 function NNL.construct_layer_gather(::Type{CGType}, name, inputs, outputs, data, indices; axis=0)
-    println("parsing Gather")
+    VERBOSE_ONNX[] && println("parsing Gather")
     return Gather(inputs, outputs, name, indices, axis) 
 end
 
 function NNL.construct_layer_softmax(::Type{CGType}, name, inputs, outputs, data; axis=-1)
-    println("parsing Softmax")
+    VERBOSE_ONNX[] && println("parsing Softmax")
     return Softmax(inputs, outputs, name, axis)
 end
     
@@ -326,28 +326,37 @@ function NNL.construct_layer_concat(::Type{CGType}, name, inputs, outputs, data.
 end
 
 function NNL.construct_network(::Type{CGType}, inputs, outputs, nodes, input_shape, output_shape)
-    println("Constructing the whole NN -- yay -- :-)")
-    println("inputs: ", inputs)
-    println("outputs: ", outputs)
+    VERBOSE_ONNX[] && println("Constructing the whole NN -- yay -- :-)")
+    VERBOSE_ONNX[] && println("inputs: ", inputs)
+    VERBOSE_ONNX[] && println("outputs: ", outputs)
     @assert length(inputs) == 1 "currently only a unique input node is supported"
     @assert length(outputs) == 1 "currently only a unique output node is supported"
 
-    # println(nodes)
-
-    input_node = nothing
-    output_node = nothing
+    input_nodes = []
+    output_nodes = []
     for (key, value) in nodes
         if inputs[1] in value.inputs
-            input_node = value
+            push!(input_nodes, value)
         end
 
         if outputs[1] in value.outputs
-            output_node = value
+            push!(output_nodes, value)
         end
     end
 
+    @assert length(output_nodes) == 1 "Only NNs with unique output nodes are supported! Got $(output_nodes)"
+    output_node = output_nodes[1]
+    input_node = input_nodes[1]
+
+    if length(input_nodes) > 1
+        # TODO: better way?
+        dummy_input = DummyInputNode(["dummy_input"], inputs, "DummyInputNode")
+        input_node = dummy_input
+        nodes["DummyInputNode"] = dummy_input
+    end
+
     # TODO: really include shapes
-    println("input_shape = $input_shape, output_shape = $output_shape")
+    VERBOSE_ONNX[] && println("input_shape = $input_shape, output_shape = $output_shape")
 
     # need to change from onnx NCHW to WHCN order of Flux
     input_shape = reverse(tuple(input_shape...))

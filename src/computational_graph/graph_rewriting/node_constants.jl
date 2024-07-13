@@ -1,7 +1,8 @@
 
 # TODO: probably better to add a new field to each node!!!
 
-linear_nodes = Dict(Linear => true,
+linear_nodes = Dict(DummyInputNode => false, # it is really linear, but we wouldn't want to convert it
+                    Linear => true,
                     AddConst => true,
                     SubConst => true,
                     Concat => true,  # should we really convert that? Maybe have a special rule to only change dims to concat along?
@@ -29,7 +30,8 @@ linear_nodes = Dict(Linear => true,
                     )
 
 # TODO: check, if this is correct!
-batched_nodes = Dict(Linear => true,
+batched_nodes = Dict(DummyInputNode => true,
+                    Linear => true,
                     AddConst => true,
                     SubConst => true,
                     Concat => false,  # can't concat tensors, when one has batch dim and the others don't
