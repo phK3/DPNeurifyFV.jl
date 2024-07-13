@@ -32,13 +32,31 @@ end
 
 
 
+function test_counterexample(x, y, in_shape, in_name, out_name, onnx_file)
+    # test if onnx execution matches own execution
+    # need to propagate again as we might have merged output spec with last layer of nn
+    model = OX.load_inference(onnx_file)
+    outs = model(Dict(in_name => reshape(Float32.(x), reverse(in_shape))))
+    y_onnx = outs[out_name]
+
+    res = "SAT"
+    if any(abs.(y .- reversedims(y_onnx)) .> 1e-4)
+        println("Numberical precision error! Changing result to inconclusive")
+        res = "inconclusive"
+    end
+
+    return res, x, y 
+end
+
+
 function reaches_polytope(nn::CompGraph, input_set::AbstractHyperrectangle, polytope, params::PriorityOptimizerParameters;
                           solver=DPNFV(), split=split_largest_interval, concrete_sample=:Center)
     A, b = tosimplehrep(polytope)
     nn_spec = merge_into_network(nn, A, b)
 
-    in_shape = map(x -> ifelse(isa(x, Integer), x, 1), nn_spec.input_shape)
-    s = init_symbolic_interval_graph(nn_spec, input_set, in_shape)
+    #in_shape = map(x -> ifelse(isa(x, Integer), x, 1), nn_spec.input_shape)
+    in_shape = nn_spec.input_shape
+    s = init_symbolic_interval_graph(nn_spec, input_set, Tuple(in_shape))
 
     function approximate_optimize_cell(cell)
         out_cell = propagate(solver, nn_spec, cell)
@@ -83,8 +101,9 @@ function contained_within_polytope(nn::CompGraph, input_set::AbstractHyperrectan
     A, b = tosimplehrep(polytope)
     nn_spec = merge_into_network(nn, A, b)
 
-    in_shape = map(x -> ifelse(isa(x, Integer), x, 1), nn_spec.input_shape)
-    s = init_symbolic_interval_graph(nn_spec, input_set, in_shape)
+    #in_shape = map(x -> ifelse(isa(x, Integer), x, 1), nn_spec.input_shape)
+    in_shape = nn_spec.input_shape
+    s = init_symbolic_interval_graph(nn_spec, input_set, Tuple(in_shape))
 
     function approximate_optimize_cell(cell)
         out_cell = propagate(solver, nn_spec, cell)
@@ -143,7 +162,8 @@ returns:
     result - (String) SAT, UNSAT or inconclusive
 """
 function verify_vnnlib(solver::DPNFV, network::CompGraph, vnnlib_file::String, params::PriorityOptimizerParameters; 
-                        split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing)
+                        split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing,
+                        check_onnx=false)
     # DPNeurifyFV doesn't use eager 
 
     speclist = PyVnnlib.generate_specs(vnnlib_file, dtype=Float64)
@@ -195,9 +215,27 @@ end
 
 
 function verify_vnnlib(solver::DPNFV, onnx_file::String, vnnlib_file::String, params::PriorityOptimizerParameters;
-                       split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing)
+                       split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing,
+                       check_onnx=false, convert2linear=true)
     nn = NNL.load_network_dict(CGType, onnx_file)
-    return verify_vnnlib(solver, nn, vnnlib_file, params, split=split, concrete_sample=concrete_sample, printing=printing, eager=eager)
+    # need to store here in case we convert2linear, which changes shapes and may change input node
+    in_shape = nn.input_shape
+    in_name = get_inputs(nn.in_node)[1]
+    out_name = get_outputs(nn.out_node)[1]
+
+    if convert2linear
+        nn = cg2dense(nn, double_precision=true)
+        nn = summarize_linear_layers(nn, double_precision=true)
+    end
+
+    x_star, y_star, all_steps, result = verify_vnnlib(solver, nn, vnnlib_file, params, split=split, concrete_sample=concrete_sample, printing=printing, eager=eager)
+
+    if result == "SAT" && check_onnx
+        x_star = reshape(x_star, in_shape)
+        result, x_star, y_star = test_counterexample(x_star, y_star, in_shape, in_name, out_name, onnx_file)
+    end
+
+    return x_star, y_star, all_steps, result
 end
 
 
