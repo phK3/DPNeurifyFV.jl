@@ -37,3 +37,19 @@ ŝ = DP.propagate(solver, nn_summ, s)
 
 s = DP.init_symbolic_interval_graph(nn_summ, input_set, max_vars=10)
 symdict = DP.propagate(solver, nn_summ, s, return_dict=true)
+
+
+## counterexample printing
+nn = NNL.load_network_dict(DP.CGType, "../vnncomp2023_benchmarks/benchmarks/acasxu/onnx/ACASXU_run2a_1_2_batch_2000.onnx")
+nn_lin = DP.cg2dense(nn)
+nn_summ = DP.summarize_linear_layers(nn_lin);
+
+params = DP.PriorityOptimizerParameters(max_steps=10000, print_frequency=500, stop_frequency=1, verbosity=2)
+solver = DP.DPNFV(method=:DeepPolyRelax)
+
+onnx_file = "../vnncomp2023_benchmarks/benchmarks/acasxu/onnx/ACASXU_run2a_1_2_batch_2000.onnx"
+vnnlib_file = "../vnncomp2023_benchmarks/benchmarks/acasxu/vnnlib/prop_2.vnnlib"
+
+x_star, y_star, n_steps, result = DP.verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true, check_onnx=true)
+
+
