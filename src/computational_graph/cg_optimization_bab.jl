@@ -217,7 +217,14 @@ end
 function verify_vnnlib(solver::DPNFV, onnx_file::String, vnnlib_file::String, params::PriorityOptimizerParameters;
                        split=split_important_interval, concrete_sample=:BoundsMaximizer, printing=true, eager=nothing,
                        check_onnx=false, convert2linear=true)
-    nn = NNL.load_network_dict(CGType, onnx_file)
+    nn = try 
+        NNL.load_network_dict(CGType, onnx_file)
+    catch err
+        println("Failed to load: ", netpath)
+        println(err)
+        return zeros(5), zeros(5), 0, "inconclusive"
+    end
+
     # need to store here in case we convert2linear, which changes shapes and may change input node
     in_shape = nn.input_shape
     in_name = get_inputs(nn.in_node)[1]
