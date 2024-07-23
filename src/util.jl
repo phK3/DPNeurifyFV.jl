@@ -246,6 +246,72 @@ end
 """
 
 
+#### Sigmoid relaxation by Henriksen et al.
+
+dσ(x) = Flux.σ(x) * (1 - Flux.σ(x))
+
+function relax_sigmoid_lower(l, u, d)
+    if l >= 0
+        α = (Flux.σ(u) - Flux.σ(l)) / ( u - l)
+        β = Flux.σ(l)/α - l
+    elseif u <= 0
+        α = dσ(d)
+        β = Flux.σ(d) / α - d
+    else
+        α = dσ(d)
+        β = Flux.σ(u) / α - u
+    end
+    
+    return α, β
+end
+
+function relax_sigmoid_upper(l, u, d)
+    if l >= 0
+        α = dσ(d)
+        β = Flux.σ(d) / α - d
+    elseif u <= 0
+        α = (Flux.σ(u) - Flux.σ(l)) / ( u - l)
+        β = Flux.σ(l)/α - l
+    else
+        α = dσ(d)
+        β = Flux.σ(l)/α - l
+    end
+    
+    return α, β
+end
+
+function find_sigmoid_delta(l, u; dl=-Inf, du=Inf, tol=1e-4, upper=true)
+    dl = max(dl, l)
+    du = min(du, u)
+    d = 0.5*(dl + du)
+    
+    if upper
+        α, β = relax_sigmoid_upper(l, u, d)
+    else
+        α, β = relax_sigmoid_lower(l, u, d)
+    end
+    # want α*(d + β) = σ(d)
+    ϵ = α * (d + β) - Flux.σ(d)
+    
+    if abs(ϵ) <= tol
+        return d
+    elseif ϵ > 0
+        # linear relaxation is larger than sigmoid
+        # for upper relaxation need larger delta
+        # for lower relaxation need smaller delta
+        dl = upper ? 0.5*(dl + du) : dl
+        du = upper ? du : 0.5*(dl + du)
+        return find_sigmoid_delta(l, u, dl=dl, du=du, tol=tol, upper=upper)
+    else
+        # need smaller delta for upper relaxation
+        # for lower relaxation need larger delta
+        du = upper ? 0.5*(dl + du) : du
+        dl = upper ? dl : 0.5*(dl + du)
+        return find_sigmoid_delta(l, u, dl=dl, du=du, tol=tol, upper=upper)
+    end
+end
+
+
 ### Network construction
 
 function merge_into_network(network::Network, coeffs::Vector{N} where N<:Number)
