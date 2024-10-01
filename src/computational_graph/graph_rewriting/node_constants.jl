@@ -45,7 +45,7 @@ batched_nodes = Dict(DummyInputNode => true,
                     Upsampling => true, 
                     Add => true,
                     Sub => true,
-                    Gather => true,
+                    Gather => false,  # TODO: modify my_gather to handle batches
                     Slice => true,
                     SplitNode => true,
                     Transpose => true,
