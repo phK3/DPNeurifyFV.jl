@@ -12,16 +12,26 @@ args:
 kwargs:
     max_steps - maximum number of steps 
     optimality_gap - distance between best concrete value and upper bound
+
+returns:
+    yu - certified upper bound on the function
+    dom_star - domain containing best found concrete maximizer
 """
 function generic_bab(init_domains, eval_f, approx_f, split_f; max_steps=10, optimality_gap=1e-2, printing=false)
     queue = PriorityQueue(Base.Order.Reverse)
 
+    # domain with maximizing input
+    dom_star = init_domains[1]
     yl = -Inf
     yu = Inf
     n_doms = 0
     for dom in init_domains
         y = eval_f(dom)
-        yl = max(y, yl)
+
+        if y > yl
+            yl = y
+            dom_star = dom
+        end
 
         yu = approx_f(dom)
         # all keys must be distinct, so include time in the key
@@ -37,7 +47,7 @@ function generic_bab(init_domains, eval_f, approx_f, split_f; max_steps=10, opti
 
         if yu - yl <= optimality_gap
             printing && println("Found optimal value ∈ ", [yl, yu])
-            return yu
+            return yu, dom_star
         end
     
         dequeue!(queue)
@@ -50,6 +60,13 @@ function generic_bab(init_domains, eval_f, approx_f, split_f; max_steps=10, opti
 
         yl1 = eval_f(dom1)
         yl2 = eval_f(dom2)
+
+        if (yl1 > yl ) && (yl1 >= yl2)
+            dom_star = dom1
+        elseif (yl2 > yl) && (yl2 > yl1)
+            dom_star = dom2
+        end
+
         yl = max(yl, yl1, yl2)
     
         yu1 > yl && enqueue!(queue, dom1, (yu1, n_doms + 1))
@@ -57,7 +74,7 @@ function generic_bab(init_domains, eval_f, approx_f, split_f; max_steps=10, opti
         n_doms += 2
     end
     
-    return yu
+    return yu, dom_star
 end
 
 
@@ -75,6 +92,10 @@ args:
 kwargs:
     max_steps - maximum number of steps 
     optimality_gap - distance between best concrete value and upper bound
+
+returns:
+    yu - certified upper bound on the function
+    dom_star - domain containing best found concrete maximizer
 """
 function generic_bab(init_domains, eval_f, approx_f, split_f, maximize; max_steps=10, optimality_gap=1e-2, printing=false)
     eval_fun = eval_f
@@ -84,7 +105,7 @@ function generic_bab(init_domains, eval_f, approx_f, split_f, maximize; max_step
         approx_fun = dom -> -approx_f(dom)
     end
 
-    yu = generic_bab(init_domains, eval_fun, approx_fun, split_f; max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
+    yu, dom_star = generic_bab(init_domains, eval_fun, approx_fun, split_f; max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
     
-    return maximize ? yu : -yu
+    return maximize ? (yu, dom_star) : (-yu, dom_star)
 end
