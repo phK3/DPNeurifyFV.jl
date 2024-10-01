@@ -40,7 +40,7 @@ end
 Returns indices a_inds, b_inds of elements occuring both in a and b, s.t.
 a[a_inds] == b[b_inds]
 """
-function common_inds(a, b)
+function common_inds_2_tuple(a, b)
     common1 = filter(!isnothing, indexin(b, a))
     common2 = (1:length(b))[.~isnothing.(indexin(b, a))]
     return common1, common2
@@ -95,7 +95,7 @@ returns
     b_diff
 """
 function common_and_diff_inds(a, b)
-    common1, common2 = common_inds(a, b)
+    common1, common2 = common_inds_2_tuple(a, b)
     distinct1 = setdiff(1:length(a), common1)
     distinct2 = setdiff(1:length(b), common2)
     
