@@ -129,7 +129,8 @@ end
 
 
 function forward_node(solver, L::Concat, xs...)
-    return cat(xs..., dims=L.dim)
+    dims = ndims(xs[1]) - L.dim  # NCHW -> WHCN
+    return cat(xs..., dims=dims)
 end
 
 
