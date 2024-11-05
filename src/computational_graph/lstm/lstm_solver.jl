@@ -159,13 +159,42 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
 end
 
 
-for T in [Transpose, AveragePool, Squeeze, Gather]  # why can't we just use L::Union{Transpose, AveragePool} ??? would be prettier
+function forward_node(solver::LSTMSolver, L::Transpose, sz::SplitZonotope{N}) where N <: Number
+    c = reshape(sz.z.center, sz.shape)
+    G = get_shaped_G(sz)
+
+    ĉ = forward_node(solver, L, c)
+    # add a separate dimension for batch at the end and leave it as it is
+    Ĝ = permutedims(G, (L.perm..., length(L.perm)+1))
+    
+    shape = size(ĉ)
+    ẑ = Zonotope(vec(ĉ), get_matrix_G(shape, Ĝ))
+    return SplitZonotope(ẑ, sz, shape)
+end
+
+
+function forward_node(solver::LSTMSolver, L::Gather, sz::SplitZonotope{N}) where N <: Number
+    c = reshape(sz.z.center, sz.shape)
+    G = get_shaped_G(sz)
+
+    ĉ = forward_node(solver, L, c)
+    # need to increment L.axis, since we appended an extra dimension for storing the generators
+    Ĝ = my_gather(G, L.inds, axis=L.axis + 1)
+
+    shape = size(ĉ)
+    ẑ = Zonotope(vec(ĉ), get_matrix_G(shape, Ĝ))
+    return SplitZonotope(ẑ, sz, shape)
+end
+
+
+for T in [AveragePool, Squeeze]  # why can't we just use L::Union{Transpose, AveragePool} ??? would be prettier
     """
     Generically propagates a SplitZonotope forward through the computational graph.
 
-    This method only works for layers that don't add constants (or whose relaxations don't add constants)!
+    This method only works for layers that don't add constants (or whose relaxations don't add constants)
+    and that support batch mode.
     Currently those are
-    - Transpose
+    - ~~Transpose~~ (can get messed up with batch dim!)
     - AveragePool
 
     For all other layers, custom methods need to be implemented!
