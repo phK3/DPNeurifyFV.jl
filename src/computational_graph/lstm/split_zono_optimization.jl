@@ -104,6 +104,18 @@ returns:
 function optimize_bounds(sz::SplitZonotope; upper=true, opt=() -> Gurobi.Optimizer(GRB_ENV[]), with_output_bounds=true)
     n_in = findlast(x -> first(x) == "input", sz.generator_map)  # all input vars are in the input layer
     n_out = sz.shape[1]
+
+    if isnothing(n_in)
+        # we have no generators for the input, so we only consider a single concrete input
+        l, _ = sz.bounds["input"]
+        X = zeros(length(l), n_out)
+        # just so we have the right shape
+        X = l .+ 0 .* X
+        # for concrete input, the bounds are just the concrete value
+        bds = sz.z.center
+        return bds, X 
+    end
+    
     bds = zeros(n_out)
     X = zeros(n_in, n_out)  # one column vector for the maximizer/minimizer of each output
 
