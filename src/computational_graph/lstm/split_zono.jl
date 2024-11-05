@@ -4,6 +4,7 @@
 Zonotope that carries splitting information on the nodes of the network.
 
 The underlying zonotope is always stored as representing a vector x ∈ ℝⁿ (needs to be reshaped for tensor ops)
+The function get_shaped_G(sz) returns the generator matrix in (d₁ × ... × dₙ × d_gen) where d_gen is the number of generators 
 
 splits are stored as a dictionary, where splits (neuron_idx, split_value) are stored for each layer identified by its name
 
@@ -94,7 +95,7 @@ returns:
 function get_shaped_G(sz::SplitZonotope)
     # put equations into batch dimension
     # TODO: maybe explicitly track batch dimension entry in a member variable of SplitZonotope?
-    if (sz.shape[end] == 1) && length(sz.shape) > 1
+    if false #(sz.shape[end] == 1) && length(sz.shape) > 1
         G = reshape(sz.z.generators, (sz.shape[1:end-1]..., :))
     else
         G = reshape(sz.z.generators, (sz.shape..., :))
@@ -332,6 +333,38 @@ end
 function hadamard_prod(a::AbstractVector{N}, sz::SplitZonotope{N}) where N <: Number
     ẑ = Zonotope(a .* sz.z.center, a .* sz.z.generators)
     return SplitZonotope(ẑ, sz.splits, sz.bounds, sz.generator_map, sz.split_A, sz.split_b, sz.shape, sz.importance)
+end
+
+
+function cat2(sz1::SplitZonotope, sz2::SplitZonotope; dims=1)
+    @assert typeof(dims) <: Number "Concatenating SplitZonotopes along multiple dims is currently not supported!"
+    sz1common, sz2common = expand_generators(sz1, sz2)
+    
+    cs = [reshape(sz.z.center, sz.shape) for sz in [sz1common, sz2common]]
+    Gs = [get_shaped_G(sz) for sz in [sz1common, sz2common]]
+
+    ĉ = cat(cs..., dims=dims)
+
+    if dims == ndims(Gs[1])
+        # need to do some permutation, s.t. batch dim with symbolic vars is at end again
+        Ĝ = cat(Gs..., dims=dims+1)
+        n = ndims(Gs[1])
+        perm = tuple((1:n-1)..., n+1, n)
+        Ĝ = permutedims(Ĝ, perm)
+    else
+        Ĝ = cat(Gs..., dims=dims)
+    end
+
+    ẑ = Zonotope(vec(ĉ), get_matrix_G(size(ĉ), Ĝ))
+    sẑ = SplitZonotope(ẑ, sz1common.splits, sz1common.bounds, sz1common.generator_map, sz1common.split_A, sz1common.split_b, 
+                       size(ĉ), sz1common.importance .+ sz2common.importance)
+    return sẑ
+end
+
+
+function Base.cat(szs::SplitZonotope...; dims=1)
+    sẑ = reduce(cat2, szs)
+    return sẑ
 end
 
 
