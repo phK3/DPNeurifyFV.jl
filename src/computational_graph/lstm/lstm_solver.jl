@@ -136,7 +136,7 @@ function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Unio
 end
 
 
-function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonotope; n_samples=100)
+function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonotope{N}; n_samples=100) where N<:Number
     # TODO: cleaner lstm_cell/flux_cell construct?
     lstm_cell = extract_cell(lstm_layer)
     flux_cell = lstm_layer.cell
@@ -145,6 +145,7 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
 
     # last dimension is length of the sequence
     timesteps = sx.shape[end]
+    hs = Vector{SplitZonotope{N}}()
     for i in 1:timesteps
         # shape is (features, batch, sequence_length)
         # need index [:,:,i:i] s.t. last dimension is retained ([:,:,i] would return one less dimension)
@@ -152,10 +153,13 @@ function forward_node(solver::LSTMSolver, lstm_layer::LSTMLayer, sx::SplitZonoto
 
         h, c = forward_node(solver, lstm_cell, state, sz_lstm, n_samples=n_samples)
         state = (i+1, h, c)
+        push!(hs, h)
     end
 
     n_steps, h, c = state
-    return h, c 
+
+    hs_out = cat(hs..., dims=length(h.shape)+1)
+    return hs_out, h, c 
 end
 
 
