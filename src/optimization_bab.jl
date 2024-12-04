@@ -45,6 +45,9 @@ function print_progress(verbosity::Int, step, lower_bound, best_lower_bound,
         println("lower bound threshold: ", lower_bound_threshold)
     elseif verbosity == 2
         println("i: ", step, " - ", [best_lower_bound, value], ", ", elapsed_time, " sec")
+    elseif verbosity == 3
+        println("i: ", step, " - ", [best_lower_bound, value], ", ", elapsed_time, " sec")
+        println("\tsplits: ", cell.splits)
     end
 end
 
@@ -261,7 +264,7 @@ function NPO.general_priority_optimization(start_cell, overestimate_cell, params
 
     # shouldn't need this case anymore as all cells achievable value is evaluated before they are put in the queue
     # The largest value in our queue is the approximate optimum
-    #cell, (value, timestamp) = peek(cells)
+    cell, (value, timestamp) = peek(cells)
     #input_in_cell, lower_bound = achievable_value(cell)
     #if lower_bound > best_lower_bound
     #    best_lower_bound = lower_bound
