@@ -224,3 +224,24 @@ for T in [AveragePool, Squeeze]  # why can't we just use L::Union{Transpose, Ave
         end
     end
 end
+
+function forward_node(solver::LSTMSolver, L::AveragePool, sz::SplitZonotope)
+    c = reshape(sz.z.center, sz.shape)
+    G = get_shaped_G(sz)
+
+    ĉ = forward_node(solver, L, c)
+
+    # TODO: can we generalize that?
+    N_pool = length(L.avg.k)
+    if ndims(G) > N_pool + 2
+        @assert size(G)[end-1] == 1 "MeanPool with kernel $(L.avg.k) with N=$(N_pool) dims only accepts input with N+2 dims!"
+        idxs = [i for i in 1:ndims(G) if i != ndims(G)-1]
+        G = reshape(G, size(G)[idxs])
+    end
+
+    Ĝ = forward_node(solver, L, G)
+    
+    shape = size(ĉ)
+    ẑ = Zonotope(vec(ĉ), get_matrix_G(shape, Ĝ))
+    return SplitZonotope(ẑ, sz, shape)
+end
