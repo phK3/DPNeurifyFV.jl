@@ -75,6 +75,12 @@ function LazySets.radius(sz::SplitZonotope)
 end
 
 
+function Base.size(sz::SplitZonotope)
+    # TODO: do we really want to overload the size function?
+    sz.shape
+end
+
+
 """
 Returns the generator matrix of the SplitZonotope in the shape of the input that is overapproximated by it.
 
