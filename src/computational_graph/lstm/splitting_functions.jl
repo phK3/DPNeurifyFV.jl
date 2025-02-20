@@ -253,7 +253,7 @@ function split_split_zonotope(sz::SplitZonotope, input_shape, split_layer, split
         zs, new_splits = split_input(sz, input_shape, split_layer, split_idx)
     elseif startswith(split_layer, "Relu")
         zs, new_splits = split_relu_layer(sz, input_shape, split_layer, split_idx)
-    elseif startswith(split_layer, "LSTM")
+    elseif endswith(split_layer, "_σtanh_1") || endswith(split_layer, "_σtanh_2") || endswith(split_layer, "_σy_1")
         zs, new_splits = split_lstm_layer(sz, input_shape, split_layer, split_idx, split_method=lstm_split_method)
     else
         throw(ArgumentError("Splitting layer $(split_layer) not supported!"))
