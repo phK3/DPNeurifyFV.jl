@@ -17,6 +17,10 @@ const OX = ONNXRunTime
 const VERBOSE_ONNX = Ref(false)
 set_onnx_verbosity(v::Bool) = (VERBOSE_ONNX[] = v)
 
+# whether to convert all weights to Float64
+const DOUBLE_PRECISION = Ref(true)
+set_double_precision(v::Bool) = (DOUBLE_PRECISION[] = v)
+
 
 # redefinitions of function defined in NeuralVerification.jl
 # include("overwrite_neural_verification.jl")
@@ -52,14 +56,14 @@ include("computational_graph/lstm/lstm_act_propagation.jl")
 include("computational_graph/lstm/lstm_solver.jl")
 
 # does it get precompiled?
-println("precompiling...")
-@setup_workload begin
-    params = PriorityOptimizerParameters(max_steps=3, print_frequency=1, stop_frequency=1, verbosity=2)
-    solver = DPNFV(method=:DeepPolyRelax)
-    onnx_file = string(@__DIR__, "/../networks/precompile_nns/ACASXU_run2a_1_1_batch_2000.onnx")
-    vnnlib_file = string(@__DIR__,"/../networks/precompile_nns/prop_1.vnnlib")
-    verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true);
-end
+#println("precompiling...")
+#@setup_workload begin
+#    params = PriorityOptimizerParameters(max_steps=3, print_frequency=1, stop_frequency=1, verbosity=2)
+#    solver = DPNFV(method=:DeepPolyRelax)
+#    onnx_file = string(@__DIR__, "/../networks/precompile_nns/ACASXU_run2a_1_1_batch_2000.onnx")
+#    vnnlib_file = string(@__DIR__,"/../networks/precompile_nns/prop_1.vnnlib")
+#    verify_vnnlib(solver, onnx_file, vnnlib_file, params, printing=true);
+#end
 
 
 # use this env, whenever you use Gurobi, so output doesn't get cluttered by licensing information

@@ -85,7 +85,7 @@ function NNL.construct_layer_matmul(::Type{CGType}, name, inputs, outputs, weigh
     #println("weight <: DynamicInput? ", typeof(weight) <: NNL.DynamicInput)
     #println("x <: DynamicInput? ", typeof(x) <: NNL.DynamicInput)
 
-    return Linear(inputs, outputs, name, weight, zero(weight[:,1]))
+    return Linear(inputs, outputs, name, weight, zero(weight[:,1]), double_precision=DOUBLE_PRECISION[])
 end
 
 # TODO: is Type{NNL.DynamicInput} what we really want here?
@@ -93,7 +93,7 @@ function NNL.construct_layer_matmul(::Type{CGType}, name, inputs, outputs, x::Ty
     VERBOSE_ONNX[] && println("parsing Matmul with input :-)")
     # TODO: do we have to transpose matrix if it is x * W instead of W*x?
     #println("node $name with params $weight and x is $x")
-    return Linear(inputs, outputs, name, weight, zero(weight[:,1]))
+    return Linear(inputs, outputs, name, weight, zero(weight[:,1]), double_precision=DOUBLE_PRECISION[])
 end
 
 function NNL.construct_layer_gemm(::Type{CGType}, name, inputs, outputs, A, B, C; alpha=1., beta=1., transA=0, transB=0)
@@ -107,7 +107,7 @@ function NNL.construct_layer_gemm(::Type{CGType}, name, inputs, outputs, A, B, C
 
     b = beta .* C
 
-    return Linear(inputs, outputs, name, W, b)
+    return Linear(inputs, outputs, name, W, b, double_precision=DOUBLE_PRECISION[])
 end
 
 
@@ -133,7 +133,7 @@ function NNL.construct_layer_conv(::Type{CGType}, name, inputs, outputs, data, w
     # onnx really calculates CrossCorrelation, so need to flip weights for convolution
     weights = flipweights(weights)
 
-    ret = Convolution(inputs, outputs, name, weights, bias, stride=strides, pad=pads, dilation=dilations, groups=group)
+    ret = Convolution(inputs, outputs, name, weights, bias, stride=strides, pad=pads, dilation=dilations, groups=group, double_precision=DOUBLE_PRECISION[])
     return ret
 end
 
@@ -151,7 +151,7 @@ function NNL.construct_layer_conv_transpose(::Type{CGType}, name, inputs, output
 
     weights = flipweights(weights)
 
-    return ConvolutionTranspose(inputs, outputs, name, weights, bias, stride=strides, pad=pads, dilation=dilations, groups=group)
+    return ConvolutionTranspose(inputs, outputs, name, weights, bias, stride=strides, pad=pads, dilation=dilations, groups=group, double_precision=DOUBLE_PRECISION[])
 end
 
 
@@ -214,7 +214,7 @@ function NNL.construct_layer_batch_normalization(::Type{CGType}, name, inputs, o
                                                  epsilon=1e-5, momentum=0.9, training_mode=0)
     @assert X == NNL.DynamicInput
     VERBOSE_ONNX[] && println("parsing BatchNormalization")
-    return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon)
+    return BatchNormalization(inputs, outputs, name, input_mean, scale, B, input_var, ϵ=epsilon, double_precision=DOUBLE_PRECISION[])
 end
 
 
@@ -306,6 +306,9 @@ function NNL.construct_layer_lstm(::Type{CGType}, name, inputs, outputs, data, W
     initial_c = isnothing(initial_c) ? zeros(M, hidden_size, 1) : initial_c
 
     cell = Flux.LSTMCell(W_ih, W_hh, bias, (initial_h, initial_c))
+    if DOUBLE_PRECISION[]
+        cell = cell |> f64 
+    end
 
     return LSTMLayer(inputs, outputs, name, cell, num_directions)
 end

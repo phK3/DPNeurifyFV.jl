@@ -691,8 +691,8 @@ function LSTMCell(inputs, outputs, name, Wih::AbstractArray{<:N}, Whh::AbstractA
     hs4, n_in = size(Wih)
     hidden_size = floor(Integer, hs4 / 4)
 
-    linear_ih = Linear([], [], name * "_linear_ih", Wih, b)
-    linear_hh = Linear([], [], name * "_linear_hh", Whh, zeros(eltype(Whh), hs4))
+    linear_ih = Linear([], [], name * "_linear_ih", Wih, b, double_precision=DOUBLE_PRECISION[])
+    linear_hh = Linear([], [], name * "_linear_hh", Whh, zeros(eltype(Whh), hs4), double_precision=DOUBLE_PRECISION[])
 
     if isnothing(state0)
         # (hidden_state, cell_state)
