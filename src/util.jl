@@ -312,6 +312,24 @@ function find_sigmoid_delta(l, u; dl=-Inf, du=Inf, tol=1e-4, upper=true)
 end
 
 
+"""
+Create the linear constraints Ax ≤ b specifying that x_i for i == y_true is the maximum among the n_out outputs.
+
+args:
+    n_out - number of outputs
+    y_true - index of the maximum output (1-indexed!)
+
+returns:
+    A - constraints matrix
+    b - bias vector
+"""
+function robustness_output_spec(n_out, y_true)
+    A = [I(n_out-1)[:,1:y_true-1] -ones(n_out-1) I(n_out-1)[:,y_true:end]]
+    b = zeros(n_out - 1)
+    return A, b
+end
+
+
 ### Network construction
 
 function merge_into_network(network::Network, coeffs::Vector{N} where N<:Number)
