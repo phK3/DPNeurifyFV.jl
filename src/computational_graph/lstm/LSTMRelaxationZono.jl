@@ -153,7 +153,7 @@ kwargs:
 returns:
     a, b, c, ϵ - for linear overapproximation f(x,y) = a*x + b*y + c ± ϵ
 """
-function get_relaxation_σy_zono(z; n_samples=100, max_steps=1000, optimality_gap=1e-6, printing=false)
+function get_relaxation_σy_zono(z; n_samples=100, max_steps=1000, optimality_gap=1e-6, printing=false, method=:remezlike)
     # no extrema in interior for σ(x)y
     #v = vertices_list_2d_zonotope(z)
 
@@ -233,7 +233,7 @@ kwargs:
 returns:
     a, b, c, ϵ - for linear overapproximation f(x,y) = a*x + b*y + c ± ϵ
 """
-function get_relaxation_σtanh_zono(z; n_samples=100, max_steps=1000, optimality_gap=1e-6, printing=false)
+function get_relaxation_σtanh_zono(z; n_samples=100, max_steps=1000, optimality_gap=1e-6, printing=false, method=:remezlike)
     # extrema in interior for σ(x)*tanh(y) are possible!!!
     #v = vertices_list_2d_zonotope(z)
 

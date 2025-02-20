@@ -3,6 +3,9 @@
 @with_kw struct LSTMSolver <: Solver 
     # use zonotope domain instead of box-overapproximation to compute linear relaxation of LSTM activation functions
     use_zonotope_domain = false
+    # see LSTMRelaxation.get_linear_approximation for options
+    σtanh_relaxation = :remezlike
+    σy_relaxation = :remezlike
 end
 
 
@@ -125,12 +128,12 @@ function forward_node(solver::LSTMSolver, lstm_cell::LSTMCell, (i, sh, sc)::Unio
     # --> for 1st σ(x)*y non-linearity
     # --> for 4th neuron in that σ(x)*y layer
     ĝ_f, sĉ = expand_generators(g_f, sc)
-    fc = propagate_σ_y(ĝ_f, sĉ, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples, use_zono=solver.use_zonotope_domain)
-    ic = propagate_σ_tanh(g_in, g_c, lstm_cell.name * "_$(i)_σtanh_1", n_samples=n_samples, use_zono=solver.use_zonotope_domain)
+    fc = propagate_σ_y(ĝ_f, sĉ, lstm_cell.name * "_$(i)_σy_1", n_samples=n_samples, use_zono=solver.use_zonotope_domain, method=solver.σy_relaxation)
+    ic = propagate_σ_tanh(g_in, g_c, lstm_cell.name * "_$(i)_σtanh_1", n_samples=n_samples, use_zono=solver.use_zonotope_domain, method=solver.σtanh_relaxation)
     ĉ = direct_sum(fc, ic)
 
     eĉ, ĝ_o = expand_generators(ĉ, g_o)
-    ĥ = propagate_σ_tanh(ĝ_o, eĉ, lstm_cell.name * "_$(i)_σtanh_2", n_samples=n_samples, use_zono=solver.use_zonotope_domain)
+    ĥ = propagate_σ_tanh(ĝ_o, eĉ, lstm_cell.name * "_$(i)_σtanh_2", n_samples=n_samples, use_zono=solver.use_zonotope_domain, method=solver.σtanh_relaxation)
     
     return ĥ, ĉ
 end
@@ -191,7 +194,7 @@ function forward_node(solver::LSTMSolver, L::Gather, sz::SplitZonotope{N}) where
 end
 
 
-for T in [AveragePool, Squeeze]  # why can't we just use L::Union{Transpose, AveragePool} ??? would be prettier
+for T in [Squeeze]  # why can't we just use L::Union{Transpose, AveragePool} ??? would be prettier
     """
     Generically propagates a SplitZonotope forward through the computational graph.
 

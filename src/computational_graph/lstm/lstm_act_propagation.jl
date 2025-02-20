@@ -1,6 +1,6 @@
 
 
-function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false)
+function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false, method=:remezlike)
     x = sx.z
     y = sy.z
 
@@ -21,9 +21,10 @@ function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_sa
             zono = Zonotope([sx.z.center[i], sy.z.center[i]], [sx.z.generators[i,:]'; sy.z.generators[i,:]'])
             push!(zonos, zono)
         end
+        # TODO: add method=method ???
         relaxations = get_relaxation_σy_zono.(zonos; n_samples=100, max_steps=10000, optimality_gap=1e-8, printing=false)
     else
-        relaxations = get_relaxation_σ_y.(lx, ux, ly, uy, n_samples=n_samples)
+        relaxations = get_relaxation_σ_y.(lx, ux, ly, uy, n_samples=n_samples, method=method)
     end
     M = reduce(hcat, [collect(r) for r in relaxations])'
 
@@ -48,7 +49,7 @@ function propagate_σ_y(sx::SplitZonotope, sy::SplitZonotope, name::String; n_sa
 end
 
 
-function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false)
+function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n_samples=100, use_zono=false, method=:remezlike)
     x = sx.z
     y = sy.z
 
@@ -69,9 +70,10 @@ function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n
             zono = Zonotope([sx.z.center[i], sy.z.center[i]], [sx.z.generators[i,:]'; sy.z.generators[i,:]'])
             push!(zonos, zono)
         end
+        # TODO: add method=method
         relaxations = get_relaxation_σtanh_zono.(zonos; n_samples=100, max_steps=10000, optimality_gap=1e-8, printing=false)
     else
-        relaxations = get_relaxation_σ_tanh.(lx, ux, ly, uy, n_samples=n_samples)
+        relaxations = get_relaxation_σ_tanh.(lx, ux, ly, uy, n_samples=n_samples, method=method)
     end
     M = reduce(hcat, [collect(r) for r in relaxations])'
 
@@ -92,6 +94,6 @@ function propagate_σ_tanh(sx::SplitZonotope, sy::SplitZonotope, name::String; n
     sz = SplitZonotope(ẑ, sx.splits, sx.bounds, copy(sx.generator_map), Â, b̂, sx.shape, importance)
     push!(sz.generator_map, [(name, i) for i in 1:dim(x)]...)
 
-    @assert length(sz.importance) == length(sz.generator_map)
+    @assert length(sz.importance) == length(sz.generator_map) "Did you reuse an old zonotope? (The generator_map is not cleared when a new propagation starts.)"
     return sz
 end

@@ -139,6 +139,8 @@ args
         β = linear_approximation_lp(X, y)
     elseif method == :remezlike 
         β = linear_approximation_remezlike(lx, ux, ly, uy, f, fun)
+    elseif method == :zero 
+        β = zeros(3)
     else
         throw(ArgumentError("Unknown method $(method)!"))
     end
@@ -237,9 +239,9 @@ returns:
     c - bias of the relaxation
     ϵ - error value of the relaxation
 """
-function get_relaxation_σ_tanh(lx, ux, ly, uy; n_samples=100)
+function get_relaxation_σ_tanh(lx, ux, ly, uy; n_samples=1000, method=:remezlike)
     h(x,y) = σ(x)*tanh(y)
-    a, b, c = get_linear_approximation(lx, ux, ly, uy, h, :σtanh, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, h, :σtanh, n_samples=n_samples, method=method)
     xs, ys = get_critical_points_σ_tanh(lx, ux, ly, uy, a, b, c)
     ϵs = h.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
@@ -311,9 +313,9 @@ returns:
     c - bias of the relaxation
     ϵ - error value of the relaxation
 """
-function get_relaxation_σ_y(lx, ux, ly, uy; n_samples=100)
+function get_relaxation_σ_y(lx, ux, ly, uy; n_samples=100, method=:remezlike)
     g(x,y) = σ(x)*y
-    a, b, c = get_linear_approximation(lx, ux, ly, uy, g, :σy, n_samples=n_samples)
+    a, b, c = get_linear_approximation(lx, ux, ly, uy, g, :σy, n_samples=n_samples, method=method)
     xs, ys = get_critical_points_σ_y(lx, ux, ly, uy, a, b, c)
     ϵs = g.(xs, ys) .- (a .* xs .+ b .* ys .+ c)
     
