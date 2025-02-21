@@ -32,6 +32,8 @@ function build_model(sz::SplitZonotope; opt=Gurobi.Optimizer, opt_idx=1, silent=
     
     if with_output_bounds && ("spec_out" in keys(sz.bounds))
         l, u = sz.bounds["spec_out"]
+        # TODO: if we take zonotope from beginning of NN after propagating it to the end
+        # its sz.bounds keys were modified in-place to also include "spec_out", so this fails
         @constraint(model, out_ub, z.generators * x .+ z.center .<= u)
         @constraint(model, out_lb, z.generators * x .+ z.center .>= l)
     end
@@ -190,16 +192,20 @@ function contained_within_polytope_sz_lp(nn::CompGraph, input_set::AbstractHyper
     function optimize_with_input(cell)
         out_cell = propagate(solver, nn_spec, cell)
         violations, X = optimize_bounds(out_cell, upper=true)
+        #@show violations
         max_violation = maximum(violations)
 
         y_best = -Inf
         x_best = X[:,1]
-        for i in 1:cell.shape[1]  # for each output
-            y = maximum(propagate(nn_spec, reshape(X[:,i], nn_spec.input_shape)))
+        for i in 1:out_cell.shape[1]  # for each output
+            ŷ = propagate(nn_spec, reshape(X[:,i], nn_spec.input_shape))
+            #@show ŷ
+            y = maximum(ŷ)
+            #y = maximum(propagate(nn_spec, reshape(X[:,i], nn_spec.input_shape)))
             
             if y > y_best
                 y_best = y
-                x_best = X[:,1]
+                x_best = X[:,i]
             end
         end
         

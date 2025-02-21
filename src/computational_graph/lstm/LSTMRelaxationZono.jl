@@ -202,8 +202,8 @@ function get_relaxation_σy_zono(z; n_samples=100, max_steps=1000, optimality_ga
         return (λl1, λu1, x₀, x₁, y₀, y₁), (λl2, λu2, x₀, x₁, y₀, y₁)
     end
 
-    ϵₗ = generic_bab(initial_domains, eval_f, approx_f_min, split_f, false, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
-    ϵᵤ = generic_bab(initial_domains, eval_f, approx_f_max, split_f, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
+    ϵₗ, _ = generic_bab(initial_domains, eval_f, approx_f_min, split_f, false, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
+    ϵᵤ, _ = generic_bab(initial_domains, eval_f, approx_f_max, split_f, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
 
     c += 0.5 * (ϵₗ + ϵᵤ)
     ϵ = 0.5 * (ϵᵤ - ϵₗ)
@@ -244,8 +244,8 @@ function get_relaxation_σtanh_zono(z; n_samples=100, max_steps=1000, optimality
 
     l = low(z)
     u = high(z)
-    a, b, c = LSTMRelaxation.linear_approximation_remezlike(l[1], u[1], l[2], u[2], (x,y) -> Flux.σ(x)*tanh(y), :σtanh)
-    #a, b, c = LSTMRelaxation.linear_approximation_lp(X, y)
+    a, b, c = LSTMRelaxation.linear_approximation_remezlike(l[1], u[1], l[2], u[2], (x,y) -> Flux.σ(x)*tanh(y), :σtanh)  
+    
 
     # extrema in interior
     interior_xs = Float64[]
@@ -303,8 +303,8 @@ function get_relaxation_σtanh_zono(z; n_samples=100, max_steps=1000, optimality
         return (λl1, λu1, x₀, x₁, y₀, y₁), (λl2, λu2, x₀, x₁, y₀, y₁)
     end
 
-    ϵₗ = generic_bab(initial_domains, eval_f, approx_f_min, split_f, false, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
-    ϵᵤ = generic_bab(initial_domains, eval_f, approx_f_max, split_f, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
+    ϵₗ, _ = generic_bab(initial_domains, eval_f, approx_f_min, split_f, false, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
+    ϵᵤ, _ = generic_bab(initial_domains, eval_f, approx_f_max, split_f, max_steps=max_steps, optimality_gap=optimality_gap, printing=printing)
 
     ϵₗ = min(ϵₗ, ϵₗ_interior)
     ϵᵤ = max(ϵᵤ, ϵᵤ_interior)
