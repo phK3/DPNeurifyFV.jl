@@ -194,12 +194,12 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     subs_LL, subs_UU = substitute_variables(Low, Up, s.var_los, s.var_his, n_unfixed, current_n_vars)
     subs_UL, subs_LU = substitute_variables(Up, Low, s.var_los, s.var_his, n_unfixed, current_n_vars)
 
-    lbs = fill(-Inf, n_neurons)
-    ubs = fill(Inf, n_neurons)
-    ll = lower_bounds(subs_LL, domain(s), lbs, ubs)
-    lu = upper_bounds(subs_LU, domain(s), lbs, ubs)
-    ul = lower_bounds(subs_UL,  domain(s), lbs, ubs)
-    uu = upper_bounds(subs_UU,  domain(s), lbs, ubs)
+    ~haskey(s.lbs, L.name) && (s.lbs[L.name] = fill(-Inf, n_neurons))
+    ~haskey(s.ubs, L.name) && (s.ubs[L.name] = fill( Inf, n_neurons))
+    ll = lower_bounds(subs_LL, domain(s), s.lbs[L.name], s.ubs[L.name])
+    lu = upper_bounds(subs_LU, domain(s), ll, s.ubs[L.name])
+    uu = upper_bounds(subs_UU, domain(s), lu, s.ubs[L.name])
+    ul = lower_bounds(subs_UL,  domain(s), ll, uu)
 
     crossing = is_crossing.(ll, uu)
     layer_importance = sum(abs.(subs_LL[crossing, :]), dims=1) .+ sum(abs.(subs_UU[crossing, :]), dims=1)
@@ -262,13 +262,15 @@ function forward_node(solver::DPNFV, L::Relu, s::SymbolicIntervalGraph)
     # get in right shape after flattening
     # batch dimension can get larger as there are now more coefficients for the
     # fresh variables
-    L = reshape(L̂, size(s.Low)[1:end-1]..., :)
-    U = reshape(Û, size(s.Up)[1:end-1]..., :)
+    L_out = reshape(L̂, size(s.Low)[1:end-1]..., :)
+    U_out = reshape(Û, size(s.Up)[1:end-1]..., :)
 
 
-    output = SymbolicIntervalGraph(L, U, domain(s), s.lbs, s.ubs, 
+    output = SymbolicIntervalGraph(L_out, U_out, domain(s), s.lbs, s.ubs, 
                                    var_los, var_his, var_ids, 
                                    s.max_vars, importance)
+    output.lbs[L.name] .= ll
+    output.ubs[L.name] .= uu
 
     return output
 end

@@ -172,10 +172,9 @@ function init_symbolic_interval_graph(s::SymbolicIntervalGraph, input_set::Abstr
     Low = [I(n)[:,.~fixed] lbs .* fixed]
     Up  = [I(n)[:,.~fixed] ubs .* fixed]
 
-    # TODO: is copy enough?
     # dict "layername" => [lbs]
-    lbs = copy(s.lbs)
-    ubs = copy(s.ubs)
+    lbs = deepcopy(s.lbs)
+    ubs = deepcopy(s.ubs)
 
     n_unfixed = sum(.~fixed)
     var_los = zeros(N, max_vars, n_unfixed + 1)
