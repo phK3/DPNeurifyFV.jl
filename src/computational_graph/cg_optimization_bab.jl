@@ -142,6 +142,79 @@ function contained_within_polytope(nn::CompGraph, input_set::AbstractHyperrectan
 end
 
 
+# TODO: put this somewhere else 
+#       together with other concretization functions, get rid of the concrete_sample keyword and accept a function instead
+function concrete_input_valid(s::SymbolicIntervalGraph{<:Hyperrectangle}; h=2, w=2)
+    lx = low(domain(s))
+    ux = high(domain(s))
+    width = ux .- lx
+
+    l = lx[1:h*w] .+ width[1:h*w] .* rand(h*w)
+    l = accumulate(max, l)
+
+    u = lx[h*w+1:2*h*w] .+ width[h*w+1:2*h*w] .* rand(h*w)
+    u = max.(l, u)
+    i = argmax(u)
+    u[i] = 1.
+
+    a = lx[2*h*w+1:end] .+ width[2*h*w+1:end] .* rand(h*w)
+
+    return [l; u; a]    
+end
+
+
+function optimize_linear(nn::CompGraph, input_set::AbstractHyperrectangle, coeffs::AbstractVector, params::PriorityOptimizerParameters;
+    solver=DPNFV(), split=split_important_interval, concrete_sample=:Center, maximize=true)
+    min_sign_flip = maximize ? 1. : -1.
+    nn_spec = merge_into_network(nn, min_sign_flip .* coeffs', zeros(1))
+
+    #in_shape = map(x -> ifelse(isa(x, Integer), x, 1), nn_spec.input_shape)
+    in_shape = nn_spec.input_shape
+    s = init_symbolic_interval_graph(nn_spec, input_set, Tuple(in_shape))
+
+    function approximate_optimize_cell(cell)
+        out_cell = propagate(solver, nn_spec, cell)
+        lbs, ubs = bounds(out_cell)
+        # after merging into network, we only have a single output
+        val = min_sign_flip * ubs[1]
+        return val, out_cell
+    end
+
+    if concrete_sample == :Center
+        achievable_value = cell -> (domain(cell).center, min_sign_flip * propagate(nn_spec, domain(cell).center)[1])
+    elseif concrete_sample == :BoundsMaximizer
+        achievable_value = cell -> begin
+            x_star = maximizer(cell)
+            x_center = domain(cell).center
+
+            y_star = propagate(nn_spec, x_star)[1]
+            y_center = propagate(nn_spec, x_center)[1]
+
+            if y_star > y_center
+                y = y_star
+                x = x_star
+            else
+                y = y_center
+                x = x_center
+            end
+
+            return x, y
+        end
+    elseif concrete_sample == :valid 
+        achievable_value = cell -> begin
+            x = concrete_input_valid(cell)
+            y = propagate(nn_spec, x)[1]
+
+            return x, y
+        end
+    else
+        throw(ArgumentError("keyword $concrete_sample doesn't exist!"))
+    end
+
+    return general_priority_optimization(s, approximate_optimize_cell, achievable_value, params, maximize, split=split)
+end
+
+
 """
 Verifies network for given vnnlib specification.
 
